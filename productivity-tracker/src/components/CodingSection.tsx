@@ -72,26 +72,6 @@ const QuickSkillsBar: React.FC<{ store: LifeTrackerStore }> = ({ store }) => {
     );
 };
 
-// --- SKILL BADGE COMPONENT ---
-const SkillBadge: React.FC<{ name: string; store: LifeTrackerStore }> = ({ name, store }) => {
-    const skills = store.getState().skillMastery;
-    // Try to match by name or part of name
-    const skill = skills.find(s =>
-        s.name.toLowerCase() === name.toLowerCase() ||
-        name.toLowerCase().includes(s.name.toLowerCase()) ||
-        s.name.toLowerCase().includes(name.toLowerCase())
-    );
-
-    if (!skill) return null;
-
-    return (
-        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-accent/5 border border-accent/20 rounded-lg group">
-            <Award className="w-2.5 h-2.5 text-accent" />
-            <span className="text-[8px] font-black text-accent uppercase tracking-widest">{skill.name} {skill.depthRating}/5</span>
-        </div>
-    );
-};
-
 // --- Types for local state ---
 type SectionId = 'paths' | 'dsa' | 'videos' | 'projects' | 'notes' | 'mastery';
 
