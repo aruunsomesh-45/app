@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create New Routine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bee6c",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center">
+<!-- Main Container (Mobile Form Factor) -->
+<div class="relative flex min-h-screen w-full max-w-[430px] flex-col bg-white dark:bg-background-dark shadow-2xl overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="flex items-center bg-white dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="flex w-12 items-center justify-start">
+<p class="text-[#61896f] dark:text-primary text-base font-bold leading-normal tracking-[0.015em] shrink-0 cursor-pointer">Cancel</p>
+</div>
+<h2 class="text-[#111813] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Create New Routine</h2>
+<div class="w-12"></div> <!-- Spacer for symmetry -->
+</header>
+<main class="flex-1 overflow-y-auto">
+<!-- ProfileHeader / Image Upload -->
+<div class="flex p-6 @container">
+<div class="flex w-full flex-col gap-6 items-center">
+<div class="flex gap-4 flex-col items-center">
+<!-- Image Upload Container -->
+<div class="relative group cursor-pointer">
+<div class="bg-background-light dark:bg-emerald-950/30 border-2 border-dashed border-[#dbe6df] dark:border-emerald-900 aspect-square rounded-xl min-h-40 w-40 flex flex-col items-center justify-center gap-2 transition-colors hover:bg-primary/10">
+<span class="material-symbols-outlined text-4xl text-[#61896f] dark:text-primary">photo_camera</span>
+<span class="text-xs font-semibold text-[#61896f] dark:text-primary">Add Photo</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center">
+<p class="text-[#111813] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">Upload Routine Cover</p>
+<p class="text-[#61896f] dark:text-emerald-400/70 text-base font-normal leading-normal text-center">Pick an image that motivates you</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Form Fields -->
+<div class="px-4 space-y-2">
+<!-- Routine Title TextField -->
+<div class="flex flex-col w-full py-3">
+<label class="flex flex-col flex-1">
+<p class="text-[#111813] dark:text-white text-base font-medium leading-normal pb-2 px-1">Routine Title</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111813] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary border border-[#dbe6df] dark:border-emerald-900 bg-white dark:bg-emerald-950/20 focus:border-primary h-14 placeholder:text-[#61896f] dark:placeholder:text-emerald-700 p-[15px] text-base font-normal leading-normal transition-all" placeholder="e.g., Morning Mobility" type="text" value=""/>
+</label>
+</div>
+<!-- Subtitle/Description TextField -->
+<div class="flex flex-col w-full py-3">
+<label class="flex flex-col flex-1">
+<p class="text-[#111813] dark:text-white text-base font-medium leading-normal pb-2 px-1">Subtitle/Description</p>
+<textarea class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111813] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary border border-[#dbe6df] dark:border-emerald-900 bg-white dark:bg-emerald-950/20 focus:border-primary min-h-36 placeholder:text-[#61896f] dark:placeholder:text-emerald-700 p-[15px] text-base font-normal leading-normal transition-all" placeholder="e.g., 15 mins to start your day"></textarea>
+</label>
+</div>
+</div>
+<div class="h-20"></div> <!-- Spacer for sticky button -->
+</main>
+<!-- SingleButton (Bottom Fixed) -->
+<div class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-6 border-t border-[#dbe6df] dark:border-emerald-900">
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-primary text-[#102216] text-lg font-bold leading-normal tracking-[0.015em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+<span class="truncate">Add to Homepage</span>
+</button>
+<!-- iOS Home Indicator Safe Area -->
+<div class="h-2"></div>
+</div>
+</div>
+</body></html>

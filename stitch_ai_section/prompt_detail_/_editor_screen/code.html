@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker - Prompt Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1E1E1E", // Dark charcoal for strong contrast, serving as a primary action color
+                        "background-light": "#F2F1EF", // Warm, creamy off-white like the card background in left image
+                        "background-dark": "#0F0F0F", // Deep black/dark grey like the right image
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1C1C1C",
+                        "accent-brown": "#8C7B6D", // Muted earth tone from image
+                        "text-primary-light": "#111827",
+                        "text-secondary-light": "#6B7280",
+                        "text-primary-dark": "#F3F4F6",
+                        "text-secondary-dark": "#9CA3AF",
+                    },
+                    fontFamily: {
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        'xl': "1.5rem",
+                        '2xl': "2rem",
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 15px rgba(255, 255, 255, 0.1)',
+                    }
+                },
+            },
+        };
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen transition-colors duration-300">
+<div class="max-w-md mx-auto min-h-screen relative flex flex-col pb-24">
+<header class="px-6 py-6 flex items-center justify-between sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark shadow-sm text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-icons-round text-xl">arrow_back</span>
+</button>
+<h1 class="text-sm font-semibold tracking-wide uppercase text-text-secondary-light dark:text-text-secondary-dark">Edit Prompt</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark shadow-sm text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-icons-round text-xl">more_horiz</span>
+</button>
+</header>
+<main class="flex-1 px-6 space-y-6">
+<section>
+<div class="flex items-start justify-between mb-2">
+<input class="bg-transparent border-none text-3xl font-bold text-text-primary-light dark:text-text-primary-dark p-0 focus:ring-0 w-full placeholder-gray-400" placeholder="Prompt Title" type="text" value="Strategic Planning Assistant"/>
+</div>
+<div class="flex flex-wrap gap-2 mt-3">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-secondary-light dark:text-text-secondary-dark shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-brown mr-2"></span>
+                        Productivity
+                    </span>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-secondary-light dark:text-text-secondary-dark shadow-sm">
+                        GPT-4 Optimized
+                    </span>
+</div>
+</section>
+<section class="bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-soft border border-gray-100 dark:border-gray-800 relative group">
+<div class="flex items-center justify-between mb-3">
+<label class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark">System Prompt</label>
+<button class="text-primary dark:text-white hover:opacity-70 transition-opacity">
+<span class="material-icons-round text-lg">content_copy</span>
+</button>
+</div>
+<textarea class="w-full bg-background-light dark:bg-background-dark rounded-xl p-4 text-base leading-relaxed text-text-primary-light dark:text-text-primary-dark border-none focus:ring-2 focus:ring-accent-brown/50 resize-none h-48 placeholder-gray-400 dark:placeholder-gray-600 font-mono text-sm" placeholder="Enter your prompt structure here...">Act as a senior strategic consultant. 
+Analyze the provided business context and identify the top 3 leverage points for growth. Focus on operational efficiency and market positioning. 
+Output format:
+1. Executive Summary
+2. Key Opportunities
+3. Risk Assessment</textarea>
+<div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="bg-primary text-white text-xs px-2 py-1 rounded shadow-lg">Edited</div>
+</div>
+</section>
+<section class="bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-soft border border-gray-100 dark:border-gray-800">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-icons-round text-accent-brown text-lg">lightbulb</span>
+<h3 class="text-sm font-semibold text-text-primary-light dark:text-text-primary-dark">Why it works</h3>
+</div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">
+                    This prompt uses persona adoption ("Senior Consultant") to set the tone. It constrains the output to specific categories (Efficiency, Positioning) to avoid generic advice.
+                </p>
+<div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+<h4 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2">Best used for</h4>
+<ul class="space-y-2">
+<li class="flex items-start gap-2 text-sm text-text-primary-light dark:text-text-primary-dark">
+<span class="material-icons-round text-green-500 text-sm mt-0.5">check_circle</span>
+<span>Quarterly business reviews</span>
+</li>
+<li class="flex items-start gap-2 text-sm text-text-primary-light dark:text-text-primary-dark">
+<span class="material-icons-round text-green-500 text-sm mt-0.5">check_circle</span>
+<span>Brainstorming new product launches</span>
+</li>
+</ul>
+</div>
+</section>
+<section>
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-3 ml-1">Linked Workflows</h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center text-center gap-2 shadow-sm hover:border-accent-brown transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-icons-round">edit_document</span>
+</div>
+<span class="text-xs font-medium text-text-primary-light dark:text-text-primary-dark">Q3 Planning</span>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+<span class="material-icons-round text-gray-400 dark:text-gray-500">add</span>
+<span class="text-xs font-medium text-gray-400 dark:text-gray-500">Link Workflow</span>
+</div>
+</div>
+</section>
+</main>
+<div class="fixed bottom-6 left-0 right-0 px-6 pointer-events-none">
+<div class="max-w-md mx-auto relative flex justify-center pointer-events-auto">
+<button class="bg-primary text-white w-full py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 transform active:scale-95 transition-all hover:shadow-2xl">
+<span class="material-icons-round">play_arrow</span>
+<span class="font-semibold text-base">Run Prompt</span>
+</button>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none z-10"></div>
+</div>
+<div class="fixed top-0 left-0 right-0 h-64 bg-gradient-to-b from-gray-200/50 dark:from-gray-800/20 to-transparent -z-10 pointer-events-none"></div>
+
+</body></html>

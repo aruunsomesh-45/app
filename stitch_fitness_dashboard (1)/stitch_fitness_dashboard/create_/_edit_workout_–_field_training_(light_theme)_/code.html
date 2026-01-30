@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create / Edit Workout - Field Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b4f835",
+                        "primary-dark": "#9ed92b",
+                        "background-light": "#f7f8f5",
+                        "background-dark": "#1c230f",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2a341a",
+                        "text-main": "#171c0d",
+                        "text-sub": "#5c6b45",
+                        "border-color": "#dfe9ce",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hide for cleaner UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main antialiased selection:bg-primary selection:text-black">
+<div class="relative mx-auto flex h-full min-h-screen w-full max-w-md flex-col overflow-hidden shadow-2xl bg-background-light dark:bg-background-dark">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-50 flex items-center justify-between bg-background-light/90 dark:bg-background-dark/90 px-4 py-3 backdrop-blur-md">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-text-main dark:text-white">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h2 class="text-lg font-bold leading-tight tracking-tight text-text-main dark:text-white">Field Training</h2>
+<span class="text-xs font-medium text-primary dark:text-primary tracking-wide uppercase">Editing</span>
+</div>
+<button class="flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-black transition-transform active:scale-95 shadow-sm hover:bg-primary-dark">
+                Save
+            </button>
+</div>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto px-4 pb-24 pt-2">
+<!-- Workout Overview Card -->
+<div class="mb-6 rounded-2xl bg-surface-light dark:bg-surface-dark p-5 shadow-sm border border-border-color dark:border-white/5">
+<!-- Workout Name -->
+<div class="mb-4">
+<label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-text-sub dark:text-gray-400" for="workout-name">Workout Name</label>
+<input class="w-full rounded-lg border-none bg-background-light dark:bg-black/20 px-4 py-3 text-xl font-bold text-text-main dark:text-white placeholder-text-sub focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark transition-all" id="workout-name" placeholder="E.g. Leg Day" type="text" value="Morning Grind"/>
+</div>
+<!-- Notes / Focus -->
+<div class="mb-4">
+<label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-text-sub dark:text-gray-400" for="workout-notes">Focus / Notes</label>
+<textarea class="w-full resize-none rounded-lg border-none bg-background-light dark:bg-black/20 px-4 py-3 text-sm text-text-main dark:text-gray-200 placeholder-text-sub focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark transition-all" id="workout-notes" placeholder="Add notes about focus or goals..." rows="2">Focus on hypertrophy and slow eccentrics.</textarea>
+</div>
+<!-- Chips / Stats -->
+<div class="flex flex-wrap gap-2">
+<div class="flex items-center gap-1.5 rounded-full bg-background-light dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-text-main dark:text-gray-200">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                        45 Mins
+                    </div>
+<div class="flex items-center gap-1.5 rounded-full bg-background-light dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-text-main dark:text-gray-200">
+<span class="material-symbols-outlined text-[16px]">fitness_center</span>
+                        6 Exercises
+                    </div>
+<div class="flex items-center gap-1.5 rounded-full bg-background-light dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-text-main dark:text-gray-200">
+<span class="material-symbols-outlined text-[16px]">local_fire_department</span>
+                        Upper Body
+                    </div>
+</div>
+</div>
+<!-- Exercises List Header -->
+<div class="mb-3 flex items-center justify-between px-1">
+<h3 class="text-base font-bold text-text-main dark:text-white">Routine</h3>
+<button class="text-xs font-semibold text-primary hover:underline">Reorder</button>
+</div>
+<!-- Exercise Card 1 -->
+<div class="group/card relative mb-4 overflow-hidden rounded-xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-color dark:border-white/5 transition-all hover:shadow-md">
+<!-- Card Header -->
+<div class="flex items-center justify-between border-b border-border-color dark:border-white/5 bg-gray-50/50 dark:bg-white/5 px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="flex size-10 items-center justify-center rounded-lg bg-primary/20 text-primary-dark dark:text-primary">
+<span class="material-symbols-outlined">fitness_center</span>
+</div>
+<div>
+<h4 class="text-base font-bold text-text-main dark:text-white">Barbell Squat</h4>
+<p class="text-xs text-text-sub dark:text-gray-400">Legs • Compound</p>
+</div>
+</div>
+<button class="flex size-8 items-center justify-center rounded-full text-text-sub hover:bg-black/5 dark:hover:bg-white/10 dark:text-gray-400">
+<span class="material-symbols-outlined text-xl">more_horiz</span>
+</button>
+</div>
+<!-- Sets Table -->
+<div class="p-4">
+<div class="mb-2 grid grid-cols-10 gap-2 text-xs font-semibold uppercase tracking-wider text-text-sub dark:text-gray-500">
+<div class="col-span-2 text-center">Set</div>
+<div class="col-span-3 text-center">kg</div>
+<div class="col-span-3 text-center">Reps</div>
+<div class="col-span-2 text-center"></div>
+</div>
+<!-- Set 1 -->
+<div class="mb-2 grid grid-cols-10 items-center gap-2">
+<div class="col-span-2 flex items-center justify-center">
+<span class="flex size-6 items-center justify-center rounded bg-gray-100 text-xs font-bold text-gray-500 dark:bg-white/10 dark:text-gray-300">1</span>
+</div>
+<div class="col-span-3">
+<input class="w-full rounded bg-background-light p-2 text-center text-sm font-semibold text-text-main focus:ring-1 focus:ring-primary dark:bg-black/20 dark:text-white" type="number" value="100"/>
+</div>
+<div class="col-span-3">
+<input class="w-full rounded bg-background-light p-2 text-center text-sm font-semibold text-text-main focus:ring-1 focus:ring-primary dark:bg-black/20 dark:text-white" type="number" value="8"/>
+</div>
+<div class="col-span-2 flex justify-end">
+<button class="flex size-8 items-center justify-center rounded text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/20">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+</button>
+</div>
+</div>
+<!-- Set 2 -->
+<div class="mb-2 grid grid-cols-10 items-center gap-2">
+<div class="col-span-2 flex items-center justify-center">
+<span class="flex size-6 items-center justify-center rounded bg-gray-100 text-xs font-bold text-gray-500 dark:bg-white/10 dark:text-gray-300">2</span>
+</div>
+<div class="col-span-3">
+<input class="w-full rounded bg-background-light p-2 text-center text-sm font-semibold text-text-main focus:ring-1 focus:ring-primary dark:bg-black/20 dark:text-white" type="number" value="100"/>
+</div>
+<div class="col-span-3">
+<input class="w-full rounded bg-background-light p-2 text-center text-sm font-semibold text-text-main focus:ring-1 focus:ring-primary dark:bg-black/20 dark:text-white" type="number" value="8"/>
+</div>
+<div class="col-span-2 flex justify-end">
+<button class="flex size-8 items-center justify-center rounded text-gray-400 hover:bg-gray-100 dark:text-gray-600 dark:hover:bg-white/5">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+</button>
+</div>
+</div>
+<button class="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border-color py-2 text-xs font-bold uppercase text-primary hover:bg-primary/5 dark:border-white/10">
+<span class="material-symbols-outlined text-sm">add</span> Add Set
+                    </button>
+</div>
+</div>
+<!-- Exercise Card 2 -->
+<div class="group/card relative mb-4 overflow-hidden rounded-xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-color dark:border-white/5 transition-all hover:shadow-md">
+<!-- Card Header -->
+<div class="flex items-center justify-between border-b border-border-color dark:border-white/5 bg-gray-50/50 dark:bg-white/5 px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="flex size-10 items-center justify-center rounded-lg bg-primary/20 text-primary-dark dark:text-primary">
+<span class="material-symbols-outlined">accessibility_new</span>
+</div>
+<div>
+<h4 class="text-base font-bold text-text-main dark:text-white">Bench Press</h4>
+<p class="text-xs text-text-sub dark:text-gray-400">Chest • Compound</p>
+</div>
+</div>
+<button class="flex size-8 items-center justify-center rounded-full text-text-sub hover:bg-black/5 dark:hover:bg-white/10 dark:text-gray-400">
+<span class="material-symbols-outlined text-xl">more_horiz</span>
+</button>
+</div>
+<!-- Sets Table -->
+<div class="p-4">
+<div class="mb-2 grid grid-cols-10 gap-2 text-xs font-semibold uppercase tracking-wider text-text-sub dark:text-gray-500">
+<div class="col-span-2 text-center">Set</div>
+<div class="col-span-3 text-center">kg</div>
+<div class="col-span-3 text-center">Reps</div>
+<div class="col-span-2 text-center"></div>
+</div>
+<!-- Set 1 -->
+<div class="mb-2 grid grid-cols-10 items-center gap-2">
+<div class="col-span-2 flex items-center justify-center">
+<span class="flex size-6 items-center justify-center rounded bg-gray-100 text-xs font-bold text-gray-500 dark:bg-white/10 dark:text-gray-300">1</span>
+</div>
+<div class="col-span-3">
+<input class="w-full rounded bg-background-light p-2 text-center text-sm font-semibold text-text-main focus:ring-1 focus:ring-primary dark:bg-black/20 dark:text-white" type="number" value="80"/>
+</div>
+<div class="col-span-3">
+<input class="w-full rounded bg-background-light p-2 text-center text-sm font-semibold text-text-main focus:ring-1 focus:ring-primary dark:bg-black/20 dark:text-white" type="number" value="10"/>
+</div>
+<div class="col-span-2 flex justify-end">
+<button class="flex size-8 items-center justify-center rounded text-gray-400 hover:bg-gray-100 dark:text-gray-600 dark:hover:bg-white/5">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+</button>
+</div>
+</div>
+<!-- Set 2 -->
+<div class="mb-2 grid grid-cols-10 items-center gap-2">
+<div class="col-span-2 flex items-center justify-center">
+<span class="flex size-6 items-center justify-center rounded bg-gray-100 text-xs font-bold text-gray-500 dark:bg-white/10 dark:text-gray-300">2</span>
+</div>
+<div class="col-span-3">
+<input class="w-full rounded bg-background-light p-2 text-center text-sm font-semibold text-text-main focus:ring-1 focus:ring-primary dark:bg-black/20 dark:text-white" type="number" value="80"/>
+</div>
+<div class="col-span-3">
+<input class="w-full rounded bg-background-light p-2 text-center text-sm font-semibold text-text-main focus:ring-1 focus:ring-primary dark:bg-black/20 dark:text-white" type="number" value="10"/>
+</div>
+<div class="col-span-2 flex justify-end">
+<button class="flex size-8 items-center justify-center rounded text-gray-400 hover:bg-gray-100 dark:text-gray-600 dark:hover:bg-white/5">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+</button>
+</div>
+</div>
+<button class="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border-color py-2 text-xs font-bold uppercase text-primary hover:bg-primary/5 dark:border-white/10">
+<span class="material-symbols-outlined text-sm">add</span> Add Set
+                    </button>
+</div>
+</div>
+<!-- Empty State for Visual Interest -->
+<div class="mt-6 flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-transparent p-6 dark:border-gray-700 opacity-60">
+<div class="mb-2 flex size-12 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 text-gray-400">
+<span class="material-symbols-outlined">playlist_add</span>
+</div>
+<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Add more exercises to build your flow.</p>
+</div>
+<div class="h-24"></div> <!-- Spacer for fixed button -->
+</main>
+<!-- Floating Action Button Area -->
+<div class="fixed bottom-0 z-40 w-full max-w-md bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark px-4 pb-6 pt-10">
+<button class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-base font-bold text-black shadow-lg shadow-primary/30 transition-all hover:bg-primary-dark active:scale-[0.98]">
+<span class="material-symbols-outlined">add</span>
+                Add Exercise
+            </button>
+</div>
+</div>
+</body></html>

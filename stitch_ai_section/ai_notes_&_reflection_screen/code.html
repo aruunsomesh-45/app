@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker - AI Notes &amp; Reflection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1A1A1A", // Very dark charcoal/black for primary buttons as seen in the left screen
+                        "background-light": "#F5F5F0", // Warm off-white from the left screen bottom card
+                        "background-dark": "#0F0F0F", // Deep black from the right screen
+                        "card-light": "#E8E8E3", // Slightly darker off-white for cards in light mode
+                        "card-dark": "#1E1E1E", // Dark gray for cards in dark mode
+                        "accent-brown": "#A69C93", // Muted brown/taupe accent
+                        "text-light": "#1A1A1A",
+                        "text-dark": "#FFFFFF",
+                        "text-muted-light": "#666666",
+                        "text-muted-dark": "#999999",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "3xl": "2.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-100 dark:bg-black flex justify-center items-center min-h-screen font-sans p-4 antialiased selection:bg-gray-200 dark:selection:bg-gray-800">
+<div class="w-full max-w-sm h-[850px] bg-background-light dark:bg-background-dark rounded-[3rem] shadow-2xl overflow-hidden relative border-[8px] border-gray-200 dark:border-gray-800 ring-1 ring-gray-900/5">
+<div class="px-8 pt-5 pb-2 flex justify-between items-center text-xs font-medium text-text-light dark:text-text-dark">
+<span>9:41</span>
+<div class="flex items-center space-x-1">
+<span class="material-icons-round text-sm">signal_cellular_alt</span>
+<span class="material-icons-round text-sm">wifi</span>
+<span class="material-icons-round text-sm">battery_full</span>
+</div>
+</div>
+<div class="px-6 pt-4 pb-2">
+<div class="flex justify-between items-center mb-6">
+<button class="w-10 h-10 rounded-full bg-white/50 dark:bg-white/10 flex items-center justify-center backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/20 transition">
+<span class="material-icons-round text-text-light dark:text-text-dark">arrow_back</span>
+</button>
+<div class="flex space-x-3">
+<button class="w-10 h-10 rounded-full bg-white/50 dark:bg-white/10 flex items-center justify-center backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/20 transition">
+<span class="material-icons-round text-text-light dark:text-text-dark">search</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white/50 dark:bg-white/10 flex items-center justify-center backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/20 transition">
+<span class="material-icons-round text-text-light dark:text-text-dark">more_horiz</span>
+</button>
+</div>
+</div>
+<h1 class="text-3xl font-light tracking-tight text-text-light dark:text-text-dark mb-1">AI Reflections</h1>
+<p class="text-sm text-text-muted-light dark:text-text-muted-dark font-normal">Learnings &amp; optimization log</p>
+</div>
+<div class="px-6 mb-6">
+<div class="flex space-x-2 overflow-x-auto no-scrollbar pb-2">
+<button class="flex items-center px-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent text-xs font-medium text-text-light dark:text-text-dark whitespace-nowrap hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    Prompts <span class="ml-1 material-icons-round text-[10px]">close</span>
+</button>
+<button class="flex items-center px-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent text-xs font-medium text-text-light dark:text-text-dark whitespace-nowrap hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    Automation <span class="ml-1 material-icons-round text-[10px]">close</span>
+</button>
+<button class="flex items-center px-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent text-xs font-medium text-text-light dark:text-text-dark whitespace-nowrap hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    Mistakes <span class="ml-1 material-icons-round text-[10px]">close</span>
+</button>
+</div>
+</div>
+<div class="px-4 pb-24 h-full overflow-y-auto no-scrollbar">
+<div class="grid grid-cols-2 gap-3">
+<div class="col-span-2 bg-card-light dark:bg-card-dark rounded-3xl p-5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-icons-round text-text-light dark:text-text-dark text-lg">edit</span>
+</div>
+<div class="flex justify-between items-start mb-3">
+<div class="inline-flex items-center px-2.5 py-1 rounded-full bg-white dark:bg-white/10 backdrop-blur-sm border border-black/5 dark:border-white/5">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-2"></span>
+<span class="text-[10px] font-semibold tracking-wide uppercase text-text-muted-light dark:text-text-muted-dark">Best Discovery</span>
+</div>
+<span class="text-xs text-text-muted-light dark:text-text-muted-dark">Mon 12.11</span>
+</div>
+<h3 class="text-xl font-medium text-text-light dark:text-text-dark mb-2 leading-tight">Prompt Chaining Strategy</h3>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark leading-relaxed mb-4">
+                        Breaking down complex requests into 3 smaller prompts yielded 40% better accuracy than a single mega-prompt.
+                    </p>
+<div class="bg-white dark:bg-black/30 rounded-xl p-3 flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shrink-0">
+<span class="material-icons-round text-white text-sm">auto_awesome</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-semibold text-text-light dark:text-text-dark truncate">System Prompt V3</p>
+<p class="text-[10px] text-text-muted-light dark:text-text-muted-dark truncate">Saved to library</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-black dark:bg-white flex items-center justify-center">
+<span class="material-icons-round text-white dark:text-black text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="bg-[#E0DDD5] dark:bg-[#2A2A2A] rounded-3xl p-4 flex flex-col justify-between h-48 relative">
+<div class="absolute top-3 right-3">
+<span class="material-icons-round text-text-light dark:text-text-dark text-sm opacity-50">timer</span>
+</div>
+<div>
+<div class="w-10 h-10 rounded-full overflow-hidden mb-3 border border-white/20">
+<img alt="Abstract automation visual" class="w-full h-full object-cover grayscale opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpuJ4YCkJx_zYB9PU3Trota4Cozj3drZgkDEqtb5GAS7LxAwCX66g0KC8INWlFxlQz5ulMa4S3fQCJQ8Q8jHS2awbmo2KhvaF8qInLiJLmHsiMKxm8p-a4bYIDiYGOMRxDcxfKTNLIHS1iusqqSkSsWX3zuifhzHUJKS1LcEnv5DhdwuLwEdO8H5NxlM4u_u6N2JO6Nt45-aA6kEGk4Z3kAHLRtElW6i4NpjL_0I1rrHPorqop5XeYJjMbpYaBAbbXzABNA4bsvVM4"/>
+</div>
+<h4 class="text-sm font-semibold text-text-light dark:text-text-dark leading-tight">Email Triage Bot</h4>
+</div>
+<div>
+<div class="text-2xl font-light text-text-light dark:text-text-dark">2.5h</div>
+<p class="text-[10px] text-text-muted-light dark:text-text-muted-dark">Saved this week</p>
+</div>
+</div>
+<div class="bg-card-light dark:bg-card-dark rounded-3xl p-4 flex flex-col justify-between h-48 relative group">
+<div class="absolute top-3 right-3">
+<span class="material-icons-round text-text-light dark:text-text-dark text-sm opacity-50">warning</span>
+</div>
+<div>
+<div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-3">
+<span class="material-icons-round text-orange-600 dark:text-orange-400 text-lg">priority_high</span>
+</div>
+<h4 class="text-sm font-semibold text-text-light dark:text-text-dark leading-tight">Hallucination Check</h4>
+</div>
+<div>
+<p class="text-[10px] text-text-muted-light dark:text-text-muted-dark line-clamp-3 leading-relaxed">
+                            Always verify citations. The research summary invented two papers on productivity.
+                        </p>
+</div>
+<button class="absolute bottom-3 right-3 w-6 h-6 rounded-full bg-white dark:bg-white/10 flex items-center justify-center">
+<span class="material-icons-round text-text-light dark:text-text-dark text-[10px]">add</span>
+</button>
+</div>
+<div class="col-span-2 bg-text-light dark:bg-[#1E1E1E] rounded-3xl p-5 text-white dark:text-text-dark flex items-center justify-between">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
+<span class="material-icons-round text-white text-xl">smart_toy</span>
+</div>
+<div>
+<h4 class="text-sm font-medium">Daily Briefing Script</h4>
+<p class="text-[10px] text-white/60 dark:text-white/40 mt-0.5">Automate morning summarization</p>
+</div>
+</div>
+<button class="px-4 py-2 rounded-xl bg-white text-black text-xs font-semibold">
+                        Setup
+                    </button>
+</div>
+<div class="col-span-2 bg-[#D4D4CE] dark:bg-[#252525] rounded-3xl p-5 relative">
+<div class="flex justify-between items-center mb-4">
+<div class="flex -space-x-2">
+<img alt="User Avatar" class="w-8 h-8 rounded-full border-2 border-[#D4D4CE] dark:border-[#252525]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl2rEEWtVP5YmEK2XRkXoU9x0-YJAcH6wGS5EqEesJQafCWxhbkIWCe66JSLzoi9athMN8xRmGLDgi3lJdnloZPVYT8Mdvng-G3vGUjc6n0r7-mmVPVgho2HnCCEUbawfIts0GNxHLgOt5bDLGcNr-MeKObTWAwThk9yvtBnBMLGxcmFmn-xfx-MCRYIV_oDrdM7ENl6i_3d2zsuX3wtb5cIQy7kP_CiQh0Wk7MBlWnRtzjvWX7ehT1u_CqWZ5M33cXkwBfNeWszo9"/>
+<div class="w-8 h-8 rounded-full bg-black text-white text-[10px] flex items-center justify-center border-2 border-[#D4D4CE] dark:border-[#252525] font-medium">+3</div>
+</div>
+<span class="px-2 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-[10px] font-medium text-text-muted-light dark:text-text-muted-dark">Draft</span>
+</div>
+<p class="text-sm font-medium text-text-light dark:text-text-dark mb-2">Review: GPT-4 vs Claude 3</p>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark">Comparing code generation quality for Python scripts...</p>
+<button class="mt-4 w-full py-3 rounded-2xl bg-black dark:bg-black border border-transparent dark:border-white/10 text-white text-xs font-medium flex items-center justify-center space-x-2 group">
+<span class="material-icons-round text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+<span>Continue Reading</span>
+</button>
+</div>
+</div>
+<div class="h-20"></div>
+</div>
+<div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] z-20">
+<div class="bg-black/90 dark:bg-white/10 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-[2rem] p-2 pr-4 flex items-center justify-between shadow-2xl">
+<div class="w-12 h-12 bg-white dark:bg-primary rounded-full flex items-center justify-center text-black dark:text-white shadow-lg">
+<span class="material-icons-round">add</span>
+</div>
+<span class="text-sm font-medium text-white dark:text-white ml-3">New Reflection</span>
+<span class="text-[10px] text-white/50 dark:text-white/50 ml-auto bg-white/10 px-2 py-1 rounded-md">CMD + N</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none z-10"></div>
+</div>
+
+</body></html>

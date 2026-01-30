@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fitness Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#C6F432", 
+              "background-light": "#F5F7FA",
+              "background-dark": "#0F172A",
+              "card-light": "#FFFFFF",
+              "card-dark": "#1E293B",
+              "secondary-blue": "#3B82F6",
+              "secondary-orange": "#F97316",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              'xl': '1rem',
+              '2xl': '1.25rem',
+              '3xl': '1.5rem',
+            },
+          },
+        },
+      };
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-white pb-32 transition-colors duration-300">
+<div class="max-w-md mx-auto px-6 pt-8">
+<header class="flex justify-between items-center mb-8">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="User Avatar" class="w-14 h-14 rounded-full border-2 border-primary object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtaWiNNXNwslbKSoeuS1JxJqMGugCZo0veSxFmpStvbsX0c9xZnRXHbN_B9dD7MRL72aC7r0lSlBFAeMtsHaL4hf9g0JhOiyk3FCKSAjulxXSHRWNOkAQmyMmjKjCairAd2R6HuEjr0Ugghlhx9kihxrV4fozVAPAs6f6uYpDhJYa1bmG7r8rNIQEcFLGLWNqbtwJu-TqFG_WewmU3bVgfGSM3iZm7HHBFOg2T1O6xDuisxHJSqLFWulQk9lkRLyAELUcgEFgAjwfM"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-primary rounded-full border-2 border-background-light dark:border-background-dark"></div>
+</div>
+<div>
+<p class="text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wider">GOOD EVENING</p>
+<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Alex Johnson</h1>
+</div>
+</div>
+<button class="w-12 h-12 rounded-full bg-white dark:bg-card-dark flex items-center justify-center shadow-sm relative transition-colors duration-300">
+<span class="material-icons-round text-gray-800 dark:text-white">notifications</span>
+<span class="absolute top-3 right-3.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-card-dark"></span>
+</button>
+</header>
+<section class="mb-8">
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-xl font-bold">Your Progress</h2>
+<a class="text-sm font-semibold text-green-600 dark:text-primary hover:opacity-80 transition-colors" href="#">View Calendar</a>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar gap-3 mb-6 pb-2">
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl bg-white dark:bg-card-dark text-gray-500 dark:text-gray-400 shadow-sm transition-colors duration-300">
+<span class="text-xs mb-1">Mon</span>
+<span class="text-lg font-bold text-gray-900 dark:text-white">12</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl bg-white dark:bg-card-dark text-gray-500 dark:text-gray-400 shadow-sm transition-colors duration-300">
+<span class="text-xs mb-1">Tue</span>
+<span class="text-lg font-bold text-gray-900 dark:text-white">13</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl bg-primary text-gray-900 shadow-md shadow-green-200 dark:shadow-none transform scale-105 transition-transform duration-300">
+<span class="text-xs font-semibold mb-1 opacity-80">Wed</span>
+<span class="text-lg font-bold">14</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl bg-white dark:bg-card-dark text-gray-500 dark:text-gray-400 shadow-sm transition-colors duration-300">
+<span class="text-xs mb-1">Thu</span>
+<span class="text-lg font-bold text-gray-900 dark:text-white">15</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl bg-white dark:bg-card-dark text-gray-500 dark:text-gray-400 shadow-sm transition-colors duration-300">
+<span class="text-xs mb-1">Fri</span>
+<span class="text-lg font-bold text-gray-900 dark:text-white">16</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl bg-white dark:bg-card-dark text-gray-500 dark:text-gray-400 shadow-sm transition-colors duration-300">
+<span class="text-xs mb-1">Sat</span>
+<span class="text-lg font-bold text-gray-900 dark:text-white">17</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="bg-white dark:bg-card-dark rounded-3xl p-4 shadow-sm relative overflow-hidden transition-colors duration-300">
+<span class="material-icons-round absolute -right-2 -bottom-2 text-6xl text-gray-100 dark:text-gray-700 opacity-50 pointer-events-none rotate-[-15deg]">fitness_center</span>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">Workouts</p>
+<h3 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">12</h3>
+<div class="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 70%"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-card-dark rounded-3xl p-4 shadow-sm relative overflow-hidden transition-colors duration-300">
+<span class="material-icons-round absolute -right-2 -bottom-2 text-6xl text-gray-100 dark:text-gray-700 opacity-50 pointer-events-none">schedule</span>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">Minutes</p>
+<h3 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">45</h3>
+<div class="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-blue h-full rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-card-dark rounded-3xl p-4 shadow-sm relative overflow-hidden transition-colors duration-300">
+<span class="material-icons-round absolute -right-2 -bottom-2 text-6xl text-gray-100 dark:text-gray-700 opacity-50 pointer-events-none">local_fire_department</span>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">Kcal</p>
+<h3 class="text-3xl font-bold mb-2 text-[#84cc16] dark:text-[#a3e635]">320</h3>
+<div class="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-orange h-full rounded-full" style="width: 60%"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="mb-8">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-bold">Categories</h2>
+<button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+<span class="material-icons-round text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar gap-6 pb-2">
+<div class="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-colors">
+<img alt="Strength Category" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_zdIYtvlHImHF3nZiyduDeUyUTrNX6fjucwZlFp81S47aC-AG2WxKVX3tESF04377SUYtHaKTVRaHkRUTVwdi8jqQ3H_6MnTiZlOPF3zNlJUZ5k5RHvXInDfJf_SMMFn_B2Q0v_K8i80yxmajZxJr-Fikl8pqS-lTb_SkPabhN3FS8u82_XcdwS7_i6RTBSrT_Hu2tOcYIFzX_MCLvoE5WRnP7av5ZBrf2IIQGKb6PUCkhzZn_XVXVuH0LghbrFjFE_cTs2lVfTCG"/>
+</div>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Strength</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-colors">
+<img alt="Cardio Category" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFP-SPXOJ5p0CcW74_UqenCUaBzqJ8r-d-zC8J8s30WdFsZTv_hFasiMQPHe3G12W4C3foDLGw3U_14zkHutHoa0mIeHpOPNEksM4-cTKBZVPyRok5sABFmB0s65lwRz-BvB97n4OUqkZOmtZ6acMq7KR3OOqTapKbGSN6GwyhxWo6b2F56A5ofDMiyxtXRadCngIdxGPjDek2fj6KDnepGXahD1IOmoG1Cxy-0QfsH3sPsR_WhVrOe5rTFiUf9Lc2hCeudHm5IKyr"/>
+</div>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Cardio</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-colors">
+<img alt="Yoga Category" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwh0_HCs9dK1vtN2VRrOO2qN45-ag0Kr0H2sG5aAoQGCRG2LWnuTzi7HvzDFL6HKPudbMRD-SgY-2kOfgHtThpDrlcql_ZA5K3SWywQIWZysRABTR124ZSty3WnacDCDJ0pg4IBD2RoZmj8hr3K7Vlhn3nxmWvSJVCahJqwwz_7NJElGvh32VYuLVXwdGpWmX61oQgXchKsqZ7wYf6OWVer8cwlvjXM1FFQumUD6S1My-21c-ynjpn9R0bDoUtCUkYeS_8Jzx1A1n5"/>
+</div>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Yoga</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-colors">
+<img alt="Boxing Category" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaPzf1NEn4lhvjsH3kKx6yZHCjY_LbMblDZROJIL8ICdnijuca_R44Dxe66ZYmPkA1iB5NtJvcxJ2zN-8pfYYHgW8i5BLWeqxl8x90FPOKH1l_pWYKksUVpUoI4fPJJSgocKjW_4JpjHppfHha-SsGZDNF8aqjsh8QOu4i0zfdQFD4UQTeKZ2S6ZLtH5QWTRMiJzSQEr4Qc8xGu7zCrY4HYadnQugVXsuFb0_fcME1MwXc_EibqQMCPjpdjRkNo5c6cSJOlt5ZQLkh"/>
+</div>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Boxing</span>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xl font-bold mb-4">Popular Workouts</h2>
+<div class="space-y-4">
+<div class="group relative rounded-3xl overflow-hidden h-52 shadow-md cursor-pointer">
+<img alt="Lower Body Power Background" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMLWmjQOO9Paa6Hyqo6FKPe4DcjM1t_uNgSc97MgV8CnGfQZH82ykGnpjZ7R232aEJWWXe23QqK7dvbtV0AwHjOIoUeXrm5_LZ4rLf0Ro7iyqPNnMnmGiwUXnHVyeqFKSY3mbIFebEv23RPSLJQKubUi1R_Djt9vfOYzCeLk40j--soNbPpQOu3CgNFvaWZT8WFX0Vgkv5yFcuzHPYgf1YAX9jjOkzJoIun3P9r2lAHjbIR8G1IhT_5rNEJ9G2yyooWIr8w3F4ERHh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+<div class="absolute inset-0 p-5 flex flex-col justify-between">
+<div class="self-end">
+<span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10">Advanced</span>
+</div>
+<div>
+<h3 class="text-white text-2xl font-bold mb-3">Lower Body Power</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5 bg-black/30 px-2 py-1 rounded-lg backdrop-blur-sm">
+<span class="material-icons-round text-primary text-sm">schedule</span>
+<span class="text-white text-xs font-medium">45 min</span>
+</div>
+<div class="flex items-center gap-1.5 bg-black/30 px-2 py-1 rounded-lg backdrop-blur-sm">
+<span class="material-icons-round text-secondary-orange text-sm">local_fire_department</span>
+<span class="text-white text-xs font-medium">320 Kcal</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="group relative rounded-3xl overflow-hidden h-52 shadow-md cursor-pointer">
+<img alt="HIIT Intensity Background" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA94YddKUVk9ojtUSg-Us0wnz4YXST05Kgf8sT9Dbtt7jCNsx377cswtTR1fRP-ddg1ia4gdLVebQ1OFJoiOL-1_GLzBeYIuSzMFVQE3RiE2Uxz7MAvAcO9KqhqTWxBNZROnHYeAlK5eyqwEGWqYkoadqLcpsFbejoSlqwNKOHW1T_vGOTNfEFMD7LMb-oAdEuRyK9_RYBJEru-Wx1_3hRWVdtBkOeFB9PjIkCTt5ubJ-6NiBDCU1D_pKRVKlc76ON67caiuKBv7gUJ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+<div class="absolute inset-0 p-5 flex flex-col justify-between">
+<div class="self-end">
+<span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10">Intermediate</span>
+</div>
+<div>
+<h3 class="text-white text-2xl font-bold mb-3">HIIT Intensity</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5 bg-black/30 px-2 py-1 rounded-lg backdrop-blur-sm">
+<span class="material-icons-round text-primary text-sm">schedule</span>
+<span class="text-white text-xs font-medium">20 min</span>
+</div>
+<div class="flex items-center gap-1.5 bg-black/30 px-2 py-1 rounded-lg backdrop-blur-sm">
+<span class="material-icons-round text-secondary-orange text-sm">local_fire_department</span>
+<span class="text-white text-xs font-medium">250 Kcal</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-card-dark rounded-3xl p-3 flex items-center gap-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-300">
+<div class="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
+<img alt="Morning Flow Thumbnail" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0S9NQC_ZB3k5FZ7TXLXDJ9O8t9658H3-QcYsNMz7VGiXCrVh-y2JSiyIvJMnMUepyE9_JFzBheoDjqXR7h69oMiKH6j8Nx_FRJCLVrW3ENFVOY41UwefrVC_sEuLM0BYLnQs3ajj2Oj0rYz-iBp4ZiBg_laxR1UgeeBSpNGhT-TCXzaNXe33tGLpz6TDD_fVy-LxUREpnckTB7yt6pgljyYbglf-uePwja0Eg_FHVpi3om-XOM9WuRwh-DLJTbtmiOKJU6OoV1Shr"/>
+</div>
+<div class="flex-grow">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Morning Flow</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">15 min <span class="mx-1">•</span> 110 Kcal</p>
+</div>
+<button class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-colors duration-300">
+<span class="material-icons-round">play_arrow</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<nav class="fixed bottom-0 w-full bg-white dark:bg-card-dark border-t border-gray-100 dark:border-gray-800 pb-6 pt-2 px-6 shadow-lg z-50">
+<div class="max-w-md mx-auto flex justify-between items-center">
+<button class="flex flex-col items-center justify-center w-12 h-12 bg-primary rounded-full shadow-lg shadow-green-100 dark:shadow-none transform -translate-y-4 border-4 border-background-light dark:border-background-dark">
+<span class="material-icons-round text-gray-900 text-2xl">home</span>
+</button>
+<button class="flex flex-col items-center justify-center w-12 h-12 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors">
+<span class="material-icons-round text-2xl">fitness_center</span>
+</button>
+<button class="flex flex-col items-center justify-center w-12 h-12 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors">
+<span class="material-icons-round text-2xl">bar_chart</span>
+</button>
+<button class="flex flex-col items-center justify-center w-12 h-12 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors">
+<span class="material-icons-round text-2xl">person</span>
+</button>
+</div>
+</nav>
+<script>
+        // Check local storage or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+
+</body></html>

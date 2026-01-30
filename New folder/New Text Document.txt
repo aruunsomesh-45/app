@@ -1,0 +1,50 @@
+| AI Agent       | Best Use Case                                                   |
+| -------------- | --------------------------------------------------------------- |
+| **ChatGPT**    | General-purpose tasks — writing, coding, chatbots, explanations |
+| **Claude**     | Deep reasoning, long documents, thoughtful analysis             |
+| **Gemini**     | Multimodal work (text + image + audio) inside Google ecosystem  |
+| **Grok**       | Real-time insights, social media, and trending content          |
+| **Perplexity** | Research, factual answers with web citations                    |
+| **DeepSeek**   | Budget-friendly AI for experimentation or bulk tasks            |
+      
+               -----ai agent-----
+	       1. revenlance ai - to build agent
+	       2. opal ai        - to bulid agent (free)
+               3. crew ai 	 
+--- web site ---bulider---
+1.bolt
+2.lovable
+3. firebase(base)
+4.dualite(free)
+5.von.dev
+6.kimi	
+----- prompt generator----
+open ai prompt optimizer
+MetaPrompt.com in agent ai
+-----design-----
+1.21st.dev
+2.
+----figma design plugings-----
+1.flow base
+2.figduo
+3.spurot ui
+---- 2d into 3d design---
+1. formia .so
+2. ai studio
+3. meshy ai
+--- ai viedos---
+1.seedance
+2.cadaes
+----ui design--
+banani
+magic ui
+ai seo---
+listora
+-------------------ui componetes----------
+1.awwwards.com
+2,react bits
+3. 21.dev
+4.minimal.gallerry
+5.refero.design
+6.designspells.com
+7.landing.love

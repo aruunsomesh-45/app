@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker - Prompt Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#18181b", // Deep zinc black/gray as primary actionable color (like the "Pay" button in ref)
+                        secondary: "#d4d4d8", // Lighter gray for secondary text/borders
+                        accent: "#f4f4f5", // Very light gray for backgrounds
+                        "background-light": "#fdfdfd",
+                        "background-dark": "#121212",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e1e1e",
+                        "text-light": "#18181b",
+                        "text-dark": "#e4e4e7",
+                        "tag-coding": "#e0f2fe", // Light blue
+                        "tag-coding-text": "#0369a1",
+                        "tag-writing": "#fce7f3", // Light pink
+                        "tag-writing-text": "#be185d",
+                        "tag-research": "#fef3c7", // Light amber
+                        "tag-research-text": "#b45309",
+                        "tag-automation": "#dcfce7", // Light green
+                        "tag-automation-text": "#15803d",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        'xl': "1.5rem",
+                        '2xl': "2rem",
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'hover': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                        'floating': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    }
+                },
+            },
+        };
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-sans min-h-screen antialiased transition-colors duration-300">
+<div class="max-w-md mx-auto min-h-screen relative flex flex-col pb-24">
+<header class="px-6 pt-12 pb-4 sticky top-0 z-20 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md transition-colors duration-300">
+<div class="flex justify-between items-center mb-6">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-300 transition-colors">
+<span class="material-icons-round text-xl">arrow_back</span>
+</button>
+<div class="flex space-x-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-300 transition-colors">
+<span class="material-icons-round text-xl">search</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-300 transition-colors">
+<span class="material-icons-round text-xl">tune</span>
+</button>
+</div>
+</div>
+<h1 class="text-3xl font-bold tracking-tight mb-1">Prompt Library</h1>
+<p class="text-gray-500 dark:text-gray-400 text-sm">Manage your AI productivity workflows</p>
+</header>
+<div class="px-6 mb-6">
+<div class="flex space-x-3 overflow-x-auto no-scrollbar pb-2">
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium shadow-md transition-transform active:scale-95">All Prompts</button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Coding</button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Writing</button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Research</button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Automation</button>
+</div>
+</div>
+<main class="flex-1 px-6 space-y-4">
+<div class="group bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-hover border border-gray-100 dark:border-gray-800 transition-all duration-300 cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-tag-coding/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50"></div>
+<div class="flex justify-between items-start mb-3 relative z-10">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tag-coding dark:bg-opacity-20 text-tag-coding-text dark:text-blue-300">
+<span class="w-1.5 h-1.5 rounded-full bg-tag-coding-text dark:bg-blue-400 mr-1.5"></span>
+                        Coding
+                    </span>
+<button class="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+<span class="material-icons-round text-lg">more_horiz</span>
+</button>
+</div>
+<h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2 leading-tight group-hover:text-primary dark:group-hover:text-white transition-colors">React Component Generator</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">Create functional React components with Tailwind styling based on detailed requirements and accessibility standards.</p>
+<div class="flex items-center text-xs text-gray-400 dark:text-gray-500 font-medium pt-3 border-t border-gray-100 dark:border-gray-800">
+<span class="material-icons-round text-sm mr-1.5">history</span>
+                    Last used: 2 hours ago
+                </div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-hover border border-gray-100 dark:border-gray-800 transition-all duration-300 cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-tag-writing/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50"></div>
+<div class="flex justify-between items-start mb-3 relative z-10">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tag-writing dark:bg-opacity-20 text-tag-writing-text dark:text-pink-300">
+<span class="w-1.5 h-1.5 rounded-full bg-tag-writing-text dark:bg-pink-400 mr-1.5"></span>
+                        Writing
+                    </span>
+<button class="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+<span class="material-icons-round text-lg">more_horiz</span>
+</button>
+</div>
+<h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2 leading-tight group-hover:text-primary dark:group-hover:text-white transition-colors">Technical Blog Post Outliner</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">Generate structured outlines for technical articles including SEO keywords, H2/H3 headers, and key takeaways.</p>
+<div class="flex items-center text-xs text-gray-400 dark:text-gray-500 font-medium pt-3 border-t border-gray-100 dark:border-gray-800">
+<span class="material-icons-round text-sm mr-1.5">history</span>
+                    Last used: Yesterday
+                </div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-hover border border-gray-100 dark:border-gray-800 transition-all duration-300 cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-tag-research/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50"></div>
+<div class="flex justify-between items-start mb-3 relative z-10">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tag-research dark:bg-opacity-20 text-tag-research-text dark:text-amber-300">
+<span class="w-1.5 h-1.5 rounded-full bg-tag-research-text dark:bg-amber-400 mr-1.5"></span>
+                        Research
+                    </span>
+<button class="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+<span class="material-icons-round text-lg">more_horiz</span>
+</button>
+</div>
+<h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2 leading-tight group-hover:text-primary dark:group-hover:text-white transition-colors">Competitive Analysis Matrix</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">Extract key features, pricing, and unique selling points from competitor websites and format into a comparison table.</p>
+<div class="flex items-center text-xs text-gray-400 dark:text-gray-500 font-medium pt-3 border-t border-gray-100 dark:border-gray-800">
+<span class="material-icons-round text-sm mr-1.5">history</span>
+                    Last used: Oct 24
+                </div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-hover border border-gray-100 dark:border-gray-800 transition-all duration-300 cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-tag-automation/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50"></div>
+<div class="flex justify-between items-start mb-3 relative z-10">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tag-automation dark:bg-opacity-20 text-tag-automation-text dark:text-green-300">
+<span class="w-1.5 h-1.5 rounded-full bg-tag-automation-text dark:bg-green-400 mr-1.5"></span>
+                        Automation
+                    </span>
+<button class="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+<span class="material-icons-round text-lg">more_horiz</span>
+</button>
+</div>
+<h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2 leading-tight group-hover:text-primary dark:group-hover:text-white transition-colors">Email Response Parser</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">Analyze incoming client emails for sentiment and urgency, then draft appropriate replies based on tone.</p>
+<div class="flex items-center text-xs text-gray-400 dark:text-gray-500 font-medium pt-3 border-t border-gray-100 dark:border-gray-800">
+<span class="material-icons-round text-sm mr-1.5">history</span>
+                    Last used: Oct 20
+                </div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-hover border border-gray-100 dark:border-gray-800 transition-all duration-300 cursor-pointer relative overflow-hidden mb-8">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-tag-research/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50"></div>
+<div class="flex justify-between items-start mb-3 relative z-10">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tag-research dark:bg-opacity-20 text-tag-research-text dark:text-amber-300">
+<span class="w-1.5 h-1.5 rounded-full bg-tag-research-text dark:bg-amber-400 mr-1.5"></span>
+                        Research
+                    </span>
+<button class="text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+<span class="material-icons-round text-lg">more_horiz</span>
+</button>
+</div>
+<h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2 leading-tight group-hover:text-primary dark:group-hover:text-white transition-colors">Academic Paper Summarizer</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">Condense complex academic PDFs into bulleted executive summaries highlighting methodology and results.</p>
+<div class="flex items-center text-xs text-gray-400 dark:text-gray-500 font-medium pt-3 border-t border-gray-100 dark:border-gray-800">
+<span class="material-icons-round text-sm mr-1.5">history</span>
+                    Last used: Oct 12
+                </div>
+</div>
+</main>
+<div class="fixed bottom-6 left-0 right-0 px-6 flex justify-center z-30 pointer-events-none">
+<button class="pointer-events-auto bg-primary text-white flex items-center justify-center px-6 py-4 rounded-full shadow-floating hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 group">
+<span class="material-icons-round mr-2 text-xl group-hover:rotate-90 transition-transform duration-300">add</span>
+<span class="font-semibold text-base">New Prompt</span>
+</button>
+</div>
+<nav class="fixed bottom-0 w-full max-w-md bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 pb-safe pt-2 px-6 flex justify-between items-center z-20 h-20 rounded-t-3xl">
+<button class="flex flex-col items-center justify-center w-12 h-12 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-white transition-colors">
+<span class="material-icons-round text-2xl mb-1">home</span>
+</button>
+<button class="flex flex-col items-center justify-center w-12 h-12 text-primary dark:text-white transition-colors">
+<span class="material-icons-round text-2xl mb-1">library_books</span>
+</button>
+<div class="w-12"></div> 
+<button class="flex flex-col items-center justify-center w-12 h-12 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-white transition-colors">
+<span class="material-icons-round text-2xl mb-1">analytics</span>
+</button>
+<button class="flex flex-col items-center justify-center w-12 h-12 text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-white transition-colors">
+<span class="material-icons-round text-2xl mb-1">person</span>
+</button>
+</nav>
+</div>
+
+</body></html>

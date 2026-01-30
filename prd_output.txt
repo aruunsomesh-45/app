@@ -1,0 +1,115 @@
+Product Requirements Document (PRD)
+Product: LifeTracker – Business Section
+Audience: AI Development Agent, FullIStack Engineers, Product Designers
+1. Overview
+The Business Section of LifeTracker is a secure, configurable business operating system. Its
+purpose is to help users organize businessIcritical information, visualize workflows, learn
+businessIrelated knowledge intentionally, and improve communication skills — without storing
+financial or banking information and without duplicating noteItaking tools.
+1.1 Goals
+• Provide a structured yet customizable business system
+• Allow users to choose which business subImodules they want
+• Securely store sensitive (nonIfinancial) business information
+• Integrate seamlessly with Notion for notes
+• Reduce cognitive overload by hiding unused features
+1.2 NonIGoals
+• No storage of bank details or financial account data
+• No payment processing
+• No duplication of Notion note storage
+• No rigid, forced workflows
+2. HighILevel Architecture
+The Business Section is composed of three fixed core modules:
+1. Business Core
+2. Learning Core
+3. Communication Core
+Each module is conditionally enabled based on user configuration during onboarding.
+3. Business Core
+The Business Core handles executionIoriented and sensitive business assets. It prioritizes
+security, clarity, and fast access.
+3.1 Secure Vault
+Purpose: Store sensitive business information securely.
+Functional Requirements:
+• Vault protected by userIdefined PIN
+• Local encryption of all vault content
+• Manual lock and autoIlock after inactivity
+• Masked content by default
+Allowed Data:
+• Private strategy notes
+• Legal references (text only)
+• ClientIsensitive nonIfinancial info
+• Important URLs and credentials references
+Disallowed Data:
+• Bank account numbers
+• Payment details
+• Financial credentials
+3.2 Workflow Canvas
+Purpose: Enable users to visually design and reason about business workflows.
+Features:
+• FreeIform canvas interface
+• Nodes and connectors
+• Zoom, pan, and drag interactions
+• Version saving and naming
+UserIDefined Use Cases:
+• Sales workflows
+• Client onboarding flows
+• ContentItoIexecution pipelines
+3.3 Resource Manager
+Purpose: Centralized storage for nonIsensitive business references.
+Data Types:
+• URLs
+• Tool dashboards
+• Client names
+• NonIfinancial IDs
+• Project references
+Features:
+• Tagging and search
+• Optional vault protection per item
+4. Learning Core
+The Learning Core supports intentional, businessIaligned learning rather than random content
+consumption.
+4.1 Content Library
+Supported Content Types:
+• YouTube videos
+• Blogs and articles
+• Courses
+Each item must store:
+• Title
+• Link
+• Status (Saved / In Progress / Applied)
+• Key takeaway
+4.2 Knowledge Notes (Notion Integration)
+All notes are stored in Notion.
+Functional Requirements:
+• User connects Notion account once
+• App stores Notion Page IDs only
+• Notes are opened or embedded from Notion
+• App never stores raw note content
+5. Communication Core
+The Communication Core helps users build businessIcritical communication skills.
+5.1 Learning
+Content related to speaking, writing, negotiation, storytelling, and client communication.
+5.2 Practice
+Practice Logs include:
+• Message drafts
+• Call scripts
+• RoleIplay reflections
+• Outcome notes
+5.3 Reflection & Growth
+• Weekly reflections
+• Confidence selfIrating
+• Improvement ideas
+6. Security & Compliance
+• Encryption required for vault data
+• No plaintext secrets
+• No financial data storage
+• UserIcontrolled access and locking
+7. Implementation Notes
+• Modular architecture for easy enable/disable
+• User configuration drives UI rendering
+• Notion acts as the single source of truth for notes
+• Business Section must operate independently of other app sections
+8. Success Criteria
+• Users can configure their Business Section during onboarding
+• Sensitive data remains secure and isolated
+• Notes are fully handled via Notion
+• UI remains clutterIfree regardless of feature depth

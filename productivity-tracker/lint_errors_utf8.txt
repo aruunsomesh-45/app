@@ -1,0 +1,109 @@
+﻿
+> productivity-tracker@0.0.0 lint
+> eslint . --quiet
+
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\AICanvas.tsx
+  169:66  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  177:41  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  178:53  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  667:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\AICanvas.tsx:667:13
+  665 |     useEffect(() => {
+  666 |         if (!isDragging) {
+> 667 |             setPosition({ x: block.x, y: block.y });
+      |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  668 |         }
+  669 |     }, [block.x, block.y, isDragging, setPosition]);
+  670 |  react-hooks/set-state-in-effect
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\AIWallet.tsx
+  25:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\BusinessSection.tsx
+  113:140  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  200:120  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  242:116  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  266:122  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  404:86   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\CodingSection.tsx
+    38:55   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   201:47   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   383:48   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   404:70   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   524:46   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   710:47   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   794:115  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   827:47   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   831:61   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   970:12   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   973:46   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   993:17   error  Unexpected lexical declaration in case block  no-case-declarations
+   993:76   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  1215:158  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\Dashboard.tsx
+   87:65   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:29   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:55   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  335:51   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  363:51   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  415:106  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  426:105  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  437:101  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  448:107  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\LenisProvider.tsx
+  16:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-refresh/only-export-components
+  38:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\LenisProvider.tsx:38:9
+  36 |         });
+  37 |
+> 38 |         setLenis(instance);
+     |         ^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |
+  40 |         // Animation frame loop for smooth scrolling
+  41 |         function raf(time: number) {  react-hooks/set-state-in-effect
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\MeditationSystem.tsx
+   117:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   293:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   948:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1075:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1291:71  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\PlannerPage.tsx
+  108:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\PlannerPage.tsx:108:9
+  106 |     // -- Persistence --
+  107 |     useEffect(() => {
+> 108 |         setAutosaving(true);
+      |         ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  109 |         localStorage.setItem('planner_priorities', JSON.stringify(priorities));
+  110 |         localStorage.setItem('planner_anti_goals', JSON.stringify(antiGoals));
+  111 |         localStorage.setItem('planner_notes', JSON.stringify(notes));  react-hooks/set-state-in-effect
+
+Γ£û 41 problems (41 errors, 0 warnings)
+

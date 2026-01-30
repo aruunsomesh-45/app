@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker Home Screen</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f97316", // Vibrant Orange for high contrast and energy
+                        "background-light": "#F3F4F6", // Cool Gray 100
+                        "background-dark": "#09090b", // Zinc 950 (Deep dark)
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#18181B", // Zinc 900
+                        "surface-glass-light": "rgba(255, 255, 255, 0.7)",
+                        "surface-glass-dark": "rgba(24, 24, 27, 0.7)",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        'lg': '1rem',
+                        'xl': '1.5rem',
+                        '2xl': '2rem',
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'glow': '0 0 20px -5px rgba(249, 115, 22, 0.3)',
+                    }
+                },
+            },
+        };
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-100 font-display antialiased min-h-screen relative pb-24 transition-colors duration-300">
+<header class="sticky top-0 z-40 px-6 py-4 flex justify-between items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-white/5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary shadow-glow">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0_YhncEhkNWxuvMEBMCcIWcob6ldcRtDfFM5sE097SxQX9WElHHaQ1L11bsGbo-FZQhD3eSyXLTo3Eq7AGKRm55kFuKxSAlsAn2jkotg5cKgRy-OQUSxCjRJOpguste7ohvjHkyMrOycS-sqIxKy7UkGKPL406BHgpJyqspwczWbUjwzqfgxfnGQaukvKTHR_Xb3empNI0cZGiQzfngss6_utFKQ3GBAL2GFXiLp3DIFTNXM1eiH2R0d13NujeP8Ok7VksmOcVNWm"/>
+</div>
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Good Morning,</p>
+<h1 class="text-lg font-bold leading-none text-gray-900 dark:text-white">Oliver Bennet</h1>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="relative p-2 rounded-full bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/10 hover:scale-105 transition-transform">
+<span class="material-icons-round text-gray-600 dark:text-gray-300 text-xl">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border border-white dark:border-surface-dark"></span>
+</button>
+</div>
+</header>
+<main class="px-6 pt-4 space-y-8 max-w-md mx-auto">
+<section class="animate-fade-in" style="animation-delay: 0.1s;">
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-surface-dark dark:via-black dark:to-surface-dark text-white shadow-soft p-6">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/20 blur-3xl rounded-full translate-y-1/2 -translate-x-1/2"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div>
+<h2 class="text-3xl font-bold tracking-tight">Tuesday, 24</h2>
+<p class="text-gray-400 text-sm mt-1">Focus on what truly matters.</p>
+<div class="mt-6">
+<div class="flex items-end gap-2 mb-2">
+<span class="text-4xl font-bold text-primary">84%</span>
+<span class="text-sm text-gray-400 mb-1">Focus Score</span>
+</div>
+<div class="w-full bg-white/10 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 84%"></div>
+</div>
+</div>
+</div>
+<div class="p-3 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
+<span class="material-icons-round text-primary text-3xl">bolt</span>
+</div>
+</div>
+</div>
+</section>
+<section class="animate-fade-in" style="animation-delay: 0.2s;">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Life Areas</h3>
+<button class="text-primary text-xs font-semibold">Edit</button>
+</div>
+<div class="flex space-x-3 overflow-x-auto no-scrollbar pb-2 snap-x">
+<div class="snap-start shrink-0 flex items-center gap-2 pl-3 pr-4 py-2 bg-white dark:bg-surface-dark rounded-full border border-gray-200 dark:border-white/10 shadow-sm whitespace-nowrap">
+<span class="material-icons-round text-orange-500 text-lg">fitness_center</span>
+<span class="text-sm font-medium">Workout</span>
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 ml-1"></div>
+</div>
+<div class="snap-start shrink-0 flex items-center gap-2 pl-3 pr-4 py-2 bg-white dark:bg-surface-dark rounded-full border border-gray-200 dark:border-white/10 shadow-sm whitespace-nowrap">
+<span class="material-icons-round text-blue-500 text-lg">code</span>
+<span class="text-sm font-medium">Coding</span>
+<div class="w-8 h-1 bg-gray-200 dark:bg-gray-700 rounded-full ml-1 overflow-hidden">
+<div class="h-full bg-blue-500 w-3/4"></div>
+</div>
+</div>
+<div class="snap-start shrink-0 flex items-center gap-2 pl-3 pr-4 py-2 bg-white dark:bg-surface-dark rounded-full border border-gray-200 dark:border-white/10 shadow-sm whitespace-nowrap">
+<span class="material-icons-round text-purple-500 text-lg">self_improvement</span>
+<span class="text-sm font-medium">Meditation</span>
+<div class="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 ml-1"></div>
+</div>
+<div class="snap-start shrink-0 flex items-center gap-2 pl-3 pr-4 py-2 bg-white dark:bg-surface-dark rounded-full border border-gray-200 dark:border-white/10 shadow-sm whitespace-nowrap">
+<span class="material-icons-round text-yellow-500 text-lg">menu_book</span>
+<span class="text-sm font-medium">Reading</span>
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 ml-1"></div>
+</div>
+<div class="snap-start shrink-0 flex items-center gap-2 pl-3 pr-4 py-2 bg-white dark:bg-surface-dark rounded-full border border-gray-200 dark:border-white/10 shadow-sm whitespace-nowrap">
+<span class="material-icons-round text-teal-500 text-lg">psychology</span>
+<span class="text-sm font-medium">AI Learning</span>
+</div>
+</div>
+</section>
+<section class="space-y-4 animate-fade-in" style="animation-delay: 0.3s;">
+<div class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft border border-gray-100 dark:border-white/5">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-6 bg-primary rounded-full"></span>
+<h3 class="font-bold text-lg">Priorities</h3>
+</div>
+<button class="text-xs text-gray-400 hover:text-white">View All</button>
+</div>
+<div class="space-y-3">
+<label class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer group">
+<input checked="" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent checked:bg-primary" type="checkbox"/>
+<span class="text-gray-700 dark:text-gray-300 group-hover:text-primary transition-colors text-sm font-medium line-through opacity-50">Morning Reflection</span>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-gray-100 dark:hover:border-white/5">
+<input class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-gray-900 dark:text-white group-hover:text-primary transition-colors text-sm font-medium">Finish UI Design for Client</span>
+<span class="ml-auto text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md">Work</span>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-gray-100 dark:hover:border-white/5">
+<input class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-gray-900 dark:text-white group-hover:text-primary transition-colors text-sm font-medium">Deep Work: Coding (2h)</span>
+<span class="ml-auto text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-md">Dev</span>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-red-50 dark:bg-[#1f1212] rounded-2xl p-5 shadow-sm border border-red-100 dark:border-red-500/10">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-icons-round text-red-500 text-xl">block</span>
+<h3 class="font-bold text-red-900 dark:text-red-200">Anti-Goals</h3>
+</div>
+<ul class="space-y-2">
+<li class="text-sm text-red-800 dark:text-red-300/80 flex items-start gap-2">
+<span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                            No social media before 12PM
+                        </li>
+<li class="text-sm text-red-800 dark:text-red-300/80 flex items-start gap-2">
+<span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                            Don't skip stretching
+                        </li>
+</ul>
+</div>
+<div class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft border border-gray-100 dark:border-white/5 flex flex-col justify-center">
+<div class="flex justify-between items-end mb-4">
+<h3 class="font-bold text-gray-900 dark:text-white">Weekly</h3>
+<span class="text-xs text-primary font-medium cursor-pointer">Plan &gt;</span>
+</div>
+<div class="space-y-3">
+<div>
+<div class="flex justify-between text-xs mb-1 text-gray-500 dark:text-gray-400">
+<span>Physical</span>
+<span>3/5</span>
+</div>
+<div class="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-3/5 rounded-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs mb-1 text-gray-500 dark:text-gray-400">
+<span>Career</span>
+<span>8/10</span>
+</div>
+<div class="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+<div class="h-full bg-blue-500 w-4/5 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="animate-fade-in" style="animation-delay: 0.4s;">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Category Status</h3>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-white/5 hover:border-primary/30 transition-colors group">
+<div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-blue-500">laptop_mac</span>
+</div>
+<h4 class="font-semibold text-gray-900 dark:text-white">Freelancing</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2 active projects</p>
+</div>
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-white/5 hover:border-primary/30 transition-colors group">
+<div class="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-purple-500">camera_front</span>
+</div>
+<h4 class="font-semibold text-gray-900 dark:text-white">Branding</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">New post ready</p>
+</div>
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-white/5 hover:border-primary/30 transition-colors group">
+<div class="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-green-500">attach_money</span>
+</div>
+<h4 class="font-semibold text-gray-900 dark:text-white">Business</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Review Q3 stats</p>
+</div>
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-white/5 hover:border-primary/30 transition-colors group">
+<div class="w-10 h-10 rounded-lg bg-pink-50 dark:bg-pink-900/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-pink-500">face</span>
+</div>
+<h4 class="font-semibold text-gray-900 dark:text-white">Looksmaxing</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Skincare routine</p>
+</div>
+</div>
+</section>
+<section class="animate-fade-in pb-20" style="animation-delay: 0.5s;">
+<div class="bg-gray-100 dark:bg-white/5 rounded-2xl p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-white dark:bg-black rounded-lg shadow-sm">
+<span class="material-icons-round text-gray-700 dark:text-gray-300">insights</span>
+</div>
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Consistency Streak</p>
+<p class="text-lg font-bold text-gray-900 dark:text-white">12 Days 🔥</p>
+</div>
+</div>
+<div class="flex items-end gap-1 h-8">
+<div class="w-1.5 bg-gray-300 dark:bg-gray-600 rounded-t-sm h-3"></div>
+<div class="w-1.5 bg-gray-300 dark:bg-gray-600 rounded-t-sm h-5"></div>
+<div class="w-1.5 bg-gray-300 dark:bg-gray-600 rounded-t-sm h-4"></div>
+<div class="w-1.5 bg-primary rounded-t-sm h-full shadow-[0_0_10px_rgba(249,115,22,0.5)]"></div>
+<div class="w-1.5 bg-gray-300 dark:bg-gray-600 rounded-t-sm h-5"></div>
+</div>
+</div>
+</section>
+</main>
+<div class="fixed bottom-28 right-6 z-40">
+<button class="w-14 h-14 bg-primary text-white rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
+<span class="material-icons-round text-3xl">add</span>
+</button>
+</div>
+<nav class="fixed bottom-6 left-6 right-6 h-16 bg-surface-glass-light dark:bg-surface-glass-dark backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl z-50 flex items-center justify-around px-2">
+<a class="p-3 text-primary flex flex-col items-center" href="#">
+<span class="material-icons-round">home</span>
+</a>
+<a class="p-3 text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition-colors flex flex-col items-center" href="#">
+<span class="material-icons-round">calendar_today</span>
+</a>
+<a class="p-3 text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition-colors flex flex-col items-center" href="#">
+<span class="material-icons-round">pie_chart</span>
+</a>
+<a class="p-3 text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition-colors flex flex-col items-center" href="#">
+<span class="material-icons-round">settings</span>
+</a>
+</nav>
+<script>
+        // Simple script to toggle dark mode for demonstration
+        // In a real app, this would be based on system preference or user setting
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+
+</body></html>

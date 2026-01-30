@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00a3b3",
+                        "accent-blue": "#3b82f6",
+                        "background-light": "#f3f4f6",
+                        "charcoal": "#1a1a1a",
+                        "medium-grey": "#6b7280",
+                        "input-bg": "#f9fafb",
+                        "modal-bg": "#ffffff",
+                        "card-inner": "#141b1e",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "2xl": "3.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .modal-shadow {
+            box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.1), 0 15px 30px -10px rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light min-h-screen flex items-center justify-center p-4">
+<div class="relative w-full max-w-[440px] bg-modal-bg rounded-2xl p-8 modal-shadow flex flex-col gap-10 overflow-hidden border border-gray-100">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<h1 class="text-charcoal text-3xl font-extrabold tracking-tight leading-none">
+                    Asset <span class="italic font-light">Incubator</span>
+</h1>
+<p class="text-medium-grey text-[10px] font-bold tracking-[0.2em] mt-2 uppercase">
+                    Layer 1: Prompt Engineering
+                </p>
+</div>
+<button class="bg-gray-100 hover:bg-gray-200 text-charcoal rounded-full w-10 h-10 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<div class="space-y-8">
+<div class="flex flex-col gap-3">
+<label class="text-medium-grey text-[11px] font-bold tracking-wider px-2">ASSET IDENTITY (TITLE)</label>
+<input class="w-full h-16 bg-input-bg border border-gray-200 rounded-full px-8 text-charcoal placeholder:text-gray-400/40 placeholder:text-[11px] focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-base font-medium" placeholder="e.g., NEURAL ARCHITECT V1" type="text"/>
+</div>
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-3">
+<label class="text-medium-grey text-[11px] font-bold tracking-wider px-2 uppercase">Sector</label>
+<div class="relative">
+<input class="w-full h-16 bg-input-bg border border-gray-200 rounded-full px-8 text-charcoal text-base font-medium cursor-default focus:ring-0" readonly="" type="text" value="DEVELOPMENT"/>
+<span class="material-symbols-outlined absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<label class="text-medium-grey text-[11px] font-bold tracking-wider px-2 uppercase">Utility (Purpose)</label>
+<div class="relative">
+<input class="w-full h-16 bg-input-bg border border-gray-200 rounded-full px-8 text-charcoal text-base font-medium cursor-default focus:ring-0" readonly="" type="text" value="Asset Objective"/>
+<span class="material-symbols-outlined absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-card-inner rounded-[40px] p-8 flex flex-col gap-5 relative overflow-hidden">
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-accent-blue/10 blur-[60px] rounded-full pointer-events-none"></div>
+<div class="flex justify-between items-center">
+<h3 class="text-accent-blue text-xs font-black tracking-[0.15em] uppercase">Neural Logic Core</h3>
+<span class="material-symbols-outlined text-accent-blue/60 text-xl leading-none">bolt</span>
+</div>
+<div class="relative">
+<textarea class="w-full min-h-[160px] bg-transparent border-none focus:ring-0 text-white/90 placeholder:text-gray-600/50 placeholder:text-[11px] text-base leading-relaxed resize-none custom-scrollbar p-0" placeholder="Paste RAW prompt content here..."></textarea>
+</div>
+<div class="pt-2 flex justify-start">
+<button class="group flex items-center gap-3 px-8 py-3 bg-accent-blue/10 hover:bg-accent-blue/20 rounded-full transition-all border border-accent-blue/20">
+<span class="text-accent-blue text-[11px] font-bold tracking-widest uppercase">Atomic Format {{ }}</span>
+<span class="material-symbols-outlined text-[16px] text-accent-blue group-hover:translate-x-0.5 transition-transform">auto_fix_high</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col items-center gap-6">
+<button class="w-full h-20 bg-primary hover:bg-primary/90 text-white rounded-full font-bold text-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+                Initialize Sequence
+            </button>
+<button class="text-medium-grey text-sm font-semibold hover:text-charcoal transition-colors underline underline-offset-4 decoration-gray-300">
+                Cancel
+            </button>
+<p class="text-center text-medium-grey text-[10px] font-medium tracking-wide mt-2">
+                SECURE HANDSHAKE: END-TO-END ENCRYPTION ENABLED
+            </p>
+</div>
+</div>
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none opacity-10">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-accent-blue blur-[100px] rounded-full opacity-50"></div>
+</div>
+
+</body></html>

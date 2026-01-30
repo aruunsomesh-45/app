@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker - AI Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#18181b", 
+                        "background-light": "#F2F2F2",
+                        "background-dark": "#09090b",
+                        "card-light": "rgba(255, 255, 255, 0.7)",
+                        "card-dark": "rgba(24, 24, 27, 0.6)",
+                        "text-secondary-light": "#71717a",
+                        "text-secondary-dark": "#a1a1aa",
+                        "accent-beige": "#e7e5e4",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                        body: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        'xl': "1.5rem",
+                        '2xl': "2rem",
+                        '3xl': "2.5rem",
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 20px rgba(255, 255, 255, 0.05)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                },
+            },
+        };
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-card {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .dark .glass-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(145deg, rgba(39, 39, 42, 0.4), rgba(24, 24, 27, 0.4));
+        }
+        .light .glass-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-body antialiased text-gray-900 dark:text-white transition-colors duration-300 min-h-screen relative flex justify-center selection:bg-zinc-800 selection:text-white">
+<div class="w-full max-w-md h-full min-h-screen bg-background-light dark:bg-background-dark relative flex flex-col pb-24 overflow-hidden">
+<div class="absolute top-[-10%] left-[-20%] w-[500px] h-[500px] bg-amber-100/30 dark:bg-amber-900/10 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute bottom-[-10%] right-[-20%] w-[400px] h-[400px] bg-blue-100/30 dark:bg-zinc-800/20 rounded-full blur-[80px] pointer-events-none"></div>
+<header class="px-6 pt-12 pb-6 flex justify-between items-start relative z-10">
+<div>
+<button class="w-10 h-10 rounded-full glass-card flex items-center justify-center shadow-sm mb-6 text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-zinc-700/50 transition">
+<span class="material-symbols-outlined text-xl">arrow_back</span>
+</button>
+<h1 class="text-4xl font-light tracking-tight text-gray-900 dark:text-white mb-1">AI</h1>
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-sm font-medium tracking-wide uppercase opacity-70">Leverage &amp; Automation</p>
+</div>
+<div class="flex gap-3 mt-16">
+<button class="w-10 h-10 rounded-full glass-card flex items-center justify-center shadow-sm text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-xl">search</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-primary dark:bg-zinc-200 text-white dark:text-zinc-900 flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-xl">person</span>
+</button>
+</div>
+</header>
+<div class="px-6 mb-8 relative z-10">
+<div class="w-full glass-card rounded-2xl p-4 flex justify-between items-center shadow-sm">
+<div class="flex-1 text-center border-r border-gray-200 dark:border-zinc-700/50">
+<span class="block text-lg font-semibold text-gray-900 dark:text-white">12</span>
+<span class="text-[10px] uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark font-medium">Prompts</span>
+</div>
+<div class="flex-1 text-center border-r border-gray-200 dark:border-zinc-700/50 px-2">
+<span class="block text-lg font-semibold text-gray-900 dark:text-white">4</span>
+<span class="text-[10px] uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark font-medium">Workflows</span>
+</div>
+<div class="flex-1 text-center">
+<span class="block text-lg font-semibold text-gray-900 dark:text-white">2h</span>
+<span class="text-[10px] uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark font-medium">Saved</span>
+</div>
+</div>
+</div>
+<main class="px-6 relative z-10 flex-1 flex flex-col">
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="col-span-1 aspect-square relative group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-br from-white/60 to-white/20 dark:from-zinc-800/60 dark:to-zinc-900/20 rounded-3xl transform transition-transform duration-300 group-hover:scale-[1.02]"></div>
+<div class="relative glass-card h-full rounded-3xl p-5 flex flex-col justify-between shadow-soft overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-100/40 to-transparent dark:from-amber-900/10 dark:to-transparent rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+<div class="w-12 h-12 rounded-2xl bg-white/80 dark:bg-zinc-800/80 flex items-center justify-center text-gray-900 dark:text-white shadow-sm backdrop-blur-sm">
+<span class="material-symbols-outlined">library_books</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-gray-900 dark:text-white leading-tight mb-1">Prompt<br/>Library</h3>
+</div>
+</div>
+</div>
+<div class="col-span-1 aspect-square relative group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-br from-white/60 to-white/20 dark:from-zinc-800/60 dark:to-zinc-900/20 rounded-3xl transform transition-transform duration-300 group-hover:scale-[1.02]"></div>
+<div class="relative glass-card h-full rounded-3xl p-5 flex flex-col justify-between shadow-soft overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-100/40 to-transparent dark:from-blue-900/10 dark:to-transparent rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+<div class="w-12 h-12 rounded-2xl bg-white/80 dark:bg-zinc-800/80 flex items-center justify-center text-gray-900 dark:text-white shadow-sm backdrop-blur-sm">
+<span class="material-symbols-outlined">track_changes</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-gray-900 dark:text-white leading-tight mb-1">Use<br/>Cases</h3>
+</div>
+</div>
+</div>
+<div class="col-span-1 aspect-square relative group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-br from-white/60 to-white/20 dark:from-zinc-800/60 dark:to-zinc-900/20 rounded-3xl transform transition-transform duration-300 group-hover:scale-[1.02]"></div>
+<div class="relative glass-card h-full rounded-3xl p-5 flex flex-col justify-between shadow-soft overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-purple-100/40 to-transparent dark:from-purple-900/10 dark:to-transparent rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+<div class="w-12 h-12 rounded-2xl bg-white/80 dark:bg-zinc-800/80 flex items-center justify-center text-gray-900 dark:text-white shadow-sm backdrop-blur-sm">
+<span class="material-symbols-outlined">build</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-gray-900 dark:text-white leading-tight mb-1">Tools</h3>
+</div>
+</div>
+</div>
+<div class="col-span-1 aspect-square relative group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-br from-white/60 to-white/20 dark:from-zinc-800/60 dark:to-zinc-900/20 rounded-3xl transform transition-transform duration-300 group-hover:scale-[1.02]"></div>
+<div class="relative glass-card h-full rounded-3xl p-5 flex flex-col justify-between shadow-soft overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-100/40 to-transparent dark:from-emerald-900/10 dark:to-transparent rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+<div class="w-12 h-12 rounded-2xl bg-white/80 dark:bg-zinc-800/80 flex items-center justify-center text-gray-900 dark:text-white shadow-sm backdrop-blur-sm">
+<span class="material-symbols-outlined">schema</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-gray-900 dark:text-white leading-tight mb-1">Workflows</h3>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-2">
+<h2 class="text-sm font-medium uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-4 px-1">Recent Activity</h2>
+<div class="space-y-3">
+<div class="flex items-center p-3 glass-card rounded-2xl shadow-sm hover:bg-white/40 dark:hover:bg-zinc-800/40 transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-zinc-800 flex items-center justify-center shrink-0 overflow-hidden relative">
+<img alt="Abstract Gradient" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS_8D8gxIqR4ZxDEy7bRd-c4JoMsBsZf26PaacgSflfubneoVi2ifar9lEao7en1LoqJXWO9wehydEbE294ZW85zjoaL1rv2rD2nqjvyWk4R1sCRqegLRwlYtx8haCe81Jj1w2bRrKk1_gFJ2mKAN7Gkr8L9FjLL9ueKwCuckI5uiekfPcRl--Pvdk_twSWmAtyESot1zjppzHtHd3Kknr6j63VYwU-rqH4EyshpXok5xAdkrHmaV4z4hWDURa2IaMza8SydUggtw2"/>
+</div>
+<div class="ml-3 flex-1">
+<h4 class="text-sm font-medium text-gray-900 dark:text-white">Python Script Helper</h4>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Tool • Used yesterday</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-lg">chevron_right</span>
+</div>
+<div class="flex items-center p-3 glass-card rounded-2xl shadow-sm hover:bg-white/40 dark:hover:bg-zinc-800/40 transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-zinc-800 flex items-center justify-center shrink-0 overflow-hidden relative">
+<img alt="Abstract AI Art" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmtAIpVeOMukCLVBCkeCtaBNJy11oibEgMQdUrumCr6VYFRJcsMq3G20Qj6ynhAaftWocidGur7A7HO-_Dn_5hyDhgRUQcxxGxUeogn-dzN2hev3IBzxIcxFpvamZkezXNTrDlDtonIANpiMQg1NTQZ3KZql-VZAQfg146lMUQFI2C7u_xgX0ZewATxWsuPn9l06qVvlt8J7MGbPE9IDNjAxuC_4vqBw3DdORC0Ign9aDSpymq2yl9hjEziH52KFOdhR6Kf9cDhyA0"/>
+</div>
+<div class="ml-3 flex-1">
+<h4 class="text-sm font-medium text-gray-900 dark:text-white">Meeting Summarizer</h4>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Workflow • Updated 2h ago</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-lg">chevron_right</span>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-24 right-6 z-50">
+<button class="bg-primary dark:bg-zinc-200 text-white dark:text-zinc-900 w-14 h-14 rounded-full shadow-2xl shadow-primary/30 dark:shadow-white/10 flex items-center justify-center hover:scale-105 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 dark:bg-black/80 backdrop-blur-lg border-t border-gray-200 dark:border-white/10 px-6 py-4 flex justify-between items-center z-40 pb-8">
+<button class="flex flex-col items-center gap-1 text-gray-400 dark:text-zinc-500 hover:text-gray-900 dark:hover:text-white transition">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary dark:text-white transition">
+<span class="material-symbols-outlined text-2xl filled">smart_toy</span>
+<span class="text-[10px] font-medium">AI</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 dark:text-zinc-500 hover:text-gray-900 dark:hover:text-white transition">
+<span class="material-symbols-outlined text-2xl">bar_chart</span>
+<span class="text-[10px] font-medium">Stats</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 dark:text-zinc-500 hover:text-gray-900 dark:hover:text-white transition">
+<span class="material-symbols-outlined text-2xl">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</button>
+</div>
+</div>
+
+</body></html>

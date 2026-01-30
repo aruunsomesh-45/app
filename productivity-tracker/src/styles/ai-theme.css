@@ -1,0 +1,612 @@
+/* ============================================
+   AI SECTION - DIOR-INSPIRED LUXURY THEME
+   ============================================
+   This palette is inspired by a Dior-like luxury 
+   theme, bringing an elegant and stylish vibe.
+   ============================================ */
+
+/* CSS Custom Properties for AI Section */
+:root {
+    /* Dark Mode Colors */
+    --ai-dark-bg: #333333;
+    /* Graphite - Primary background */
+    --ai-dark-bg-secondary: #1A1A1A;
+    /* Carbon Black - Borders/subtle lines */
+    --ai-dark-text: #000000;
+    /* Black - Main text/high contrast */
+    --ai-dark-text-secondary: #CCCCCC;
+    /* Silver - Secondary/muted text */
+    --ai-dark-accent: #847777;
+    /* Rosy Granite - Buttons/interactive */
+    --ai-dark-highlight: #F5F5F5;
+    /* White Smoke - Icons/highlights */
+
+    /* Light Mode Colors */
+    --ai-light-bg: #F5F5F5;
+    /* White Smoke - Primary background */
+    --ai-light-bg-secondary: #DDDDDD;
+    /* Alabaster Grey - Secondary bg */
+    --ai-light-text: #333333;
+    /* Graphite - Main text */
+    --ai-light-text-heading: #000000;
+    /* Black - Headings/key text */
+    --ai-light-accent: #847777;
+    /* Rosy Granite - Buttons/CTA */
+    --ai-light-border: #CCCCCC;
+    /* Silver - Borders/dividers */
+}
+
+/* ============================================
+   AI SECTION CONTAINER STYLES
+   ============================================ */
+
+/* Light Mode (Default) */
+.ai-section {
+    --ai-bg: var(--ai-light-bg);
+    --ai-bg-secondary: var(--ai-light-bg-secondary);
+    --ai-text: var(--ai-light-text);
+    --ai-text-heading: var(--ai-light-text-heading);
+    --ai-text-muted: #666666;
+    --ai-accent: var(--ai-light-accent);
+    --ai-accent-hover: #6e6363;
+    --ai-border: var(--ai-light-border);
+    --ai-card-bg: #FFFFFF;
+    --ai-card-shadow: rgba(0, 0, 0, 0.08);
+    --ai-gradient-start: #847777;
+    --ai-gradient-end: #5a4f4f;
+}
+
+/* Dark Mode */
+.ai-section.dark {
+    --ai-bg: var(--ai-dark-bg);
+    --ai-bg-secondary: var(--ai-dark-bg-secondary);
+    --ai-text: var(--ai-dark-highlight);
+    --ai-text-heading: var(--ai-dark-highlight);
+    --ai-text-muted: var(--ai-dark-text-secondary);
+    --ai-accent: var(--ai-dark-accent);
+    --ai-accent-hover: #9a8b8b;
+    --ai-border: var(--ai-dark-bg-secondary);
+    --ai-card-bg: #2a2a2a;
+    --ai-card-shadow: rgba(0, 0, 0, 0.3);
+    --ai-gradient-start: #847777;
+    --ai-gradient-end: #333333;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.ai-section {
+    min-height: 100vh;
+    background-color: var(--ai-bg);
+    color: var(--ai-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.ai-section h1,
+.ai-section h2,
+.ai-section h3 {
+    color: var(--ai-text-heading);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.ai-section h1 {
+    font-size: 1.75rem;
+}
+
+.ai-section h2 {
+    font-size: 1.25rem;
+}
+
+.ai-section h3 {
+    font-size: 1rem;
+}
+
+.ai-section p {
+    color: var(--ai-text);
+}
+
+.ai-section .text-muted {
+    color: var(--ai-text-muted) !important;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.ai-header {
+    background-color: var(--ai-card-bg);
+    border-bottom: 1px solid var(--ai-border);
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+}
+
+.ai-header-title {
+    color: var(--ai-text-heading);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.ai-card {
+    background-color: var(--ai-card-bg);
+    border: 1px solid var(--ai-border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px var(--ai-card-shadow);
+    transition: all 0.3s ease;
+}
+
+.ai-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px var(--ai-card-shadow);
+}
+
+.ai-card-title {
+    color: var(--ai-text-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.ai-card-description {
+    color: var(--ai-text-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.ai-btn-primary {
+    background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end));
+    color: #FFFFFF;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.ai-btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(132, 119, 119, 0.4);
+}
+
+.ai-btn-primary:active {
+    transform: translateY(0);
+}
+
+.ai-btn-secondary {
+    background-color: transparent;
+    color: var(--ai-accent);
+    border: 1px solid var(--ai-accent);
+    border-radius: 0.75rem;
+    padding: 0.625rem 1.25rem;
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ai-btn-secondary:hover {
+    background-color: var(--ai-accent);
+    color: #FFFFFF;
+}
+
+.ai-btn-ghost {
+    background-color: transparent;
+    color: var(--ai-text);
+    border: none;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.ai-btn-ghost:hover {
+    background-color: var(--ai-bg-secondary);
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+
+.ai-input {
+    width: 100%;
+    background-color: var(--ai-bg-secondary);
+    border: 1px solid var(--ai-border);
+    border-radius: 0.75rem;
+    padding: 0.875rem 1rem;
+    color: var(--ai-text);
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.ai-input:focus {
+    outline: none;
+    border-color: var(--ai-accent);
+    box-shadow: 0 0 0 3px rgba(132, 119, 119, 0.15);
+}
+
+.ai-input::placeholder {
+    color: var(--ai-text-muted);
+}
+
+.ai-textarea {
+    resize: none;
+    min-height: 120px;
+}
+
+/* ============================================
+   TAGS & BADGES
+   ============================================ */
+
+.ai-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: var(--ai-bg-secondary);
+    color: var(--ai-text);
+    border: 1px solid var(--ai-border);
+    border-radius: 9999px;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.ai-tag-accent {
+    background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end));
+    color: #FFFFFF;
+    border: none;
+}
+
+.ai-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    background-color: var(--ai-accent);
+    color: #FFFFFF;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0 0.375rem;
+}
+
+/* ============================================
+   NAVIGATION TABS
+   ============================================ */
+
+.ai-tabs {
+    display: flex;
+    gap: 0.25rem;
+    background-color: var(--ai-bg-secondary);
+    border-radius: 0.75rem;
+    padding: 0.25rem;
+    overflow-x: auto;
+}
+
+.ai-tab {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ai-text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.ai-tab:hover {
+    color: var(--ai-text);
+}
+
+.ai-tab.active {
+    background-color: var(--ai-card-bg);
+    color: var(--ai-text-heading);
+    box-shadow: 0 2px 8px var(--ai-card-shadow);
+}
+
+/* ============================================
+   ICONS
+   ============================================ */
+
+.ai-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--ai-text-muted);
+    transition: color 0.2s ease;
+}
+
+.ai-icon-accent {
+    color: var(--ai-accent);
+}
+
+.ai-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end));
+    border-radius: 0.75rem;
+}
+
+.ai-icon-container svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #FFFFFF;
+}
+
+/* ============================================
+   LISTS
+   ============================================ */
+
+.ai-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ai-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--ai-border);
+    transition: background-color 0.2s ease;
+}
+
+.ai-list-item:last-child {
+    border-bottom: none;
+}
+
+.ai-list-item:hover {
+    background-color: var(--ai-bg-secondary);
+}
+
+/* ============================================
+   PROGRESS & STATS
+   ============================================ */
+
+.ai-progress-bar {
+    width: 100%;
+    height: 0.375rem;
+    background-color: var(--ai-bg-secondary);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.ai-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ai-gradient-start), var(--ai-gradient-end));
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+.ai-stat {
+    text-align: center;
+}
+
+.ai-stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ai-text-heading);
+}
+
+.ai-stat-label {
+    font-size: 0.75rem;
+    color: var(--ai-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+}
+
+/* ============================================
+   SIDEBAR & PANELS
+   ============================================ */
+
+.ai-sidebar {
+    background-color: var(--ai-card-bg);
+    border-left: 1px solid var(--ai-border);
+    height: 100%;
+}
+
+.ai-panel {
+    background-color: var(--ai-card-bg);
+    border: 1px solid var(--ai-border);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.ai-panel-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--ai-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ai-panel-body {
+    padding: 1.25rem;
+}
+
+/* ============================================
+   DIVIDERS
+   ============================================ */
+
+.ai-divider {
+    height: 1px;
+    background-color: var(--ai-border);
+    margin: 1rem 0;
+}
+
+.ai-divider-vertical {
+    width: 1px;
+    background-color: var(--ai-border);
+    margin: 0 1rem;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes ai-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes ai-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.ai-loading {
+    animation: ai-pulse 2s ease-in-out infinite;
+}
+
+.ai-shimmer {
+    background: linear-gradient(90deg,
+            var(--ai-bg-secondary) 0%,
+            var(--ai-border) 50%,
+            var(--ai-bg-secondary) 100%);
+    background-size: 200% 100%;
+    animation: ai-shimmer 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+.ai-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ai-section::-webkit-scrollbar-track {
+    background: var(--ai-bg-secondary);
+}
+
+.ai-section::-webkit-scrollbar-thumb {
+    background: var(--ai-accent);
+    border-radius: 3px;
+}
+
+.ai-section::-webkit-scrollbar-thumb:hover {
+    background: var(--ai-accent-hover);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.ai-bg-primary {
+    background-color: var(--ai-bg);
+}
+
+.ai-bg-secondary {
+    background-color: var(--ai-bg-secondary);
+}
+
+.ai-bg-card {
+    background-color: var(--ai-card-bg);
+}
+
+.ai-bg-accent {
+    background-color: var(--ai-accent);
+}
+
+.ai-text-primary {
+    color: var(--ai-text);
+}
+
+.ai-text-heading {
+    color: var(--ai-text-heading);
+}
+
+.ai-text-muted {
+    color: var(--ai-text-muted);
+}
+
+.ai-text-accent {
+    color: var(--ai-accent);
+}
+
+.ai-border {
+    border-color: var(--ai-border);
+}
+
+.ai-border-accent {
+    border-color: var(--ai-accent);
+}
+
+/* Gradient backgrounds */
+.ai-gradient-bg {
+    background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end));
+}
+
+.ai-gradient-text {
+    background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 640px) {
+    .ai-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .ai-card {
+        padding: 1rem;
+        border-radius: 0.875rem;
+    }
+
+    .ai-tabs {
+        gap: 0.125rem;
+    }
+
+    .ai-tab {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}

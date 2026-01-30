@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker - AI Tools</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ["DM Sans", "sans-serif"],
+                        sans: ["DM Sans", "sans-serif"],
+                    },
+                    colors: {
+                        primary: "#F2F2F2", // Off-white for text headers
+                        "background-light": "#F0F0F2",
+                        "background-dark": "#0F0F10", // Deep dark charcoal/black
+                        "surface-dark": "#1C1C1E", // Slightly lighter card bg
+                        "accent": "#D4C5B0", // Muted beige accent from screenshot
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        '3xl': '1.5rem',
+                        '4xl': '2rem',
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(255, 255, 255, 0.05)',
+                    }
+                },
+            },
+        };
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100 antialiased min-h-screen">
+<div class="max-w-md mx-auto min-h-screen relative pb-24 overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-amber-900/10 dark:bg-amber-700/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+<header class="pt-8 px-6 pb-4 flex justify-between items-center">
+<button class="w-10 h-10 rounded-full bg-white/10 dark:bg-white/5 flex items-center justify-center backdrop-blur-md border border-black/5 dark:border-white/10 active:scale-95 transition-transform">
+<span class="material-icons text-lg text-gray-600 dark:text-gray-300">chevron_left</span>
+</button>
+<div class="flex gap-3">
+<button class="w-10 h-10 rounded-full bg-white/10 dark:bg-white/5 flex items-center justify-center backdrop-blur-md border border-black/5 dark:border-white/10 active:scale-95 transition-transform">
+<span class="material-icons text-lg text-gray-600 dark:text-gray-300">search</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white/10 dark:bg-white/5 flex items-center justify-center backdrop-blur-md border border-black/5 dark:border-white/10 active:scale-95 transition-transform">
+<span class="material-icons text-lg text-gray-600 dark:text-gray-300">favorite_border</span>
+</button>
+</div>
+</header>
+<div class="px-6 mb-6">
+<h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-primary mb-1">
+                AI Toolkit
+            </h1>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                Manage your productivity stack
+            </p>
+</div>
+<div class="px-6 mb-8 overflow-x-auto no-scrollbar">
+<div class="flex gap-3">
+<button class="whitespace-nowrap px-4 py-2 rounded-full border border-gray-300 dark:border-white/20 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors flex items-center gap-2">
+                    Writing <span class="material-icons text-[14px] opacity-50">close</span>
+</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full border border-gray-300 dark:border-white/20 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors flex items-center gap-2">
+                    Image Gen <span class="material-icons text-[14px] opacity-50">close</span>
+</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full border border-gray-300 dark:border-white/20 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors flex items-center gap-2">
+                    Automation <span class="material-icons text-[14px] opacity-50">close</span>
+</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full border border-gray-300 dark:border-white/20 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-icons text-[16px]">add</span>
+</button>
+</div>
+</div>
+<div class="px-4 grid grid-cols-2 gap-4">
+<div class="col-span-1 relative h-64 rounded-3xl overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-b from-gray-200 to-gray-300 dark:from-[#2A2A2E] dark:to-[#1C1C1E]"></div>
+<div class="absolute inset-0 opacity-40 mix-blend-overlay" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0d6aH-k80usQg_KiMYb3_3O_ceB7AU5xo27Bp0UC8Ss6_Bu4yChlmw7N8BRtRsg5xiOyngoohZ0DF-ENq9he9sBuEe3lneNCZma5p8ehzfG1CeHOmvod-1qEhIDlrJHZY8ZcRtb3T2DecrvXUD1R-QyTfth4LzTVSJHLE54sjib7JTQxP27sDqCrz7yZ3Q9U1OA258EetYz_0a0_F0sXbfFXwUhizH3Zqf_r6ZVL_4nG7WNJ78gqN-z8ugthxdibVaWBT3u0qgvBQ'); background-size: cover; background-position: center;"></div>
+<div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center z-10">
+<div class="w-14 h-14 rounded-full bg-black/10 dark:bg-white/10 backdrop-blur-sm border border-white/20 mb-3 flex items-center justify-center overflow-hidden">
+<img alt="ChatGPT Logo" class="w-8 h-8 opacity-80 dark:invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ8cCHZIHqUjoIMIbrMlW1hPPskCtyLt_o89qjto0Gok4_PszZ_gmzXOITDi8pxQt8-kUfXMa6PrSYO5VegGVqhx1IJ82vqgPSNyxrgVEvB3ifqwkjDsM0RlIS9uOArfMiHlsm03fDAxwa891lyDig5TrshCZ9LTnbzCjEi5bvmTy_c0FGQaICgbDVWWw1-J61hlogenLPqIi1hjtttStoGxZ1e156-1bvN8AqRwM8pnp4qccJG1rohL64VQdc3HHQMWlQfNveANcY"/>
+</div>
+<h3 class="text-base font-bold text-gray-900 dark:text-white mb-1">ChatGPT 4o</h3>
+<div class="flex items-center gap-1 mb-4">
+<span class="material-icons text-[12px] text-blue-500">verified</span>
+<p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Writing</p>
+</div>
+<button class="w-full py-2 bg-black dark:bg-[#121212] text-white text-xs font-medium rounded-full border border-transparent dark:border-white/10 shadow-lg group-hover:scale-105 transition-transform">
+                        Launch
+                    </button>
+</div>
+</div>
+<div class="col-span-1 relative h-64 rounded-3xl overflow-hidden group">
+<img alt="Abstract fluid art" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvp5kt5p2aHzg6nnd1u6RRJpakOwXxRJvFpUmgTd5cCRLKO1edsFcZuwZEJrU08Ik7Am9sO8dbbeCftqmRNlRT5kNuVWSQvyYaFiJSJu-r0xAEhT0GDzoLyJbvct1JQl_f5S4JPbyp8mz0NPTyXNcairTmNKaqUMgtdIghEQAA3uBKz4f-SIZOY_IxbvNzvnvFFoyFEt1Hq0X32dKuAezkMqOHdGYx5KnNjnIrHXMg0AaX14M8dXpBn0TC3VSB7UPDM1Ooo9EdAO3b"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+<span class="material-icons text-sm">favorite</span>
+</button>
+<div class="absolute bottom-4 left-4 right-4">
+<div class="flex justify-between items-end">
+<div>
+<h3 class="text-sm font-bold text-white mb-0.5">Midjourney</h3>
+<p class="text-[10px] text-gray-300">V6 Alpha</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition-colors">
+<span class="material-icons text-sm">arrow_outward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="col-span-1 relative h-56 rounded-3xl overflow-hidden bg-[#2C2420] dark:bg-[#1E1E20] group border border-gray-200 dark:border-white/5">
+<img alt="Futuristic interface" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC26KmcDbs7FNoUn_svoAHnIq_AIEFzmHxCeXOpYeUmqBsP1g3wNVvCqWL2pTtpBPk_ri06z3rWpyJSl64SKeQktE2rBfJg9tpkWKE7SS83PsdsRuiHpojJ8eCBIRSSIpedD16OJC18mpCDn7koqUkxjL2ACgrfeNtq2OT_vs_RZHps5Z51xXxhSVFGeworTCuj43iy51ommugildqQ9gVPoMUKDDeIurUIAVPMRNn704kviNmDf4UV9EnMZOeebBir7_Lk_I3sNJ51"/>
+<div class="absolute inset-0 p-4 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="px-2 py-1 bg-black/30 backdrop-blur-md rounded-lg text-[10px] text-white/80 border border-white/10">Analysis</span>
+<span class="material-icons text-white/60 text-sm">more_horiz</span>
+</div>
+<div>
+<h3 class="text-white font-bold text-lg leading-tight">Claude 3<br/>Opus</h3>
+<div class="mt-2 flex items-center gap-1 text-white/50 text-[10px]">
+<span class="material-icons text-[10px]">link</span>
+<span>12 Workflows</span>
+</div>
+</div>
+</div>
+<button class="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition">
+<span class="material-icons text-sm">check</span>
+</button>
+</div>
+<div class="col-span-1 relative h-56 rounded-3xl overflow-hidden bg-gray-100 dark:bg-[#18181B] group border border-gray-200 dark:border-white/5">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-icons text-6xl dark:text-white">edit_note</span>
+</div>
+<div class="absolute inset-0 p-4 flex flex-col">
+<div class="flex-1">
+<div class="w-10 h-10 rounded-xl bg-white dark:bg-[#252529] shadow-sm flex items-center justify-center mb-3">
+<span class="font-bold text-lg dark:text-white">N</span>
+</div>
+<h3 class="text-gray-900 dark:text-white font-bold text-sm">Notion AI</h3>
+<p class="text-[10px] text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">Daily planning &amp; documentation system.</p>
+</div>
+<div class="mt-2 pt-3 border-t border-gray-200 dark:border-white/5">
+<div class="flex -space-x-2 mb-2">
+<div class="w-6 h-6 rounded-full bg-gray-300 border border-white dark:border-[#18181B] flex items-center justify-center text-[8px] font-bold">P1</div>
+<div class="w-6 h-6 rounded-full bg-gray-400 border border-white dark:border-[#18181B] flex items-center justify-center text-[8px] font-bold">P2</div>
+</div>
+<p class="text-[9px] text-gray-400">2 Linked Prompts</p>
+</div>
+</div>
+<button class="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-icons text-sm">add</span>
+</button>
+</div>
+<div class="col-span-2 relative h-32 rounded-3xl overflow-hidden bg-[#0D1117] border border-gray-700 dark:border-white/10 group flex items-center px-5 justify-between">
+<div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
+<div class="flex items-center gap-4 z-10">
+<div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+<span class="material-icons text-white">code</span>
+</div>
+<div>
+<h3 class="text-white font-bold text-sm">GitHub Copilot</h3>
+<p class="text-[11px] text-gray-400">Coding Assistant • v2.1</p>
+</div>
+</div>
+<button class="z-10 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full border border-white/10 text-xs font-medium text-white transition-colors">
+                    View
+                </button>
+</div>
+</div>
+<div class="fixed bottom-8 left-0 right-0 flex justify-center z-50 pointer-events-none">
+<div class="pointer-events-auto bg-[#1C1C1E]/90 dark:bg-[#1C1C1E]/80 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 p-1.5 pr-2 rounded-full flex items-center gap-3">
+<button class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+<span class="material-icons text-xl">add</span>
+</button>
+<span class="text-sm font-medium text-white pr-4">Quick Add Tool</span>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none z-40"></div>
+</div>
+
+</body></html>

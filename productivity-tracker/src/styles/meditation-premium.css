@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
+
+.meditation-premium {
+    --color-bg: #FDFCF8;
+    --color-surface: #FFFFFF;
+    --color-primary: #8BA888;
+    --color-primary-dark: #6B8E67;
+    --color-accent: #E8EADD;
+    --color-text: #2D3436;
+    --color-text-dim: #636E72;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 32px;
+    --radius-circle: 50%;
+    --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.03);
+    --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+}
+
+.meditation-premium .text-h1 {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+}
+
+.meditation-premium .text-h2 {
+    font-size: 22px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+}
+
+.meditation-premium .text-h3 {
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+}
+
+.meditation-premium .text-caption {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-dim);
+}
+
+.meditation-premium .card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-subtle);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.meditation-premium .scroll-x {
+    display: flex;
+    overflow-x: auto;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+.meditation-premium .scroll-x::-webkit-scrollbar {
+    display: none;
+}
+
+.meditation-premium .scroll-item {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+}
+
+.meditation-premium .btn-round {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-circle);
+    border: none;
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(139, 168, 136, 0.3);
+}
+
+.meditation-premium .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--glass-border);
+    z-index: 1000;
+}
+
+.meditation-premium .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-text-dim);
+    text-decoration: none;
+    font-size: 11px;
+}
+
+.meditation-premium .nav-item.active {
+    color: var(--color-primary);
+}
+
+.meditation-premium .hero-card {
+    width: 280px;
+    height: 180px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+}
+
+.meditation-premium .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.meditation-premium .hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-md);
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+    color: white;
+}
+
+.meditation-premium .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+.meditation-premium .ambient-card {
+    width: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.meditation-premium .ambient-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-md);
+    background: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-dark);
+}

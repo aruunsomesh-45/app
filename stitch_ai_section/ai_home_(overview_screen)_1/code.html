@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker - AI Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#18181b", // Zinc-900 like the dark UI in screenshot
+                        "background-light": "#F2F2F2", // Light grey/warm background
+                        "background-dark": "#09090b", // Deep black background
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#18181b",
+                        "text-secondary-light": "#71717a",
+                        "text-secondary-dark": "#a1a1aa",
+                        "accent": "#d4d4d8", // Light grey accent
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                        body: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        'xl': "1.5rem",
+                        '2xl': "2rem",
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 15px rgba(255, 255, 255, 0.1)',
+                    }
+                },
+            },
+        };
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-body antialiased text-gray-900 dark:text-white transition-colors duration-300 min-h-screen relative flex justify-center">
+<div class="w-full max-w-md h-full min-h-screen bg-background-light dark:bg-background-dark relative flex flex-col pb-24">
+<header class="px-6 pt-12 pb-6 flex justify-between items-start">
+<div>
+<button class="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center shadow-sm mb-6 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700 transition">
+<span class="material-icons-round text-xl">arrow_back</span>
+</button>
+<h1 class="text-4xl font-light tracking-tight text-gray-900 dark:text-white mb-1">AI</h1>
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-sm font-medium tracking-wide uppercase opacity-80">Leverage &amp; Automation</p>
+</div>
+<div class="flex gap-3 mt-16">
+<button class="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center shadow-sm text-gray-600 dark:text-gray-300">
+<span class="material-icons-round text-xl">search</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+<span class="material-icons-round text-xl">person</span>
+</button>
+</div>
+</header>
+<div class="px-6 mb-8">
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+<div class="flex items-center px-4 py-2 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-zinc-800 shadow-sm shrink-0">
+<span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+<span class="text-xs font-medium text-gray-600 dark:text-gray-300">12 Prompts Saved</span>
+</div>
+<div class="flex items-center px-4 py-2 bg-white dark:bg-zinc-900 rounded-full border border-gray-200 dark:border-zinc-800 shadow-sm shrink-0">
+<span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+<span class="text-xs font-medium text-gray-600 dark:text-gray-300">3 Workflows Active</span>
+</div>
+</div>
+</div>
+<main class="px-6 grid grid-cols-2 gap-4">
+<div class="col-span-2 relative group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-100 dark:from-zinc-800 dark:to-zinc-900 rounded-2xl transform transition-transform duration-200 group-hover:scale-[1.02]"></div>
+<div class="relative bg-card-light dark:bg-card-dark p-6 rounded-2xl shadow-soft dark:shadow-none border border-gray-100 dark:border-zinc-800 h-48 flex flex-col justify-between overflow-hidden">
+<div class="absolute right-0 top-0 w-32 h-32 bg-gray-50 dark:bg-zinc-800/50 rounded-bl-full -mr-8 -mt-8 pointer-events-none"></div>
+<div class="flex justify-between items-start z-10">
+<div class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-900 dark:text-white">
+<span class="material-icons-round">library_books</span>
+</div>
+<span class="material-icons-round text-gray-400 dark:text-zinc-600 text-xl">arrow_forward</span>
+</div>
+<div class="z-10">
+<h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Prompt Library</h3>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark line-clamp-2">Curated collection of high-efficacy prompts for daily tasks.</p>
+</div>
+</div>
+</div>
+<div class="col-span-1 relative group cursor-pointer">
+<div class="absolute inset-0 bg-gray-100 dark:bg-zinc-800 rounded-2xl transform transition-transform duration-200 group-hover:scale-[1.02]"></div>
+<div class="relative bg-card-light dark:bg-card-dark p-5 rounded-2xl shadow-soft dark:shadow-none border border-gray-100 dark:border-zinc-800 h-44 flex flex-col justify-between">
+<div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-icons-round">lightbulb</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Use Cases</h3>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">Practical applications</p>
+</div>
+</div>
+</div>
+<div class="col-span-1 relative group cursor-pointer">
+<div class="absolute inset-0 bg-gray-100 dark:bg-zinc-800 rounded-2xl transform transition-transform duration-200 group-hover:scale-[1.02]"></div>
+<div class="relative bg-card-light dark:bg-card-dark p-5 rounded-2xl shadow-soft dark:shadow-none border border-gray-100 dark:border-zinc-800 h-44 flex flex-col justify-between">
+<div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+<span class="material-icons-round">construction</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Tools</h3>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">Software &amp; Utilities</p>
+</div>
+</div>
+</div>
+<div class="col-span-2 relative group cursor-pointer mt-2">
+<div class="absolute inset-0 bg-zinc-900 dark:bg-zinc-800 rounded-2xl transform transition-transform duration-200 group-hover:scale-[1.02]"></div>
+<div class="relative bg-primary p-6 rounded-2xl shadow-lg h-40 flex flex-row items-center justify-between overflow-hidden">
+<div class="absolute inset-0 opacity-10 dark:opacity-20" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="z-10 flex-1 pr-4">
+<div class="w-10 h-10 rounded-xl bg-zinc-800 dark:bg-black/30 flex items-center justify-center text-white mb-3 border border-zinc-700">
+<span class="material-icons-round">account_tree</span>
+</div>
+<h3 class="text-xl font-semibold text-white">Workflows</h3>
+<p class="text-sm text-gray-400 mt-1">Automated sequences and SOPs</p>
+</div>
+<div class="z-10 h-full flex flex-col justify-end">
+<button class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-full p-2 transition-colors">
+<span class="material-icons-round">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="col-span-2 mt-6">
+<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 px-1">Recent</h2>
+<div class="space-y-3">
+<div class="flex items-center p-4 bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800 shadow-sm">
+<div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+<img alt="Abstract AI Art" class="w-full h-full object-cover rounded-lg opacity-80 mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmtAIpVeOMukCLVBCkeCtaBNJy11oibEgMQdUrumCr6VYFRJcsMq3G20Qj6ynhAaftWocidGur7A7HO-_Dn_5hyDhgRUQcxxGxUeogn-dzN2hev3IBzxIcxFpvamZkezXNTrDlDtonIANpiMQg1NTQZ3KZql-VZAQfg146lMUQFI2C7u_xgX0ZewATxWsuPn9l06qVvlt8J7MGbPE9IDNjAxuC_4vqBw3DdORC0Ign9aDSpymq2yl9hjEziH52KFOdhR6Kf9cDhyA0"/>
+<span class="material-icons-round text-gray-500 absolute text-sm">edit</span>
+</div>
+<div class="ml-4 flex-1">
+<h4 class="text-sm font-medium text-gray-900 dark:text-white">Meeting Summarizer</h4>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-0.5">Updated 2h ago</p>
+</div>
+<button class="text-gray-400 dark:text-zinc-600 hover:text-gray-600 dark:hover:text-zinc-400">
+<span class="material-icons-round">more_horiz</span>
+</button>
+</div>
+<div class="flex items-center p-4 bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800 shadow-sm">
+<div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-zinc-800 flex items-center justify-center shrink-0 overflow-hidden relative">
+<img alt="Abstract Gradient" class="w-full h-full object-cover rounded-lg opacity-80 mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS_8D8gxIqR4ZxDEy7bRd-c4JoMsBsZf26PaacgSflfubneoVi2ifar9lEao7en1LoqJXWO9wehydEbE294ZW85zjoaL1rv2rD2nqjvyWk4R1sCRqegLRwlYtx8haCe81Jj1w2bRrKk1_gFJ2mKAN7Gkr8L9FjLL9ueKwCuckI5uiekfPcRl--Pvdk_twSWmAtyESot1zjppzHtHd3Kknr6j63VYwU-rqH4EyshpXok5xAdkrHmaV4z4hWDURa2IaMza8SydUggtw2"/>
+<span class="material-icons-round text-gray-500 absolute text-sm">code</span>
+</div>
+<div class="ml-4 flex-1">
+<h4 class="text-sm font-medium text-gray-900 dark:text-white">Python Script Helper</h4>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-0.5">Used yesterday</p>
+</div>
+<button class="text-gray-400 dark:text-zinc-600 hover:text-gray-600 dark:hover:text-zinc-400">
+<span class="material-icons-round">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
+<button class="bg-primary text-white pl-5 pr-6 py-3.5 rounded-full shadow-2xl flex items-center gap-2 hover:bg-zinc-800 transition-all active:scale-95 group border border-zinc-700">
+<span class="bg-white/20 rounded-full w-6 h-6 flex items-center justify-center">
+<span class="material-icons-round text-sm group-hover:rotate-90 transition-transform duration-300">add</span>
+</span>
+<span class="font-medium tracking-wide text-sm">Quick Add</span>
+</button>
+</div>
+<div class="h-10 w-full"></div>
+</div>
+
+</body></html>

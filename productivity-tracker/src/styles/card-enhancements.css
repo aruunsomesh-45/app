@@ -1,0 +1,490 @@
+/* ============================================
+   ENHANCED CARD SYSTEM WITH GLOW EFFECTS
+   ============================================
+   This file contains enhanced card styles with:
+   - Distinct backgrounds with proper elevation
+   - Glowing effects and shadows
+   - Smooth animations
+   - Consistent appearance across light/dark modes
+   ============================================ */
+
+/* ============================================
+   DESIGN TOKENS FOR CARDS
+   ============================================ */
+:root {
+    /* Card-specific colors - Light Mode */
+    /* Using White Smoke (#F5F5F5) background, cards should be pure White (#FFFFFF) */
+    --card-bg-light: #FFFFFF;
+    --card-bg-secondary-light: #FAFAFA;
+    --card-shadow-light: rgba(132, 119, 119, 0.15);
+    --card-shadow-hover-light: rgba(132, 119, 119, 0.25);
+    --card-glow-light: rgba(132, 119, 119, 0.35);
+    --card-border-light: rgba(221, 221, 221, 0.6);
+    --card-highlight-light: rgba(245, 245, 245, 0.9);
+
+    /* Card-specific colors - Dark Mode */
+    /* Using Graphite (#333333) background, cards should be lighter (#444444) */
+    --card-bg-dark: #444444;
+    --card-bg-secondary-dark: #4A4A4A;
+    --card-shadow-dark: rgba(0, 0, 0, 0.4);
+    --card-shadow-hover-dark: rgba(0, 0, 0, 0.6);
+    --card-glow-dark: rgba(132, 119, 119, 0.5);
+    --card-border-dark: rgba(26, 26, 26, 0.8);
+    --card-highlight-dark: rgba(245, 245, 245, 0.12);
+}
+
+/* ============================================
+   BASE CARD STYLES WITH ELEVATION
+   ============================================ */
+
+/* Enhanced Card - Base Class */
+.enhanced-card {
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--card-border-light);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+
+    /* Layered shadows for depth */
+    box-shadow:
+        0 2px 8px var(--card-shadow-light),
+        0 8px 24px var(--card-shadow-light),
+        0 0 0 1px var(--card-border-light) inset;
+
+    /* Smooth transitions */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Hardware acceleration */
+    transform: translateZ(0);
+    will-change: transform, box-shadow;
+}
+
+/* Dark mode variant */
+.dark .enhanced-card {
+    background-color: var(--card-bg-dark);
+    border-color: var(--card-border-dark);
+    box-shadow:
+        0 2px 8px var(--card-shadow-dark),
+        0 8px 24px var(--card-shadow-dark),
+        0 0 0 1px var(--card-border-dark) inset;
+}
+
+/* ============================================
+   CARD GLOW EFFECTS
+   ============================================ */
+
+/* Glow on hover */
+.enhanced-card:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow:
+        0 4px 16px var(--card-shadow-hover-light),
+        0 12px 32px var(--card-shadow-hover-light),
+        0 0 0 1px var(--card-border-light) inset,
+        0 0 40px var(--card-glow-light);
+    border-color: rgba(132, 119, 119, 0.3);
+}
+
+.dark .enhanced-card:hover {
+    box-shadow:
+        0 4px 16px var(--card-shadow-hover-dark),
+        0 12px 32px var(--card-shadow-hover-dark),
+        0 0 0 1px var(--card-border-dark) inset,
+        0 0 50px var(--card-glow-dark);
+}
+
+/* Active state */
+.enhanced-card:active {
+    transform: translateY(-1px) scale(0.99);
+    transition-duration: 0.1s;
+}
+
+/* ============================================
+   CARD SHIMMER EFFECT (Background Animation)
+   ============================================ */
+
+.enhanced-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+            transparent 30%,
+            var(--card-highlight-light) 50%,
+            transparent 70%);
+    opacity: 0;
+    transform: rotate(45deg);
+    transition: opacity 0.6s;
+    pointer-events: none;
+}
+
+.dark .enhanced-card::before {
+    background: linear-gradient(45deg,
+            transparent 30%,
+            var(--card-highlight-dark) 50%,
+            transparent 70%);
+}
+
+.enhanced-card:hover::before {
+    opacity: 0.15;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+}
+
+/* ============================================
+   CARD VARIANTS WITH COLORED GLOWS
+   ============================================ */
+
+/* Primary Accent Glow */
+.card-glow-accent {
+    border-color: rgba(132, 119, 119, 0.3);
+}
+
+.card-glow-accent:hover {
+    box-shadow:
+        0 4px 16px rgba(132, 119, 119, 0.2),
+        0 12px 32px rgba(132, 119, 119, 0.15),
+        0 0 50px rgba(132, 119, 119, 0.35),
+        0 0 0 1px rgba(132, 119, 119, 0.3) inset;
+}
+
+/* Orange Glow (for priorities, workout cards, etc.) */
+.card-glow-orange {
+    background: linear-gradient(135deg, #FFF9F0 0%, #FFFFFF 100%);
+    border-color: rgba(251, 146, 60, 0.2);
+}
+
+.dark .card-glow-orange {
+    background: linear-gradient(135deg, #2A2520 0%, #2A2A2A 100%);
+}
+
+.card-glow-orange:hover {
+    box-shadow:
+        0 4px 16px rgba(251, 146, 60, 0.15),
+        0 12px 32px rgba(251, 146, 60, 0.1),
+        0 0 40px rgba(251, 146, 60, 0.25),
+        0 0 0 1px rgba(251, 146, 60, 0.3) inset;
+    border-color: rgba(251, 146, 60, 0.4);
+}
+
+/* Yellow Glow (for notes, reminders, etc.) */
+.card-glow-yellow {
+    background: linear-gradient(135deg, #FEFCE8 0%, #FFFFFF 100%);
+    border-color: rgba(250, 204, 21, 0.2);
+}
+
+.dark .card-glow-yellow {
+    background: linear-gradient(135deg, #2A2820 0%, #2A2A2A 100%);
+}
+
+.card-glow-yellow:hover {
+    box-shadow:
+        0 4px 16px rgba(250, 204, 21, 0.15),
+        0 12px 32px rgba(250, 204, 21, 0.1),
+        0 0 40px rgba(250, 204, 21, 0.25),
+        0 0 0 1px rgba(250, 204, 21, 0.3) inset;
+    border-color: rgba(250, 204, 21, 0.4);
+}
+
+/* Red Glow (for anti-goals, warnings, etc.) */
+.card-glow-red {
+    background: linear-gradient(135deg, #FEF2F2 0%, #FFFFFF 100%);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.dark .card-glow-red {
+    background: linear-gradient(135deg, #2A2020 0%, #2A2A2A 100%);
+}
+
+.card-glow-red:hover {
+    box-shadow:
+        0 4px 16px rgba(239, 68, 68, 0.15),
+        0 12px 32px rgba(239, 68, 68, 0.1),
+        0 0 40px rgba(239, 68, 68, 0.25),
+        0 0 0 1px rgba(239, 68, 68, 0.3) inset;
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Blue Glow (for career, learning, etc.) */
+.card-glow-blue {
+    background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark .card-glow-blue {
+    background: linear-gradient(135deg, #202428 0%, #2A2A2A 100%);
+}
+
+.card-glow-blue:hover {
+    box-shadow:
+        0 4px 16px rgba(59, 130, 246, 0.15),
+        0 12px 32px rgba(59, 130, 246, 0.1),
+        0 0 40px rgba(59, 130, 246, 0.25),
+        0 0 0 1px rgba(59, 130, 246, 0.3) inset;
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Purple Glow (for meditation, AI, etc.) */
+.card-glow-purple {
+    background: linear-gradient(135deg, #FAF5FF 0%, #FFFFFF 100%);
+    border-color: rgba(168, 85, 247, 0.2);
+}
+
+.dark .card-glow-purple {
+    background: linear-gradient(135deg, #28202A 0%, #2A2A2A 100%);
+}
+
+.card-glow-purple:hover {
+    box-shadow:
+        0 4px 16px rgba(168, 85, 247, 0.15),
+        0 12px 32px rgba(168, 85, 247, 0.1),
+        0 0 40px rgba(168, 85, 247, 0.25),
+        0 0 0 1px rgba(168, 85, 247, 0.3) inset;
+    border-color: rgba(168, 85, 247, 0.4);
+}
+
+/* Green Glow (for health, growth, etc.) */
+.card-glow-green {
+    background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.dark .card-glow-green {
+    background: linear-gradient(135deg, #202A22 0%, #2A2A2A 100%);
+}
+
+.card-glow-green:hover {
+    box-shadow:
+        0 4px 16px rgba(34, 197, 94, 0.15),
+        0 12px 32px rgba(34, 197, 94, 0.1),
+        0 0 40px rgba(34, 197, 94, 0.25),
+        0 0 0 1px rgba(34, 197, 94, 0.3) inset;
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+/* ============================================
+   ENTRANCE ANIMATIONS
+   ============================================ */
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Card animation classes */
+.card-animate-fade {
+    animation: cardFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.card-animate-scale {
+    animation: cardScaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.card-animate-slide {
+    animation: cardSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Stagger animation delays for lists of cards */
+.card-animate-stagger-1 {
+    animation-delay: 0.05s;
+}
+
+.card-animate-stagger-2 {
+    animation-delay: 0.1s;
+}
+
+.card-animate-stagger-3 {
+    animation-delay: 0.15s;
+}
+
+.card-animate-stagger-4 {
+    animation-delay: 0.2s;
+}
+
+.card-animate-stagger-5 {
+    animation-delay: 0.25s;
+}
+
+.card-animate-stagger-6 {
+    animation-delay: 0.3s;
+}
+
+/* ============================================
+   SPECIAL CARD EFFECTS
+   ============================================ */
+
+/* Gradient border card */
+.card-gradient-border {
+    position: relative;
+    background: var(--card-bg-light);
+    border: none;
+}
+
+.dark .card-gradient-border {
+    background: var(--card-bg-dark);
+}
+
+.card-gradient-border::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1.5rem;
+    padding: 2px;
+    background: linear-gradient(135deg,
+            rgba(132, 119, 119, 0.3),
+            rgba(132, 119, 119, 0.1),
+            rgba(132, 119, 119, 0.3));
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/* Floating card effect */
+.card-floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* ============================================
+   MINI CARDS (for smaller components)
+   ============================================ */
+
+.enhanced-card-mini {
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--card-border-light);
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow:
+        0 1px 4px var(--card-shadow-light),
+        0 4px 12px var(--card-shadow-light);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .enhanced-card-mini {
+    background-color: var(--card-bg-dark);
+    border-color: var(--card-border-dark);
+    box-shadow:
+        0 1px 4px var(--card-shadow-dark),
+        0 4px 12px var(--card-shadow-dark);
+}
+
+.enhanced-card-mini:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 2px 8px var(--card-shadow-hover-light),
+        0 8px 20px var(--card-shadow-hover-light),
+        0 0 24px var(--card-glow-light);
+}
+
+.dark .enhanced-card-mini:hover {
+    box-shadow:
+        0 2px 8px var(--card-shadow-hover-dark),
+        0 8px 20px var(--card-shadow-hover-dark),
+        0 0 30px var(--card-glow-dark);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* No animation for reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+
+    .enhanced-card,
+    .enhanced-card-mini,
+    .card-animate-fade,
+    .card-animate-scale,
+    .card-animate-slide,
+    .card-floating {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Interactive card (adds cursor pointer) */
+.card-interactive {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Disabled card state */
+.card-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    filter: grayscale(50%);
+}
+
+/* Selected card state */
+.card-selected {
+    border-color: rgba(132, 119, 119, 0.5);
+    box-shadow:
+        0 0 0 3px rgba(132, 119, 119, 0.1),
+        0 4px 16px var(--card-shadow-hover-light),
+        0 12px 32px var(--card-shadow-hover-light);
+}
+
+.dark .card-selected {
+    box-shadow:
+        0 0 0 3px rgba(132, 119, 119, 0.2),
+        0 4px 16px var(--card-shadow-hover-dark),
+        0 12px 32px var(--card-shadow-hover-dark);
+}

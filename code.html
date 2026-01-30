@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add Categories</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#8b5cf6", // Violet-500
+                        "background-light": "#F9FAFB", // Gray-50
+                        "background-dark": "#09090b", // Zinc-950
+                        "card-dark": "#18181b", // Zinc-900
+                        "card-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        '3xl': "1.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .card-gradient {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%);
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-100 dark:bg-gray-900 font-sans flex justify-center min-h-screen antialiased selection:bg-primary selection:text-white">
+<div class="w-full max-w-md h-[100dvh] bg-background-light dark:bg-background-dark overflow-hidden relative shadow-2xl sm:rounded-[2.5rem] sm:h-[90dvh] sm:my-auto flex flex-col">
+<div class="h-12 w-full flex items-center justify-between px-6 pt-2 shrink-0 z-20">
+<span class="text-sm font-semibold text-gray-900 dark:text-white">9:41</span>
+<div class="flex space-x-1.5 items-center">
+<span class="material-icons-round text-sm text-gray-900 dark:text-white" style="font-size: 18px;">signal_cellular_alt</span>
+<span class="material-icons-round text-sm text-gray-900 dark:text-white" style="font-size: 18px;">wifi</span>
+<span class="material-icons-round text-sm text-gray-900 dark:text-white" style="font-size: 18px;">battery_full</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar pb-24">
+<div class="px-5 pt-2 pb-4 flex justify-between items-start">
+<h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Add<br/>Categories</h1>
+<button class="mt-2 px-4 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-sm transition-colors">
+                Done
+            </button>
+</div>
+<div class="px-5 mb-6">
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+<span class="material-icons-round">search</span>
+</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-gray-100 dark:bg-[#1C1C1E] border-none rounded-2xl text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-primary focus:outline-none transition-shadow text-sm font-medium shadow-sm" placeholder="Find categories (e.g., CrossFit)..." type="text"/>
+</div>
+</div>
+<div class="px-5 mb-3 flex justify-between items-end">
+<h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Available Types</h2>
+<span class="text-xs text-primary font-medium">4 Selected</span>
+</div>
+<div class="px-5 flex flex-col gap-3">
+<div class="flex items-center justify-between p-3.5 bg-white dark:bg-[#1C1C1E] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/50">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-orange-500/10 dark:bg-orange-500/20 text-orange-500 flex items-center justify-center shrink-0">
+<span class="material-icons-round" style="font-size: 24px;">bolt</span>
+</div>
+<div>
+<h3 class="font-bold text-gray-900 dark:text-white text-base">Plyometrics</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Explosive Power • HIIT</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3.5 bg-white dark:bg-[#1C1C1E] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/50">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-500 flex items-center justify-center shrink-0">
+<span class="material-icons-round" style="font-size: 24px;">sports_gymnastics</span>
+</div>
+<div>
+<h3 class="font-bold text-gray-900 dark:text-white text-base">Calisthenics Adv.</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Bodyweight Mastery</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3.5 bg-white dark:bg-[#1C1C1E] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/50">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-red-500/10 dark:bg-red-500/20 text-red-500 flex items-center justify-center shrink-0">
+<span class="material-icons-round" style="font-size: 24px;">fitness_center</span>
+</div>
+<div>
+<h3 class="font-bold text-gray-900 dark:text-white text-base">Powerlifting</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Max Strength • Barbell</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3.5 bg-white dark:bg-[#1C1C1E] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/50">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-500 flex items-center justify-center shrink-0">
+<span class="material-icons-round" style="font-size: 24px;">directions_run</span>
+</div>
+<div>
+<h3 class="font-bold text-gray-900 dark:text-white text-base">Endurance Run</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Long Distance • Cardio</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3.5 bg-white dark:bg-[#1C1C1E] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/50">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-500 flex items-center justify-center shrink-0">
+<span class="material-icons-round" style="font-size: 24px;">sports_mma</span>
+</div>
+<div>
+<h3 class="font-bold text-gray-900 dark:text-white text-base">Kickboxing</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Combat Cardio • Agility</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3.5 bg-white dark:bg-[#1C1C1E] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/50">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-teal-500/10 dark:bg-teal-500/20 text-teal-500 flex items-center justify-center shrink-0">
+<span class="material-icons-round" style="font-size: 24px;">self_improvement</span>
+</div>
+<div>
+<h3 class="font-bold text-gray-900 dark:text-white text-base">Mobility Flow</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Recovery • Flexibility</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3.5 bg-white dark:bg-[#1C1C1E] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/50">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-pink-500/10 dark:bg-pink-500/20 text-pink-500 flex items-center justify-center shrink-0">
+<span class="material-icons-round" style="font-size: 24px;">child_care</span>
+</div>
+<div>
+<h3 class="font-bold text-gray-900 dark:text-white text-base">Prenatal Yoga</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Gentle • Breathing</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="h-10"></div> 
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-20 bg-white/80 dark:bg-[#09090b]/90 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 flex justify-around items-center px-2 z-50">
+<button class="flex flex-col items-center justify-center w-16 h-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition group">
+<span class="material-icons-round text-2xl mb-1 group-hover:-translate-y-0.5 transition-transform">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-primary hover:text-primary transition group relative">
+<div class="absolute top-3 w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-xl -z-10"></div>
+<span class="material-icons-round text-2xl mb-1">fitness_center</span>
+<span class="text-[10px] font-bold">Workouts</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition group">
+<span class="material-icons-round text-2xl mb-1 group-hover:-translate-y-0.5 transition-transform">insights</span>
+<span class="text-[10px] font-medium">Progress</span>
+</button>
+<button class="flex flex-col items-center justify-center w-16 h-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition group">
+<span class="material-icons-round text-2xl mb-1 group-hover:-translate-y-0.5 transition-transform">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</div>
+<div class="fixed bottom-4 right-4 text-xs text-gray-500 hidden sm:block">
+    Use system preference for Light/Dark mode
+</div>
+
+</body></html>

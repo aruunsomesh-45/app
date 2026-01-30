@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3b82f6",
+                        "bg-main": "#F6F7FB",
+                        "card-bg": "#ffffff",
+                        "text-main": "#1a1a1a",
+                        "text-secondary": "#64748b",
+                        "input-border": "#e2e8f0",
+                        "input-focus": "#3b82f6",
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "xl": "24px",
+                        "2xl": "32px",
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .ios-shadow {
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        .gradient-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(600px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-bg-main min-h-screen flex items-center justify-center p-4">
+<div class="relative w-full max-w-[440px] bg-card-bg rounded-2xl md:rounded-2xl ios-shadow flex flex-col overflow-hidden border border-gray-100">
+<div class="px-6 pt-8 pb-6">
+<h1 class="text-text-main text-2xl font-bold tracking-tight">New Source</h1>
+<p class="text-text-secondary text-sm mt-1">Add a link and write your personal notes.</p>
+</div>
+<div class="flex-1 px-6 pb-28 overflow-y-auto custom-scrollbar">
+<div class="space-y-6">
+<div class="flex flex-col gap-2">
+<label class="text-text-main text-xs font-semibold uppercase tracking-wider px-1">Title</label>
+<input class="w-full h-14 bg-white border border-input-border rounded-xl px-4 text-text-main placeholder:text-gray-400 placeholder:text-[13px] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm" placeholder="e.g. Deep Learning Paper Summary" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-main text-xs font-semibold uppercase tracking-wider px-1">Link (Optional)</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">link</span>
+<input class="w-full h-14 bg-white border border-input-border rounded-xl pl-11 pr-4 text-text-main placeholder:text-gray-400 placeholder:text-[13px] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm" placeholder="https://..." type="url"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-main text-xs font-semibold uppercase tracking-wider px-1">Personal Notes</label>
+<textarea class="w-full min-h-[180px] bg-white border border-input-border rounded-xl p-4 text-text-main placeholder:text-gray-400 placeholder:text-[13px] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm leading-relaxed resize-none custom-scrollbar" placeholder="What do you want to focus on?"></textarea>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent pt-10">
+<div class="flex items-center justify-between gap-4">
+<button class="px-6 py-3.5 text-text-secondary text-sm font-semibold hover:text-text-main transition-colors">
+                    Cancel
+                </button>
+<button class="flex-1 gradient-button text-white rounded-full py-4 px-8 font-bold text-sm shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+                    Save Source
+                </button>
+</div>
+</div>
+</div>
+
+</body></html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker - Use-Case Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1A1A1A", // Dark, sophisticated primary for buttons/accents
+                        secondary: "#D1D5DB", // Muted text
+                        "background-light": "#F3F2EE", // Warm, sophisticated light gray/beige from the left screenshot
+                        "background-dark": "#121212", // Deep black/gray for dark mode
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#1E1E1E",
+                        "surface-light": "#E5E4E0",
+                        "surface-dark": "#2A2A2A"
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                        body: ["Inter", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"], // For prompts/code
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem", // Consistent rounded corners as seen in the screenshot
+                        'xl': "1.5rem",
+                        '2xl': "2rem",
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'floating': '0 10px 40px -10px rgba(0, 0, 0, 0.2)',
+                    }
+                },
+            },
+        };
+    </script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-body text-gray-900 dark:text-gray-100 min-h-screen antialiased transition-colors duration-300">
+<div class="max-w-md mx-auto min-h-screen relative pb-24 overflow-hidden shadow-2xl bg-background-light dark:bg-background-dark">
+<div class="fixed top-0 left-0 right-0 z-50 p-4 max-w-md mx-auto flex justify-between items-center bg-gradient-to-b from-background-light/90 to-transparent dark:from-background-dark/90 backdrop-blur-sm">
+<button class="w-10 h-10 rounded-full bg-white/80 dark:bg-surface-dark/80 backdrop-blur-md flex items-center justify-center shadow-sm text-gray-800 dark:text-gray-200 hover:bg-white dark:hover:bg-surface-dark transition-all">
+<span class="material-icons-round text-xl">arrow_back</span>
+</button>
+<div class="flex gap-3">
+<button class="w-10 h-10 rounded-full bg-white/80 dark:bg-surface-dark/80 backdrop-blur-md flex items-center justify-center shadow-sm text-gray-800 dark:text-gray-200 hover:bg-white dark:hover:bg-surface-dark transition-all">
+<span class="material-icons-round text-xl">ios_share</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white/80 dark:bg-surface-dark/80 backdrop-blur-md flex items-center justify-center shadow-sm text-gray-800 dark:text-gray-200 hover:bg-white dark:hover:bg-surface-dark transition-all">
+<span class="material-icons-round text-xl">more_horiz</span>
+</button>
+</div>
+</div>
+<div class="pt-24 px-6 pb-6">
+<div class="flex items-start justify-between mb-4">
+<div>
+<span class="px-3 py-1 rounded-full bg-surface-light dark:bg-surface-dark text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Optimization</span>
+</div>
+<div class="flex items-center gap-1 text-yellow-500">
+<span class="material-icons-round text-sm">star</span>
+<span class="text-xs font-medium text-gray-600 dark:text-gray-400">Favorite</span>
+</div>
+</div>
+<h1 class="text-3xl font-light tracking-tight text-gray-900 dark:text-white mb-2">Content Strategy &amp; Drafting</h1>
+<p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                Automating the initial draft process for newsletters and blog posts using multi-shot prompting.
+            </p>
+</div>
+<div class="px-6 mb-8">
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-card-light dark:bg-card-dark p-4 rounded-2xl shadow-soft">
+<div class="flex items-center gap-2 mb-2 text-gray-400 dark:text-gray-500">
+<span class="material-icons-round text-lg">timer</span>
+<span class="text-xs font-medium uppercase tracking-wide">Time Saved</span>
+</div>
+<div class="text-2xl font-medium text-gray-900 dark:text-white">~4.5h</div>
+<div class="text-xs text-green-600 dark:text-green-400 mt-1">per week</div>
+</div>
+<div class="bg-card-light dark:bg-card-dark p-4 rounded-2xl shadow-soft">
+<div class="flex items-center gap-2 mb-2 text-gray-400 dark:text-gray-500">
+<span class="material-icons-round text-lg">auto_awesome</span>
+<span class="text-xs font-medium uppercase tracking-wide">Success Rate</span>
+</div>
+<div class="text-2xl font-medium text-gray-900 dark:text-white">85%</div>
+<div class="text-xs text-gray-400 mt-1">usable drafts</div>
+</div>
+</div>
+</div>
+<div class="px-6 mb-8">
+<h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+<span class="material-icons-round text-lg text-gray-400">handyman</span> Tool Stack
+            </h2>
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<div class="flex-shrink-0 flex items-center gap-3 bg-white dark:bg-surface-dark pl-2 pr-4 py-2 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+<div class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 font-bold text-xs">
+                        GPT
+                    </div>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-200">ChatGPT 4o</span>
+</div>
+<div class="flex-shrink-0 flex items-center gap-3 bg-white dark:bg-surface-dark pl-2 pr-4 py-2 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+<div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-700 dark:text-purple-400 font-bold text-xs">
+                        N
+                    </div>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-200">Notion</span>
+</div>
+<button class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-400 hover:bg-gray-50 dark:hover:bg-surface-dark/50 transition-colors">
+<span class="material-icons-round">add</span>
+</button>
+</div>
+</div>
+<div class="px-6 mb-8">
+<h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+<span class="material-icons-round text-lg text-gray-400">terminal</span> Core Prompts
+            </h2>
+<div class="space-y-4">
+<div class="group bg-card-light dark:bg-card-dark rounded-2xl p-5 shadow-soft border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all">
+<div class="flex justify-between items-center mb-3">
+<h3 class="font-medium text-gray-900 dark:text-white">Initial Brainstorming</h3>
+<span class="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 px-2 py-1 rounded-md">V2.1</span>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl mb-3 font-mono text-xs text-gray-600 dark:text-gray-400 leading-relaxed overflow-hidden relative max-h-20 group-hover:max-h-full transition-all duration-500">
+                        "Act as a senior content strategist. Based on the following 3 audience personas [insert personas], generate 10 topic ideas for next week..."
+                        <div class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-surface-light dark:from-surface-dark to-transparent group-hover:hidden"></div>
+</div>
+<div class="flex justify-between items-center mt-2">
+<button class="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white flex items-center gap-1">
+<span class="material-icons-round text-sm">content_copy</span> Copy
+                        </button>
+<button class="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white flex items-center gap-1">
+                            Details <span class="material-icons-round text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="group bg-card-light dark:bg-card-dark rounded-2xl p-5 shadow-soft border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all">
+<div class="flex justify-between items-center mb-3">
+<h3 class="font-medium text-gray-900 dark:text-white">Draft Refinement</h3>
+<span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-md">V1.0</span>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl mb-3 font-mono text-xs text-gray-600 dark:text-gray-400 leading-relaxed overflow-hidden relative max-h-20 group-hover:max-h-full transition-all duration-500">
+                        "Critique the following draft for tone consistency against our brand guidelines. Specifically look for..."
+                         <div class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-surface-light dark:from-surface-dark to-transparent group-hover:hidden"></div>
+</div>
+<div class="flex justify-between items-center mt-2">
+<button class="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white flex items-center gap-1">
+<span class="material-icons-round text-sm">content_copy</span> Copy
+                        </button>
+<button class="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white flex items-center gap-1">
+                            Details <span class="material-icons-round text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="px-6 mb-24">
+<h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+<span class="material-icons-round text-lg text-gray-400">sticky_note_2</span> Workflow Notes
+            </h2>
+<div class="bg-card-light dark:bg-card-dark rounded-2xl p-6 shadow-soft relative overflow-hidden">
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-gray-100 dark:bg-gray-800 rounded-full blur-2xl opacity-50 pointer-events-none"></div>
+<div class="space-y-4 relative z-10">
+<div>
+<h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Observation</h4>
+<p class="text-sm text-gray-800 dark:text-gray-200">Providing examples of past successful posts significantly improves the "Initial Brainstorming" output quality.</p>
+</div>
+<div class="h-px bg-gray-100 dark:bg-gray-800 w-full"></div>
+<div>
+<h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Next Action</h4>
+<p class="text-sm text-gray-800 dark:text-gray-200">Build a structured database of "Best Content" to feed into the prompt automatically via API.</p>
+</div>
+</div>
+<button class="mt-6 w-full py-3 rounded-xl bg-surface-light dark:bg-surface-dark text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2">
+<span class="material-icons-round text-sm">edit</span> Edit Notes
+                </button>
+</div>
+</div>
+<div class="fixed bottom-6 left-6 right-6 z-40 max-w-md mx-auto">
+<div class="bg-primary/95 backdrop-blur-md rounded-2xl shadow-floating p-2 flex items-center justify-between">
+<div class="flex items-center gap-1 px-4">
+<div class="flex -space-x-2">
+<img alt="User Avatar 1" class="w-8 h-8 rounded-full border-2 border-primary object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn5A6KVZkKdrtskoHDrjWOK7kv3HHKlm-aCb4e4fghHK9b8bDssPL5mg62sYlBB4omkjF6EyQl2QdyVlTsVK8OQgBFch3lYV9icMEkEBcY7-Q_dXdkQEoUYdIs5FCXvcyEo0MOkhrvIFL_NyG_3m3mi-cdbO9gfdDWcK4q8mOoky7h_8Hi0R7u2QVpX3ZX-oGxUpr-H98MUVXe9yMQPq51eQvmAUssrJNKqFjtxwFQuj7UV8AJ4WvaQQjrcYfxUDI9xrBSNBCeHCl0"/>
+<div class="w-8 h-8 rounded-full border-2 border-primary bg-gray-700 text-white text-xs flex items-center justify-center font-medium">+2</div>
+</div>
+<span class="text-white text-xs ml-3 font-medium opacity-80">Collaborators</span>
+</div>
+<button class="bg-white text-black px-6 py-3 rounded-xl text-sm font-semibold hover:bg-gray-100 transition-colors shadow-sm flex items-center gap-2">
+<span class="material-icons-round text-lg">play_arrow</span>
+                    Run Workflow
+                </button>
+</div>
+</div>
+</div>
+<script>
+        // Simple toggle for demonstration purposes - click the top right area to toggle
+        // In a real app this would be system preference or settings
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'd') {
+                document.documentElement.classList.toggle('dark');
+            }
+        });
+    </script>
+
+</body></html>

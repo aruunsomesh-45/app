@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create / Edit Workout</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b4f835",
+                        "primary-dark": "#8bc727",
+                        "background-light": "#f7f8f5",
+                        "background-dark": "#1c230f",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#242c16",
+                        "text-main": "#171c0d",
+                        "text-secondary": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Hide scrollbar for clean horizontal scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main antialiased selection:bg-primary selection:text-black">
+<div class="relative flex min-h-screen flex-col w-full max-w-md mx-auto bg-background-light dark:bg-background-dark pb-24">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md px-4 py-3 border-b border-gray-200/50 dark:border-gray-800/50 transition-colors duration-200">
+<button class="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-text-main dark:text-white">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold text-text-main dark:text-white tracking-tight">Hybrid Training</h1>
+<button class="flex items-center justify-center h-9 px-4 rounded-full bg-primary/20 hover:bg-primary/30 active:bg-primary/40 transition-colors">
+<span class="text-xs font-bold text-text-main uppercase tracking-wider">Save</span>
+</button>
+</header>
+<!-- Main Content Scrollable Area -->
+<main class="flex-1 flex flex-col gap-6 p-4">
+<!-- Workout Overview Card -->
+<section class="flex flex-col gap-4">
+<!-- Workout Name Input -->
+<div class="group">
+<label class="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1.5 ml-1">Workout Name</label>
+<input class="w-full bg-surface-light dark:bg-surface-dark border-0 rounded-xl px-4 py-3 text-lg font-semibold text-text-main dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-primary shadow-sm" placeholder="E.g. Leg Day Destruction" type="text" value="Upper Body Power"/>
+</div>
+<!-- Description Input -->
+<div class="group">
+<label class="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1.5 ml-1">Description</label>
+<textarea class="w-full bg-surface-light dark:bg-surface-dark border-0 rounded-xl px-4 py-3 text-sm text-text-main dark:text-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-primary shadow-sm resize-none min-h-[80px]" placeholder="Focus on compound movements and progressive overload...">Focus on heavy compound movements. Keep rest times strictly to 90s between sets.</textarea>
+</div>
+<!-- Meta Chips -->
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 shadow-sm shrink-0">
+<span class="material-symbols-outlined text-base text-primary-dark">schedule</span>
+<span class="text-sm font-medium text-text-main dark:text-gray-200">45 min</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 shadow-sm shrink-0">
+<span class="material-symbols-outlined text-base text-primary-dark">fitness_center</span>
+<span class="text-sm font-medium text-text-main dark:text-gray-200">5 Exercises</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 shadow-sm shrink-0">
+<span class="material-symbols-outlined text-base text-primary-dark">local_fire_department</span>
+<span class="text-sm font-medium text-text-main dark:text-gray-200">High Intensity</span>
+</div>
+</div>
+</section>
+<div class="h-px w-full bg-gray-200 dark:bg-gray-800 my-1"></div>
+<!-- Exercises List -->
+<section class="flex flex-col gap-5">
+<div class="flex items-center justify-between px-1">
+<h2 class="text-lg font-bold text-text-main dark:text-white">Exercises</h2>
+<button class="text-sm font-medium text-primary-dark hover:text-primary transition-colors">Reorder</button>
+</div>
+<!-- Exercise Card 1 -->
+<article class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-800/50">
+<!-- Card Header -->
+<div class="p-4 flex items-start justify-between bg-gradient-to-r from-gray-50 to-white dark:from-surface-dark dark:to-surface-dark border-b border-gray-100 dark:border-gray-800">
+<div class="flex gap-3">
+<div class="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/20 text-text-main dark:text-primary">
+<span class="text-lg font-bold">A</span>
+</div>
+<div>
+<h3 class="text-base font-bold text-text-main dark:text-white leading-tight">Barbell Bench Press</h3>
+<p class="text-xs text-text-secondary mt-0.5">Chest • Compound</p>
+</div>
+</div>
+<button class="text-gray-400 hover:text-text-main dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Sets Table -->
+<div class="p-4 pt-2">
+<!-- Table Header -->
+<div class="grid grid-cols-10 gap-2 mb-3 px-1">
+<div class="col-span-1 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Set</span></div>
+<div class="col-span-3 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Previous</span></div>
+<div class="col-span-2 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">lbs</span></div>
+<div class="col-span-2 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Reps</span></div>
+<div class="col-span-2 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Done</span></div>
+</div>
+<!-- Set Rows -->
+<div class="flex flex-col gap-2">
+<!-- Row 1 -->
+<div class="grid grid-cols-10 gap-2 items-center bg-[#f9fafb] dark:bg-white/5 rounded-lg p-1.5">
+<div class="col-span-1 flex justify-center">
+<span class="text-sm font-semibold text-gray-400">1</span>
+</div>
+<div class="col-span-3 flex justify-center">
+<span class="text-xs font-medium text-gray-400 line-through">130 x 8</span>
+</div>
+<div class="col-span-2">
+<input class="w-full h-8 text-center text-sm font-bold bg-white dark:bg-black/20 border-0 rounded-md focus:ring-1 focus:ring-primary shadow-sm p-0 text-text-main dark:text-white" type="number" value="135"/>
+</div>
+<div class="col-span-2">
+<input class="w-full h-8 text-center text-sm font-bold bg-white dark:bg-black/20 border-0 rounded-md focus:ring-1 focus:ring-primary shadow-sm p-0 text-text-main dark:text-white" type="number" value="8"/>
+</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-black shadow-sm hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-10 gap-2 items-center bg-[#f9fafb] dark:bg-white/5 rounded-lg p-1.5">
+<div class="col-span-1 flex justify-center">
+<span class="text-sm font-semibold text-gray-400">2</span>
+</div>
+<div class="col-span-3 flex justify-center">
+<span class="text-xs font-medium text-gray-400 line-through">130 x 8</span>
+</div>
+<div class="col-span-2">
+<input class="w-full h-8 text-center text-sm font-bold bg-white dark:bg-black/20 border-0 rounded-md focus:ring-1 focus:ring-primary shadow-sm p-0 text-text-main dark:text-white" type="number" value="135"/>
+</div>
+<div class="col-span-2">
+<input class="w-full h-8 text-center text-sm font-bold bg-white dark:bg-black/20 border-0 rounded-md focus:ring-1 focus:ring-primary shadow-sm p-0 text-text-main dark:text-white" type="number" value="8"/>
+</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-md bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500 shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+<span class="material-symbols-outlined text-lg">check</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card Footer -->
+<div class="mt-3 pt-2 flex items-center justify-between border-t border-gray-100 dark:border-gray-800 border-dashed">
+<button class="flex items-center gap-1.5 text-xs font-bold text-primary-dark hover:text-primary transition-colors py-2">
+<span class="material-symbols-outlined text-lg">add</span>
+                                ADD SET
+                            </button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-gray-400 text-lg">timer</span>
+<span class="text-xs font-medium text-gray-500">90s Rest</span>
+</div>
+</div>
+<!-- Inline Notes -->
+<div class="mt-2 relative">
+<input class="w-full bg-transparent border-0 border-b border-gray-200 dark:border-gray-700 text-sm py-1.5 px-0 focus:ring-0 focus:border-primary placeholder:text-gray-400 text-text-main dark:text-gray-300" placeholder="Add notes..." type="text"/>
+</div>
+</div>
+</article>
+<!-- Exercise Card 2 -->
+<article class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-800/50">
+<!-- Card Header -->
+<div class="p-4 flex items-start justify-between bg-gradient-to-r from-gray-50 to-white dark:from-surface-dark dark:to-surface-dark border-b border-gray-100 dark:border-gray-800">
+<div class="flex gap-3">
+<div class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+<span class="text-lg font-bold">B</span>
+</div>
+<div>
+<h3 class="text-base font-bold text-text-main dark:text-white leading-tight">Pull Ups</h3>
+<p class="text-xs text-text-secondary mt-0.5">Back • Bodyweight</p>
+</div>
+</div>
+<button class="text-gray-400 hover:text-text-main dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Sets Table -->
+<div class="p-4 pt-2">
+<!-- Table Header -->
+<div class="grid grid-cols-10 gap-2 mb-3 px-1">
+<div class="col-span-1 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Set</span></div>
+<div class="col-span-3 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Previous</span></div>
+<div class="col-span-2 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">lbs</span></div>
+<div class="col-span-2 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Reps</span></div>
+<div class="col-span-2 text-center"><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Done</span></div>
+</div>
+<!-- Set Rows -->
+<div class="flex flex-col gap-2">
+<!-- Row 1 -->
+<div class="grid grid-cols-10 gap-2 items-center bg-[#f9fafb] dark:bg-white/5 rounded-lg p-1.5">
+<div class="col-span-1 flex justify-center">
+<span class="text-sm font-semibold text-gray-400">1</span>
+</div>
+<div class="col-span-3 flex justify-center">
+<span class="text-xs font-medium text-gray-400">--</span>
+</div>
+<div class="col-span-2">
+<input class="w-full h-8 text-center text-sm font-bold bg-white dark:bg-black/20 border-0 rounded-md focus:ring-1 focus:ring-primary shadow-sm p-0 text-text-main dark:text-white placeholder:text-gray-300" placeholder="BW" type="number"/>
+</div>
+<div class="col-span-2">
+<input class="w-full h-8 text-center text-sm font-bold bg-white dark:bg-black/20 border-0 rounded-md focus:ring-1 focus:ring-primary shadow-sm p-0 text-text-main dark:text-white" type="number" value="10"/>
+</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-md bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500 shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+<span class="material-symbols-outlined text-lg">check</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card Footer -->
+<div class="mt-3 pt-2 flex items-center justify-between border-t border-gray-100 dark:border-gray-800 border-dashed">
+<button class="flex items-center gap-1.5 text-xs font-bold text-primary-dark hover:text-primary transition-colors py-2">
+<span class="material-symbols-outlined text-lg">add</span>
+                                ADD SET
+                            </button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-gray-400 text-lg">timer</span>
+<span class="text-xs font-medium text-gray-500">120s Rest</span>
+</div>
+</div>
+</div>
+</article>
+</section>
+</main>
+<!-- Sticky Bottom Actions -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark pointer-events-none flex justify-center w-full max-w-md mx-auto">
+<button class="pointer-events-auto w-full bg-primary hover:bg-primary-dark text-black rounded-xl py-4 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-2xl">add</span>
+<span class="text-base font-bold">Add Exercise</span>
+</button>
+</div>
+</div>
+</body></html>

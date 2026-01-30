@@ -1,0 +1,74 @@
+LifeTracker – Product Requirements Document (PRD)
+Module Focus: Freelancing System & External Account Connections
+Document Type: ExecutionIready PRD (Product + System Design)
+1. Product Vision & Context
+The Freelancing module of LifeTracker is designed to transform freelance work from a reactive, platformIdriven
+activity into a structured, reflective, and compounding system. Modern freelancers operate across multiple
+fragmented platforms such as freelance marketplaces, code repositories, payment providers, and social networks.
+While each platform optimizes for transactions or visibility, none provide a holistic view of the freelancer’s work,
+income quality, delivery consistency, or learning over time. LifeTracker positions itself as the central control layer
+above these platforms, allowing the user to observe, decide, and improve their freelance operations without
+replacing the platforms themselves.
+This PRD defines a calm, professional system that emphasizes clarity over automation, reflection over raw metrics,
+and longIterm leverage over shortIterm hustle.
+2. Problem Statement
+Freelancers commonly face the following problems: fragmented identities across platforms, poor visibility into active
+commitments, weak tracking of scope changes, inconsistent delivery processes, and little postIproject learning.
+Income is tracked emotionally rather than analytically, leading to underpricing, burnout, and repeated mistakes.
+Existing tools either focus narrowly on tasks, attempt to replace platforms entirely, or become overly complex CRMs
+that freelancers abandon. There is a clear gap for a lightweight but deep freelancing system focused on execution
+quality and strategic clarity.
+3. Product Goals & Success Definition
+The primary goal of the Freelancing module is to provide freelancers with a single source of truth for their
+professional client work. Success is defined not by the number of integrations or automated actions, but by
+increased clarity, improved delivery confidence, and better decisionImaking. Specifically, the module aims to
+centralize freelance identities, structure client and project management, provide lightweight revenue awareness,
+and create a feedback loop after every delivery.
+4. Target User Persona
+The target user is an independent professional such as a developer, designer, consultant, or creator who manages
+multiple clients and platforms simultaneously. This user values professionalism, longIterm growth, and mental
+clarity. They are not looking for another task list, but for a system that helps them think clearly about their freelance
+work. They prefer manual control, minimal interfaces, and insights over dashboards filled with numbers.
+5. External Account Connections System
+External account connections form the foundation of the Freelancing module. Rather than deeply integrating with
+every platform, LifeTracker introduces a tiered approach to account connections that balances usefulness with
+complexity and privacy. Platforms are treated as sources of work and reputation, not as systems to be controlled.
+Level 1 – Manual Account Linking (MVP)
+In the MVP, users can manually link external accounts by providing a platform name, username or profile URL, and
+account type (freelance marketplace, payment provider, code repository, or branding platform). This approach
+requires no permissions, avoids API maintenance, and immediately gives the user a unified view of their freelance
+identities. Each account includes a notes area for platformIspecific strategy insights.
+Level 2 – ReadIOnly Metadata Sync (PostIMVP)
+In later phases, optional OAuthIbased, readIonly integrations may be introduced for selected platforms such as
+GitHub or Stripe. These integrations are limited to highIlevel metadata such as activity counts or payment totals
+and never trigger automated actions. Manual user input always takes precedence over synced data.
+Level 3 – Advanced Automation (Explicitly Out of Scope)
+Deep automation such as contract imports, messaging, or invoicing is intentionally excluded from this PRD. Such
+features introduce platform risk, complexity, and shift LifeTracker away from its core value proposition of clarity and
+reflection.
+6. Core Freelancing Features
+The Freelancing module is structured around five core entities: Clients, Projects, Milestones, External Accounts,
+and Notes. Clients act as containers for longIterm relationships, while projects represent concrete engagements.
+Milestones define deliverables, and notes capture communication, scope changes, and learning.
+Each project can be linked to one or more external accounts, enabling platformIlevel analysis without duplicating
+data. Revenue tracking is intentionally lightweight, focusing on expected versus received payments rather than full
+accounting. Time and effort tracking remain optional and reflective rather than surveillanceIdriven.
+7. Typical User Workflow
+A typical workflow begins with linking external accounts, followed by adding a client and creating a project
+associated with that client. The user defines milestones and deadlines, logs communication notes during the
+project, and marks deliverables as completed. Upon delivery, the system prompts a short retrospective to capture
+lessons learned. These insights accumulate over time, improving future pricing, scoping, and platform strategy.
+8. UX & Design Principles
+The Freelancing module must feel calm, professional, and nonIintrusive. The interface should avoid dense tables,
+excessive notifications, or aggressive reminders. MobileIfirst design is mandatory, with quick access to active
+projects and deadlines. Visual hierarchy should prioritize what requires attention today over historical data.
+9. Security & Privacy Considerations
+User trust is critical. Manual data entry is the default. Any external integrations must use secure OAuth flows with
+readIonly scopes. Tokens are stored securely, and users can disconnect accounts at any time. LifeTracker never
+performs actions on external platforms on behalf of the user.
+10. Success Metrics
+Success for this module is measured through qualitative and behavioral signals rather than raw volume. Key metrics
+include weekly engagement with the Freelancing section, project completion rates, number of linked accounts, and
+the frequency of postIdelivery reviews. LongIterm success is reflected in reduced context switching and improved
+pricing confidence reported by users.
+End of Document

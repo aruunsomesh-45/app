@@ -1,0 +1,71 @@
+﻿
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\CodingSection.tsx
+  383:48   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  404:70   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  524:46   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  710:47   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  794:115  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  827:47   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  831:61   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  970:12   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  973:46   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  993:17   error  Unexpected lexical declaration in case block  no-case-declarations
+  993:76   error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\Dashboard.tsx
+  363:51   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  415:106  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  426:105  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  437:101  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  448:107  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\LenisProvider.tsx
+  16:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-refresh/only-export-components
+  70:26  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\LenisProvider.tsx:70:26
+  68 |     // Only access ref value when ready (after effect has run)
+  69 |     const contextValue: LenisContextType = {
+> 70 |         lenis: isReady ? lenisRef.current : null,
+     |                          ^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  71 |         scrollTo,
+  72 |     };
+  73 |  react-hooks/refs
+  75:39  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\LenisProvider.tsx:75:39
+  73 |
+  74 |     return (
+> 75 |         <LenisContext.Provider value={contextValue}>
+     |                                       ^^^^^^^^^^^^ Cannot access ref value during render
+  76 |             {children}
+  77 |         </LenisContext.Provider>
+  78 |     );                                               react-hooks/refs
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\MeditationSystem.tsx
+  183:11  warning  The 'CATEGORY_SOUND_QUERIES' object makes the dependencies of useEffect Hook (at line 338) change on every render. Move it inside the useEffect callback. Alternatively, wrap the initialization of 'CATEGORY_SOUND_QUERIES' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\PlannerPage.tsx
+  108:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\aruun\OneDrive\Documents\Desktop\New folder (5)\appds\productivity-tracker\src\components\PlannerPage.tsx:108:9
+  106 |     // -- Persistence --
+  107 |     useEffect(() => {
+> 108 |         setAutosaving(true);
+      |         ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  109 |         localStorage.setItem('planner_priorities', JSON.stringify(priorities));
+  110 |         localStorage.setItem('planner_anti_goals', JSON.stringify(antiGoals));
+  111 |         localStorage.setItem('planner_notes', JSON.stringify(notes));  react-hooks/set-state-in-effect
+
+Γ£û 21 problems (20 errors, 1 warning)
+

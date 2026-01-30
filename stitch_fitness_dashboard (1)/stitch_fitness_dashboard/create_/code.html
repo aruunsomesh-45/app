@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Custom Exercise</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bee6c",
+                        "primary-dark": "#059669","primary-hover": "#25cf5e",
+                        "background-light": "#f8fafc","background-dark": "#102216",
+                        "surface-dark": "#1c2e23",
+                        "input-dark": "#23482f",
+                        "text-secondary": "#64748b",},
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>.hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light text-slate-900 font-display antialiased selection:bg-primary selection:text-black">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl bg-background-light border-x border-slate-200">
+<header class="sticky top-0 z-50 flex items-center justify-between bg-background-light/95 backdrop-blur-md p-4 border-b border-slate-200">
+<button class="flex items-center justify-center p-2 -ml-2 rounded-full hover:bg-slate-100 transition-colors group">
+<span class="text-slate-500 text-base font-medium group-hover:text-slate-900">Cancel</span>
+</button>
+<h1 class="text-lg font-bold leading-tight tracking-tight text-slate-900">Create Custom Exercise</h1>
+<button class="flex items-center justify-center p-2 -mr-2 rounded-full hover:bg-emerald-50 transition-colors">
+<span class="text-primary-dark text-base font-bold">Save</span>
+</button>
+</header>
+<main class="flex-1 flex flex-col p-4 gap-6 pb-10">
+<section class="flex flex-col gap-2">
+<div class="relative group cursor-pointer">
+<div class="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-slate-300 bg-white px-6 py-10 transition-all hover:border-primary hover:bg-emerald-50/30">
+<div class="flex size-14 items-center justify-center rounded-full bg-slate-100 text-slate-400 group-hover:scale-110 group-hover:text-primary-dark transition-all">
+<span class="material-symbols-outlined text-3xl">add_a_photo</span>
+</div>
+<div class="text-center">
+<p class="text-sm font-bold text-slate-900">Add Photo or Video</p>
+<p class="text-xs text-slate-500 mt-1">Upload visual instructions (Max 50MB)</p>
+</div>
+</div>
+<input class="absolute inset-0 opacity-0 cursor-pointer" type="file"/>
+</div>
+</section>
+<section class="flex flex-col gap-5">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-700 pl-1">Exercise Name</label>
+<input class="w-full rounded-xl bg-white border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary/50 text-slate-900 placeholder-slate-400 h-12 px-4 text-base transition-colors shadow-sm" placeholder="e.g., Bulgarian Split Squat" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-700 pl-1">Description <span class="text-xs font-normal text-slate-400">(Optional)</span></label>
+<textarea class="w-full rounded-xl bg-white border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary/50 text-slate-900 placeholder-slate-400 min-h-[100px] p-4 text-base resize-none transition-colors shadow-sm" placeholder="Add notes on proper form, tempo, or breathing cues..."></textarea>
+</div>
+</section>
+<section class="flex flex-col gap-5 pt-2">
+<h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-dark text-xl">accessibility_new</span>
+                    Muscle Groups
+                </h3>
+<div class="grid grid-cols-1 gap-4">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-700 pl-1">Primary Target</label>
+<div class="relative">
+<select class="w-full appearance-none rounded-xl bg-white border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary/50 text-slate-900 h-12 px-4 pr-10 text-base shadow-sm cursor-pointer">
+<option disabled="" selected="" value="">Select muscle group</option>
+<option value="chest">Chest</option>
+<option value="back">Back</option>
+<option value="legs">Legs</option>
+<option value="shoulders">Shoulders</option>
+<option value="arms">Arms</option>
+<option value="core">Core</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-700 pl-1">Secondary <span class="text-xs font-normal text-slate-400">(Optional)</span></label>
+<div class="relative">
+<select class="w-full appearance-none rounded-xl bg-white border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary/50 text-slate-900 h-12 px-4 pr-10 text-base shadow-sm cursor-pointer">
+<option disabled="" selected="" value="">Select secondary muscle</option>
+<option value="triceps">Triceps</option>
+<option value="biceps">Biceps</option>
+<option value="calves">Calves</option>
+<option value="glutes">Glutes</option>
+<option value="forearms">Forearms</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-3 pt-2">
+<div class="flex justify-between items-end">
+<h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-dark text-xl">fitness_center</span>
+                        Equipment
+                    </h3>
+<span class="text-xs text-slate-500">Select all that apply</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<button class="group flex items-center gap-2 rounded-full border border-primary bg-primary px-4 py-2 text-sm font-bold text-slate-900 transition-all shadow-sm">
+<span>Dumbbell</span>
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:border-primary hover:text-slate-900 transition-all shadow-sm">
+<span>Barbell</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:border-primary hover:text-slate-900 transition-all shadow-sm">
+<span>Machine</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:border-primary hover:text-slate-900 transition-all shadow-sm">
+<span>Kettlebell</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:border-primary hover:text-slate-900 transition-all shadow-sm">
+<span>Bodyweight</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:border-primary hover:text-slate-900 transition-all shadow-sm">
+<span>Cables</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-dashed border-slate-300 bg-transparent px-3 py-2 text-sm font-medium text-slate-400 hover:text-primary-dark hover:border-primary transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Other</span>
+</button>
+</div>
+</section>
+<section class="flex flex-col gap-3 pt-2">
+<div class="flex justify-between items-end">
+<h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-dark text-xl">psychology</span>
+                        Mental Focus
+                    </h3>
+<span class="text-xs text-slate-500">For productivity tracking</span>
+</div>
+<div class="flex overflow-x-auto gap-2 pb-2 hide-scrollbar -mx-4 px-4">
+<button class="shrink-0 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-emerald-50 hover:border-primary hover:text-primary-dark transition-all shadow-sm">
+<span>High Energy</span>
+</button>
+<button class="shrink-0 flex items-center gap-2 rounded-full border border-primary/30 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700 transition-all">
+<span>Stress Relief</span>
+</button>
+<button class="shrink-0 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-emerald-50 hover:border-primary hover:text-primary-dark transition-all shadow-sm">
+<span>Endurance</span>
+</button>
+<button class="shrink-0 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-emerald-50 hover:border-primary hover:text-primary-dark transition-all shadow-sm">
+<span>Quick Break</span>
+</button>
+</div>
+</section>
+</main>
+</div>
+
+</body></html>
