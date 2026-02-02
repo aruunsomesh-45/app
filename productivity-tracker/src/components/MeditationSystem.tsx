@@ -182,7 +182,6 @@ const MeditationSystem: React.FC = () => {
     const [consistencyRating, setConsistencyRating] = useState(true); // "Did I show up?"
     const [qualityRating, setQualityRating] = useState(3); // "How well did I perform?"
     const [focusDrops, setFocusDrops] = useState(0);
-    const [weeklyInsight, setWeeklyInsight] = useState('');
 
     const [ytVideos, setYtVideos] = useState<YouTubeVideoData[]>(YOUTUBE_VIDEOS.map(v => ({
         originalUrl: v.url,
