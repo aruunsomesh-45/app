@@ -8,6 +8,8 @@ import {
     Sparkles
 } from 'lucide-react';
 import { generateOpenAIContent } from '../services/openaiService';
+import { useContentProtection } from '../contexts/ContentProtectionContext';
+import { checkUrl } from '../services/contentFilter';
 
 const getYouTubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -30,6 +32,7 @@ interface LearningSource {
 
 const AINotebook: React.FC = () => {
     const navigate = useNavigate();
+    const { settings, logBlockedAttempt } = useContentProtection();
     const [isAddingSource, setIsAddingSource] = useState(false);
     const [playingVideoId, setPlayingVideoId] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -48,6 +51,16 @@ const AINotebook: React.FC = () => {
         if (!sourceTitle || (!sourceText && !sourceLink)) {
             alert("Please provide at least a title and some content or a link.");
             return;
+        }
+
+        // Content Protection Check
+        if (sourceLink && settings.protectionLevel !== 'off') {
+            const protectionResult = checkUrl(sourceLink, settings.protectionLevel, settings.customBlockedDomains);
+            if (protectionResult.blocked) {
+                alert(`Access Blocked: ${protectionResult.reason}`);
+                logBlockedAttempt(sourceLink, undefined, protectionResult.reason);
+                return;
+            }
         }
 
         const youtubeId = getYouTubeId(sourceLink);
@@ -196,9 +209,21 @@ const AINotebook: React.FC = () => {
                                         <div
                                             className="h-48 -mx-7 -mt-7 mb-6 relative overflow-hidden group-hover:opacity-95 transition-all group/thumb bg-black cursor-pointer"
                                             onClick={() => {
-                                                if (source.url?.includes('youtube.com') || source.url?.includes('youtu.be')) {
+                                                if (!source.url) return;
+
+                                                // Content Protection Check
+                                                if (settings.protectionLevel !== 'off') {
+                                                    const protectionResult = checkUrl(source.url, settings.protectionLevel, settings.customBlockedDomains);
+                                                    if (protectionResult.blocked) {
+                                                        alert(`Access Blocked: ${protectionResult.reason}`);
+                                                        logBlockedAttempt(source.url, undefined, protectionResult.reason);
+                                                        return;
+                                                    }
+                                                }
+
+                                                if (source.url.includes('youtube.com') || source.url.includes('youtu.be')) {
                                                     setPlayingVideoId(source.id);
-                                                } else if (source.url) {
+                                                } else {
                                                     window.open(source.url, '_blank');
                                                 }
                                             }}
@@ -255,7 +280,17 @@ const AINotebook: React.FC = () => {
                                     )}
                                     {source.url && (
                                         <button
-                                            onClick={() => window.open(source.url, '_blank')}
+                                            onClick={() => {
+                                                if (settings.protectionLevel !== 'off') {
+                                                    const protectionResult = checkUrl(source.url, settings.protectionLevel, settings.customBlockedDomains);
+                                                    if (protectionResult.blocked) {
+                                                        alert(`Access Blocked: ${protectionResult.reason}`);
+                                                        logBlockedAttempt(source.url, undefined, protectionResult.reason);
+                                                        return;
+                                                    }
+                                                }
+                                                window.open(source.url, '_blank');
+                                            }}
                                             className="w-full py-4 bg-[#DDDDDD] text-[#000000] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#847777] hover:text-white transition-all flex items-center justify-center gap-2"
                                         >
                                             Open Source <ChevronRight className="w-4 h-4" />

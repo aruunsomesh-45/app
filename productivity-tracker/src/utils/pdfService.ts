@@ -129,6 +129,18 @@ export const processPdfFile = async (file: File): Promise<{
  */
 export const openPdfInNewTab = (pdfDataUrl: string, title: string) => {
     try {
+        if (!pdfDataUrl.startsWith('data:')) {
+            // Assume it's a regular URL (e.g. Supabase signed URL)
+            const newWindow = window.open(pdfDataUrl, '_blank');
+            if (newWindow) {
+                // Focus the new window
+                newWindow.focus();
+            } else {
+                alert('Pop-up blocked! Please allow pop-ups for this site.');
+            }
+            return;
+        }
+
         // Convert data URL to Blob
         const byteString = atob(pdfDataUrl.split(',')[1]);
         const mimeString = pdfDataUrl.split(',')[0].split(':')[1].split(';')[0];

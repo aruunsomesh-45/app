@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+
+# Early access features
+early_access: true
+
+# Enable free tier features
+enable_free_tier: true
+
+# Review settings
+reviews:
+  # Enable automatic reviews on new PRs
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - master
+      - develop
+
+  # Review profile - chill, assertive, or default
+  profile: "chill"
+
+  # Request changes workflow
+  request_changes_workflow: false
+
+  # High level summary in PR description
+  high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+
+  # Poem in review comments (fun feature)
+  poem: false
+
+  # Review status in PR title
+  review_status: true
+
+  # Collapse walkthrough beyond a certain number of files
+  collapse_walkthrough: true
+
+  # Path-specific instructions
+  path_instructions:
+    - path: "**/*.tsx"
+      instructions: "Review React components for best practices, hooks usage, and performance optimizations."
+    - path: "**/*.ts"
+      instructions: "Review TypeScript code for type safety, proper error handling, and clean code principles."
+    - path: "**/services/*.ts"
+      instructions: "Pay special attention to API calls, error handling, and security best practices."
+
+# Chat settings
+chat:
+  # Enable auto-reply in PR comments
+  auto_reply: true
+
+# Knowledge base (learns from your codebase)
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: "auto"

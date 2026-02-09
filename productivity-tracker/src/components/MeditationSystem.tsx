@@ -13,6 +13,8 @@ import type { MeditationSession } from '../utils/lifeTrackerStore';
 import youtubeService from '../services/youtubeService';
 import type { YouTubeVideoData } from '../services/youtubeService';
 import freesoundService from '../services/freesoundService';
+import { useContentProtection } from '../contexts/ContentProtectionContext';
+import { checkUrl } from '../services/contentFilter';
 import '../styles/meditation-premium.css';
 
 // Mock Data for Premium Look
@@ -158,6 +160,7 @@ const CATEGORY_SOUND_QUERIES: Record<string, string> = {
 const MeditationSystem: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const { settings, logBlockedAttempt } = useContentProtection();
     const store = useLifeTracker();
     const stats = store.getMeditationStats();
     const sessions = store.getState().meditationSessions.slice(0, 10);
@@ -698,7 +701,23 @@ const MeditationSystem: React.FC = () => {
             <section style={{ marginBottom: 'var(--spacing-xl)' }}>
                 <div className="section-header">
                     <h2 className="text-h2">Saved on YouTube</h2>
-                    <a href="https://www.youtube.com/results?search_query=meditation" target="_blank" rel="noopener noreferrer" className="view-all">Browse</a>
+                    <a
+                        href="https://www.youtube.com/results?search_query=meditation"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="view-all"
+                        onClick={(e) => {
+                            const url = "https://www.youtube.com/results?search_query=meditation";
+                            if (settings.protectionLevel !== 'off') {
+                                const protectionResult = checkUrl(url, settings.protectionLevel, settings.customBlockedDomains);
+                                if (protectionResult.blocked) {
+                                    e.preventDefault();
+                                    alert(`Access Blocked: ${protectionResult.reason}`);
+                                    logBlockedAttempt(url, undefined, protectionResult.reason);
+                                }
+                            }
+                        }}
+                    >Browse</a>
                 </div>
 
                 <div style={{ position: 'relative', height: '200px', borderRadius: '24px', overflow: 'hidden' }}>
@@ -710,7 +729,18 @@ const MeditationSystem: React.FC = () => {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.4 }}
                             className="w-full h-full cursor-pointer"
-                            onClick={() => window.open(ytVideos[ytIndex].originalUrl, '_blank')}
+                            onClick={() => {
+                                const url = ytVideos[ytIndex].originalUrl;
+                                if (settings.protectionLevel !== 'off') {
+                                    const protectionResult = checkUrl(url, settings.protectionLevel, settings.customBlockedDomains);
+                                    if (protectionResult.blocked) {
+                                        alert(`Access Blocked: ${protectionResult.reason}`);
+                                        logBlockedAttempt(url, undefined, protectionResult.reason);
+                                        return;
+                                    }
+                                }
+                                window.open(url, '_blank');
+                            }}
                         >
                             <img
                                 src={ytVideos[ytIndex].thumbnailUrl}

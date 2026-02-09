@@ -7,6 +7,9 @@ import {
 import { searchGoogle, type GoogleSearchResult } from '../services/googleSearchService';
 import { generateOpenAIContent } from '../services/openaiService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useContentProtection } from '../contexts/ContentProtectionContext';
+
+import { checkKeywords, checkUrl } from '../services/contentFilter';
 
 const AIGoogleSearch: React.FC = () => {
     const navigate = useNavigate();
@@ -17,9 +20,25 @@ const AIGoogleSearch: React.FC = () => {
     const [isSummarizing, setIsSummarizing] = useState(false);
     const [error, setError] = useState('');
 
+    const { logBlockedAttempt, settings } = useContentProtection();
+
     const handleSearch = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!query.trim()) return;
+
+        // Content Protection Check
+        if (settings.protectionLevel !== 'off') {
+            const protectionResult = checkKeywords(
+                query,
+                settings.protectionLevel,
+                settings.customBlockedKeywords
+            );
+            if (protectionResult.blocked) {
+                setError(`Search blocked by Content Protection: ${protectionResult.reason}`);
+                logBlockedAttempt(query, 'keyword'); // Corrected argument match
+                return;
+            }
+        }
 
         setIsSearching(true);
         setResults([]);
@@ -149,35 +168,50 @@ const AIGoogleSearch: React.FC = () => {
                             </div>
                         )}
 
-                        {results.map((result, idx) => (
-                            <motion.a
-                                key={idx}
-                                href={result.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.05 }}
-                                className="block bg-white rounded-[2rem] p-6 border border-[#F0F0F0] hover:border-[#847777] hover:shadow-lg transition-all group"
-                            >
-                                <div className="flex items-start justify-between mb-3">
-                                    <div className="flex items-center gap-2 overflow-hidden">
-                                        {result.pagemap?.cse_image?.[0]?.src ? (
-                                            <img src={result.pagemap.cse_image[0].src} alt="" className="w-4 h-4 rounded-full object-cover" />
-                                        ) : (
-                                            <div className="w-4 h-4 rounded-full bg-[#F5F5F5] flex items-center justify-center text-[#847777]">
-                                                <Globe className="w-2.5 h-2.5" />
-                                            </div>
-                                        )}
-                                        <span className="text-[10px] text-[#847777] truncate font-medium">{result.displayLink || new URL(result.link).hostname}</span>
-                                    </div>
-                                    <ExternalLink className="w-3 h-3 text-[#CCCCCC] group-hover:text-[#333333] transition-colors" />
-                                </div>
+                        {results.map((result, idx) => {
+                            const protectionResult = checkUrl(result.link, settings.protectionLevel, settings.customBlockedDomains);
+                            const isBlocked = settings.protectionLevel !== 'off' && protectionResult.blocked;
 
-                                <h3 className="text-base font-bold text-[#1a1a1a] mb-2 leading-tight group-hover:text-blue-600 transition-colors" dangerouslySetInnerHTML={{ __html: result.title }}></h3>
-                                <p className="text-xs text-[#666666] leading-relaxed line-clamp-2">{result.snippet}</p>
-                            </motion.a>
-                        ))}
+                            return (
+                                <motion.a
+                                    key={idx}
+                                    href={isBlocked ? '#' : result.link}
+                                    target={isBlocked ? '_self' : '_blank'}
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => {
+                                        if (isBlocked) {
+                                            e.preventDefault();
+                                            logBlockedAttempt(result.link, undefined, protectionResult.reason);
+                                            alert(`Access Blocked: ${protectionResult.reason}`);
+                                        }
+                                    }}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    className={`block rounded-[2rem] p-6 border transition-all group ${isBlocked
+                                        ? 'bg-red-50/50 border-red-200 opacity-60 grayscale'
+                                        : 'bg-white border-[#F0F0F0] hover:border-[#847777] hover:shadow-lg'
+                                        }`}
+                                >
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            {result.pagemap?.cse_image?.[0]?.src ? (
+                                                <img src={result.pagemap.cse_image[0].src} alt="" className="w-4 h-4 rounded-full object-cover" />
+                                            ) : (
+                                                <div className="w-4 h-4 rounded-full bg-[#F5F5F5] flex items-center justify-center text-[#847777]">
+                                                    <Globe className="w-2.5 h-2.5" />
+                                                </div>
+                                            )}
+                                            <span className="text-[10px] text-[#847777] truncate font-medium">{result.displayLink || new URL(result.link).hostname}</span>
+                                        </div>
+                                        <ExternalLink className="w-3 h-3 text-[#CCCCCC] group-hover:text-[#333333] transition-colors" />
+                                    </div>
+
+                                    <h3 className="text-base font-bold text-[#1a1a1a] mb-2 leading-tight group-hover:text-blue-600 transition-colors" dangerouslySetInnerHTML={{ __html: result.title }}></h3>
+                                    <p className="text-xs text-[#666666] leading-relaxed line-clamp-2">{result.snippet}</p>
+                                </motion.a>
+                            );
+                        })}
                     </div>
 
                     {/* Empty State */}

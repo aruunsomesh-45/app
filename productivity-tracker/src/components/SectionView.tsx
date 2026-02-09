@@ -2,46 +2,32 @@ import React, { useState } from 'react';
 // Force refresh
 import { useParams, useNavigate } from 'react-router-dom';
 import { sections } from '../data/sections';
+import { useLifeTracker } from '../utils/lifeTrackerStore';
 import { ArrowLeft, Plus, Trash2, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SectionView: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const store = useLifeTracker();
     const section = sections.find(s => s.id === id);
 
-    const [logs, setLogs] = useState<{ id: string, text: string, date: string }[]>(() => {
-        const saved = localStorage.getItem(`logs-${id}`);
-        return saved ? JSON.parse(saved) : [];
-    });
     const [newLog, setNewLog] = useState('');
 
-    // Use the "update during render" pattern to sync logs with the URL ID
-    const [prevId, setPrevId] = useState(id);
-    if (id !== prevId) {
-        setPrevId(id);
-        const saved = localStorage.getItem(`logs-${id}`);
-        setLogs(saved ? JSON.parse(saved) : []);
-    }
+    const sectionLogs = store.state.sectionLogs.filter(l => l.sectionId === id);
 
-    const saveLogs = (newLogs: typeof logs) => {
-        setLogs(newLogs);
-        localStorage.setItem(`logs-${id}`, JSON.stringify(newLogs));
-    };
+    // Sort logs by date descending (newest first)
+    // Assuming date is ISO string or at least comparable
+    const sortedLogs = [...sectionLogs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const addLog = () => {
-        if (!newLog.trim()) return;
-        const item = {
-            id: Date.now().toString(),
-            text: newLog,
-            date: new Date().toLocaleDateString()
-        };
-        saveLogs([item, ...logs]);
+        if (!newLog.trim() || !id) return;
+        store.addSectionLog(id, newLog);
         setNewLog('');
     };
 
     const deleteLog = (logId: string) => {
-        saveLogs(logs.filter(l => l.id !== logId));
+        store.deleteSectionLog(logId);
     };
 
     if (!section) return <div>Section not found</div>;
@@ -50,6 +36,14 @@ const SectionView: React.FC = () => {
     // section.color is like "bg-orange-100 text-orange-600"
     const bgClass = section.color.split(' ').find(c => c.startsWith('bg-')) || 'bg-gray-100';
     const textClass = section.color.split(' ').find(c => c.startsWith('text-')) || 'text-gray-800';
+
+    const formatDate = (dateStr: string) => {
+        try {
+            return new Date(dateStr).toLocaleDateString();
+        } catch (e) {
+            return dateStr;
+        }
+    };
 
     return (
         <div className="min-h-screen bg-white">
@@ -94,7 +88,7 @@ const SectionView: React.FC = () => {
 
                 <div className="space-y-3 pb-20">
                     <AnimatePresence mode="popLayout">
-                        {logs.length === 0 && (
+                        {sortedLogs.length === 0 && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -103,7 +97,7 @@ const SectionView: React.FC = () => {
                                 No activity logged yet. Start doing things!
                             </motion.div>
                         )}
-                        {logs.map((log) => (
+                        {sortedLogs.map((log) => (
                             <motion.div
                                 key={log.id}
                                 initial={{ opacity: 0, y: 10, scale: 0.98 }}
@@ -116,7 +110,7 @@ const SectionView: React.FC = () => {
                                     <p className="text-gray-800 font-medium leading-relaxed">{log.text}</p>
                                     <div className="flex items-center gap-1.5 mt-2">
                                         <Calendar className="w-3 h-3 text-gray-400" />
-                                        <span className="text-xs text-gray-400 font-medium">{log.date}</span>
+                                        <span className="text-xs text-gray-400 font-medium">{formatDate(log.date)}</span>
                                     </div>
                                 </div>
                                 <button

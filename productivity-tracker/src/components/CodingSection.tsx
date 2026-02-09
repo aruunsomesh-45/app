@@ -6,16 +6,16 @@ import {
     ArrowLeft, Plus, Play,
     Bug, ExternalLink,
     CheckCircle2, Circle, Clock, ChevronRight,
-    Flame, Network, Search,
+    Flame, Search,
     Book, Youtube,
-    User, X, Edit2, Terminal,
-    Cpu, Sparkles, AlertCircle, Award, Target, TrendingUp,
-    ListChecks, RefreshCw
+    User, X, Edit2,
+    Sparkles, AlertCircle, Award, Target, TrendingUp,
+    ListChecks, RefreshCw, Copy, Trash2, Filter, Calendar, FileText, Lightbulb
 } from 'lucide-react';
 import { useLifeTracker, LifeTrackerStore } from '../utils/lifeTrackerStore';
 import type {
     CodingLearningPath,
-    DSAProblem,
+    PracticeReflection,
     CodingProject,
     DebugLog,
     VideoResource,
@@ -23,6 +23,7 @@ import type {
     SkillMastery
 } from '../utils/lifeTrackerStore';
 import type { LucideIcon } from 'lucide-react';
+import { useContentProtection } from '../contexts/ContentProtectionContext';
 
 // --- Custom Icons ---
 const MapIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -444,149 +445,474 @@ function LearningPathsSection({ store, onAdd }: { store: LifeTrackerStore; onAdd
     );
 }
 
-// --- SECTION 2: PROBLEM SOLVING & SYSTEM DESIGN ---
+// --- SECTION 2: PRACTICE REFLECTION ---
 function ProblemSolvingSection({ store, onAdd }: { store: LifeTrackerStore; onAdd: () => void }) {
     const state = store.getState();
-    const problems: DSAProblem[] = state.dsaProblems;
-    const [selectedCategory, setSelectedCategory] = useState<'DSA' | 'CS Core' | 'System Design'>('DSA');
-    const [expandedProblemId, setExpandedProblemId] = useState<string | null>(null);
+    const reflections: PracticeReflection[] = state.dsaProblems;
+    const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
+    const [showFilters, setShowFilters] = useState(false);
 
-    const categories = [
-        { id: 'DSA', label: 'Algorithms', icon: Code2, desc: 'Interview Patterns' },
-        { id: 'CS Core', label: 'Core Systems', icon: Cpu, desc: 'The Foundations' },
-        { id: 'System Design', label: 'Architecture', icon: Network, desc: 'Scale & Design' }
+    // Filter states
+    const [filterPlatform, setFilterPlatform] = useState<'all' | 'LeetCode' | 'HackerRank' | 'Codeforces' | 'Other'>('all');
+    const [filterDifficulty, setFilterDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
+    const [filterReviewStatus, setFilterReviewStatus] = useState<'all' | 'not-reviewed' | 'needs-review' | 'mastered'>('all');
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Available topics for multi-select
+    const availableTopics = [
+        'Arrays', 'Strings', 'Two Pointers', 'Sliding Window', 'Binary Search',
+        'Trees', 'Graphs', 'DP', 'Backtracking', 'Heap', 'Stack', 'Queue',
+        'Linked List', 'Hash Map', 'Sorting', 'Recursion', 'Greedy', 'BFS', 'DFS',
+        'Trie', 'Union Find', 'Bit Manipulation', 'Math', 'Simulation'
     ];
 
-    const filteredProblems = problems.filter(p => p.category === selectedCategory);
+    const platforms = [
+        { id: 'LeetCode', label: 'LeetCode', color: 'bg-orange-500' },
+        { id: 'HackerRank', label: 'HackerRank', color: 'bg-green-500' },
+        { id: 'Codeforces', label: 'Codeforces', color: 'bg-blue-500' },
+        { id: 'Other', label: 'Other', color: 'bg-purple-500' }
+    ];
+
+    // Filter reflections
+    const filteredReflections = reflections.filter(r => {
+        const matchesPlatform = filterPlatform === 'all' || r.platform === filterPlatform;
+        const matchesDifficulty = filterDifficulty === 'all' || r.difficulty === filterDifficulty;
+        const matchesReviewStatus = filterReviewStatus === 'all' || r.reviewStatus === filterReviewStatus;
+        const matchesSearch = searchQuery === '' ||
+            r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            r.problemId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            r.topics.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesPlatform && matchesDifficulty && matchesReviewStatus && matchesSearch;
+    });
+
+    // Stats
+    const stats = {
+        total: reflections.length,
+        mastered: reflections.filter(r => r.reviewStatus === 'mastered').length,
+        needsReview: reflections.filter(r => r.reviewStatus === 'needs-review').length,
+        thisWeek: reflections.filter(r => {
+            if (!r.dateSolved) return false;
+            const date = new Date(r.dateSolved);
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            return date >= weekAgo;
+        }).length
+    };
+
+    const getDifficultyStyle = (difficulty: string) => {
+        switch (difficulty) {
+            case 'easy': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
+            case 'medium': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+            case 'hard': return 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400';
+            default: return 'bg-gray-100 text-gray-600';
+        }
+    };
+
+    const getReviewStatusStyle = (status: string) => {
+        switch (status) {
+            case 'mastered': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200';
+            case 'needs-review': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border-orange-200';
+            default: return 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 border-gray-200';
+        }
+    };
+
+    const getPlatformColor = (platform: string) => {
+        switch (platform) {
+            case 'LeetCode': return 'bg-gradient-to-br from-orange-400 to-orange-600';
+            case 'HackerRank': return 'bg-gradient-to-br from-green-400 to-green-600';
+            case 'Codeforces': return 'bg-gradient-to-br from-blue-400 to-blue-600';
+            default: return 'bg-gradient-to-br from-purple-400 to-purple-600';
+        }
+    };
 
     return (
-        <div className="space-y-8">
-            {/* Category Grid */}
-            <div className="grid grid-cols-3 gap-3">
-                {categories.map(cat => (
-                    <button
-                        key={cat.id}
-                        onClick={() => setSelectedCategory(cat.id as 'DSA' | 'CS Core' | 'System Design')}
-                        className={`p-5 rounded-4xl border transition-all text-left flex flex-col justify-between h-36 ${selectedCategory === cat.id
-                            ? 'bg-surface-light dark:bg-surface-dark border-accent shadow-luxury ring-1 ring-accent/20'
-                            : 'bg-surface-light dark:bg-surface-dark border-border-light dark:border-border-dark opacity-60'
-                            }`}
-                    >
-                        <cat.icon className={`w-7 h-7 ${selectedCategory === cat.id ? 'text-accent' : 'text-silver'}`} />
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-heading-light dark:text-text-dark">{cat.label}</p>
-                            <p className="text-[8px] text-silver font-bold mt-1 leading-tight">{cat.desc}</p>
-                        </div>
-                    </button>
-                ))}
-            </div>
-
-            {/* List */}
-            <div className="space-y-4">
-                <div className="flex items-center justify-between px-2">
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-[#847777]/60">Structured Problems</h3>
+        <div className="space-y-6">
+            {/* Header Section with Stats */}
+            <div className="bg-gradient-to-br from-accent/5 via-transparent to-accent/10 rounded-4xl p-6 border border-accent/10">
+                <div className="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 className="text-lg font-black text-heading-light dark:text-text-dark tracking-tight">Practice Reflection</h2>
+                        <p className="text-[10px] text-silver font-bold uppercase tracking-widest mt-1">Manual coding problem tracker</p>
+                    </div>
                     <button
                         onClick={onAdd}
-                        className="p-2.5 bg-accent/10 text-accent rounded-2xl hover:bg-accent/20 transition-all border border-accent/10"
+                        className="flex items-center gap-2 px-5 py-3 bg-accent text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-glow hover:scale-105 active:scale-95 transition-all"
                     >
-                        <Plus className="w-5 h-5" />
+                        <Plus className="w-4 h-4" /> Log Problem
                     </button>
                 </div>
 
-                {filteredProblems.length === 0 ? (
-                    <div className="p-16 text-center bg-surface-light dark:bg-surface-dark rounded-4xl border border-border-light dark:border-border-dark">
-                        <Terminal className="w-12 h-12 text-silver mx-auto mb-4 opacity-20" />
-                        <p className="text-[10px] font-bold text-silver uppercase tracking-widest italic">Analysis required.</p>
+                {/* Quick Stats */}
+                <div className="grid grid-cols-4 gap-3">
+                    <div className="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-border-light dark:border-border-dark text-center">
+                        <p className="text-2xl font-black text-accent">{stats.total}</p>
+                        <p className="text-[8px] font-bold text-silver uppercase tracking-widest">Total</p>
+                    </div>
+                    <div className="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-border-light dark:border-border-dark text-center">
+                        <p className="text-2xl font-black text-green-500">{stats.mastered}</p>
+                        <p className="text-[8px] font-bold text-silver uppercase tracking-widest">Mastered</p>
+                    </div>
+                    <div className="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-border-light dark:border-border-dark text-center">
+                        <p className="text-2xl font-black text-orange-500">{stats.needsReview}</p>
+                        <p className="text-[8px] font-bold text-silver uppercase tracking-widest">Review</p>
+                    </div>
+                    <div className="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-border-light dark:border-border-dark text-center">
+                        <p className="text-2xl font-black text-blue-500">{stats.thisWeek}</p>
+                        <p className="text-[8px] font-bold text-silver uppercase tracking-widest">This Week</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Search & Filter Bar */}
+            <div className="space-y-4">
+                <div className="flex gap-3">
+                    <div className="flex-1 relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-silver group-focus-within:text-accent transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="Search by title, ID, or topic..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-11 pr-4 py-3.5 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl text-sm font-medium placeholder:text-silver/50 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all"
+                        />
+                    </div>
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`p-3.5 rounded-2xl border transition-all ${showFilters
+                            ? 'bg-accent text-white border-accent'
+                            : 'bg-surface-light dark:bg-surface-dark border-border-light dark:border-border-dark text-silver hover:text-accent hover:border-accent/30'}`}
+                    >
+                        <Filter className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Expandable Filters */}
+                <AnimatePresence>
+                    {showFilters && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                        >
+                            <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-3xl border border-border-light dark:border-border-dark space-y-4">
+                                {/* Platform Filter */}
+                                <div>
+                                    <p className="text-[9px] font-black text-silver uppercase tracking-widest mb-2">Platform</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button
+                                            onClick={() => setFilterPlatform('all')}
+                                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${filterPlatform === 'all' ? 'bg-accent text-white' : 'bg-white-smoke dark:bg-background-dark text-silver hover:text-accent'}`}
+                                        >
+                                            All
+                                        </button>
+                                        {platforms.map(p => (
+                                            <button
+                                                key={p.id}
+                                                onClick={() => setFilterPlatform(p.id as typeof filterPlatform)}
+                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${filterPlatform === p.id ? 'bg-accent text-white' : 'bg-white-smoke dark:bg-background-dark text-silver hover:text-accent'}`}
+                                            >
+                                                {p.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Difficulty Filter */}
+                                <div>
+                                    <p className="text-[9px] font-black text-silver uppercase tracking-widest mb-2">Difficulty</p>
+                                    <div className="flex gap-2">
+                                        {['all', 'easy', 'medium', 'hard'].map(d => (
+                                            <button
+                                                key={d}
+                                                onClick={() => setFilterDifficulty(d as typeof filterDifficulty)}
+                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${filterDifficulty === d ? 'bg-accent text-white' : 'bg-white-smoke dark:bg-background-dark text-silver hover:text-accent'}`}
+                                            >
+                                                {d === 'all' ? 'All' : d}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Review Status Filter */}
+                                <div>
+                                    <p className="text-[9px] font-black text-silver uppercase tracking-widest mb-2">Review Status</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {[
+                                            { id: 'all', label: 'All' },
+                                            { id: 'not-reviewed', label: 'Not Reviewed' },
+                                            { id: 'needs-review', label: 'Needs Review' },
+                                            { id: 'mastered', label: 'Mastered' }
+                                        ].map(s => (
+                                            <button
+                                                key={s.id}
+                                                onClick={() => setFilterReviewStatus(s.id as typeof filterReviewStatus)}
+                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${filterReviewStatus === s.id ? 'bg-accent text-white' : 'bg-white-smoke dark:bg-background-dark text-silver hover:text-accent'}`}
+                                            >
+                                                {s.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Reflection Cards */}
+            <div className="space-y-4">
+                {filteredReflections.length === 0 ? (
+                    <div className="p-16 text-center bg-surface-light dark:bg-surface-dark rounded-4xl border border-dashed border-border-light dark:border-border-dark">
+                        <Lightbulb className="w-12 h-12 text-accent/30 mx-auto mb-4" />
+                        <p className="text-sm font-bold text-subtext-light dark:text-subtext-dark">No reflections yet</p>
+                        <p className="text-[10px] text-silver uppercase tracking-widest mt-2">Log your first solved problem to start tracking</p>
+                        <button
+                            onClick={onAdd}
+                            className="mt-6 px-6 py-3 bg-accent/10 text-accent rounded-2xl text-[10px] font-black uppercase tracking-widest border border-accent/20 hover:bg-accent/20 transition-all"
+                        >
+                            <Plus className="w-4 h-4 inline mr-2" /> Add First Reflection
+                        </button>
                     </div>
                 ) : (
-                    <div className="space-y-3">
-                        {filteredProblems.map((prob) => {
-                            const isExpanded = expandedProblemId === prob.id;
-                            return (
-                                <motion.div
-                                    key={prob.id}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.98 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    className={`bg-surface-light dark:bg-surface-dark rounded-3xl border transition-all overflow-hidden ${isExpanded ? 'border-accent shadow-luxury ring-1 ring-accent/10' : 'border-border-light dark:border-border-dark'
-                                        }`}
+                    filteredReflections.map((reflection) => {
+                        const isExpanded = expandedCardId === reflection.id;
+                        return (
+                            <motion.div
+                                key={reflection.id}
+                                layout
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className={`bg-surface-light dark:bg-surface-dark rounded-3xl border overflow-hidden transition-all ${isExpanded
+                                    ? 'border-accent shadow-luxury ring-1 ring-accent/10'
+                                    : 'border-border-light dark:border-border-dark hover:border-accent/30'}`}
+                            >
+                                {/* Card Header - Always Visible */}
+                                <div
+                                    className="p-5 cursor-pointer"
+                                    onClick={() => setExpandedCardId(isExpanded ? null : reflection.id)}
                                 >
-                                    <div className="p-5 flex items-center justify-between cursor-pointer" onClick={() => setExpandedProblemId(isExpanded ? null : prob.id)}>
-                                        <div className="flex items-center gap-4">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    store.updateDSAProblem(prob.id, { status: prob.status === 'solved' ? 'review' : 'solved' });
-                                                }}
-                                                className={`transition-all ${prob.status === 'solved' ? 'text-green-500 scale-110' : 'text-silver hover:text-accent'}`}
-                                            >
-                                                {prob.status === 'solved' ? <CheckCircle2 className="w-6 h-6 shadow-glow rounded-full" /> : <Circle className="w-6 h-6" />}
-                                            </button>
-                                            <div>
-                                                <h4 className={`text-sm font-black tracking-tight text-heading-light dark:text-text-dark ${prob.status === 'solved' ? 'opacity-40' : ''}`}>{prob.title}</h4>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${prob.difficulty === 'easy' ? 'bg-green-100 text-green-600' :
-                                                        prob.difficulty === 'medium' ? 'bg-orange-100 text-orange-600' : 'bg-red-100 text-red-600'
-                                                        }`}>
-                                                        {prob.difficulty}
-                                                    </span>
-                                                    <span className="text-[8px] text-silver font-bold uppercase tracking-widest">{selectedCategory}</span>
+                                    <div className="flex items-start gap-4">
+                                        {/* Platform Badge */}
+                                        <div className={`w-12 h-12 ${getPlatformColor(reflection.platform)} rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0`}>
+                                            <Code2 className="w-6 h-6" />
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div>
+                                                    <h4 className="font-black text-heading-light dark:text-text-dark tracking-tight line-clamp-1">
+                                                        {reflection.title || `Problem #${reflection.problemId}`}
+                                                    </h4>
+                                                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                                                        <span className="text-[9px] font-bold text-silver uppercase tracking-wider">
+                                                            {reflection.platform} • #{reflection.problemId}
+                                                        </span>
+                                                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${getDifficultyStyle(reflection.difficulty)}`}>
+                                                            {reflection.difficulty}
+                                                        </span>
+                                                    </div>
                                                 </div>
+                                                <ChevronRight className={`w-5 h-5 text-silver flex-shrink-0 transition-transform duration-300 ${isExpanded ? 'rotate-90 text-accent' : ''}`} />
+                                            </div>
+
+                                            {/* Topics Tags */}
+                                            {reflection.topics && reflection.topics.length > 0 && (
+                                                <div className="flex flex-wrap gap-1.5 mt-3">
+                                                    {reflection.topics.slice(0, 4).map((topic, idx) => (
+                                                        <span
+                                                            key={idx}
+                                                            className="px-2 py-1 bg-accent/10 text-accent text-[9px] font-bold rounded-lg"
+                                                        >
+                                                            {topic}
+                                                        </span>
+                                                    ))}
+                                                    {reflection.topics.length > 4 && (
+                                                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-silver text-[9px] font-bold rounded-lg">
+                                                            +{reflection.topics.length - 4}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Quick Info Row */}
+                                            <div className="flex items-center gap-4 mt-3 text-[10px] text-silver">
+                                                <span className="flex items-center gap-1">
+                                                    <Calendar className="w-3 h-3" />
+                                                    {reflection.dateSolved ? new Date(reflection.dateSolved).toLocaleDateString() : 'Today'}
+                                                </span>
+                                                {reflection.timeSpent && (
+                                                    <span className="flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" />
+                                                        {reflection.timeSpent} min
+                                                    </span>
+                                                )}
+                                                <span className={`px-2 py-0.5 rounded-md text-[8px] font-bold uppercase ${getReviewStatusStyle(reflection.reviewStatus)}`}>
+                                                    {reflection.reviewStatus.replace('-', ' ')}
+                                                </span>
                                             </div>
                                         </div>
-                                        <ChevronRight className={`w-4 h-4 text-silver transition-transform duration-300 ${isExpanded ? 'rotate-90 text-accent' : ''}`} />
                                     </div>
+                                </div>
 
-                                    <AnimatePresence>
-                                        {isExpanded && (
-                                            <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: 'auto', opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                className="border-t border-border-light dark:border-border-dark bg-white-smoke/30 dark:bg-background-dark/30 p-5 px-6 space-y-5"
-                                            >
+                                {/* Expanded Content */}
+                                <AnimatePresence>
+                                    {isExpanded && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="border-t border-border-light dark:border-border-dark"
+                                        >
+                                            <div className="p-5 space-y-5 bg-white-smoke/30 dark:bg-background-dark/30">
+                                                {/* What I Learned */}
                                                 <div className="space-y-2">
                                                     <p className="text-[9px] font-black text-accent uppercase tracking-widest flex items-center gap-1.5">
-                                                        <Edit2 className="w-3 h-3" /> Critical Notes
+                                                        <Lightbulb className="w-3 h-3" /> What I Learned
                                                     </p>
                                                     <textarea
-                                                        className="w-full bg-transparent text-[11px] font-medium leading-relaxed text-subtext-light dark:text-subtext-dark focus:outline-none min-h-[60px] resize-none"
-                                                        placeholder="Thinking process & patterns..."
-                                                        defaultValue={prob.notes}
-                                                        onBlur={(e) => store.updateDSAProblem(prob.id, { notes: e.target.value })}
+                                                        className="w-full bg-surface-light dark:bg-surface-dark text-[11px] font-medium leading-relaxed text-subtext-light dark:text-subtext-dark focus:outline-none focus:ring-2 focus:ring-accent/20 min-h-[80px] resize-none p-3 rounded-xl border border-border-light dark:border-border-dark"
+                                                        placeholder="Key insight, algorithm used, mistakes made, optimization learned..."
+                                                        defaultValue={reflection.whatILearned}
+                                                        onBlur={(e) => store.updateDSAProblem(reflection.id, { whatILearned: e.target.value })}
                                                     />
                                                 </div>
+
+                                                {/* Comparison Notes */}
                                                 <div className="space-y-2">
-                                                    <p className="text-[9px] font-black text-rose-500/60 uppercase tracking-widest flex items-center gap-1.5">
-                                                        <AlertCircle className="w-3 h-3" /> Mistakes & Learnings
+                                                    <p className="text-[9px] font-black text-blue-500/70 uppercase tracking-widest flex items-center gap-1.5">
+                                                        <FileText className="w-3 h-3" /> Comparison Notes (Optional)
                                                     </p>
                                                     <textarea
-                                                        className="w-full bg-transparent text-[11px] font-medium leading-relaxed text-subtext-light dark:text-subtext-dark focus:outline-none min-h-[60px] resize-none"
-                                                        placeholder="What went wrong? What did you discover?"
-                                                        defaultValue={prob.learnings}
-                                                        onBlur={(e) => store.updateDSAProblem(prob.id, { learnings: e.target.value })}
+                                                        className="w-full bg-surface-light dark:bg-surface-dark text-[11px] font-medium leading-relaxed text-subtext-light dark:text-subtext-dark focus:outline-none focus:ring-2 focus:ring-accent/20 min-h-[60px] resize-none p-3 rounded-xl border border-border-light dark:border-border-dark"
+                                                        placeholder="How does this relate to similar problems on other platforms?"
+                                                        defaultValue={reflection.comparisonNotes || ''}
+                                                        onBlur={(e) => store.updateDSAProblem(reflection.id, { comparisonNotes: e.target.value })}
                                                     />
                                                 </div>
-                                                <div className="pt-2 flex justify-end">
-                                                    <button className="text-[9px] font-black text-accent uppercase tracking-widest border-b border-accent pb-0.5">
-                                                        Lock Observation
-                                                    </button>
+
+                                                {/* Topic Tags Editor */}
+                                                <div className="space-y-2">
+                                                    <p className="text-[9px] font-black text-silver uppercase tracking-widest">Topics / Patterns</p>
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {availableTopics.map(topic => {
+                                                            const isSelected = reflection.topics?.includes(topic);
+                                                            return (
+                                                                <button
+                                                                    key={topic}
+                                                                    onClick={() => {
+                                                                        const newTopics = isSelected
+                                                                            ? reflection.topics.filter(t => t !== topic)
+                                                                            : [...(reflection.topics || []), topic];
+                                                                        store.updateDSAProblem(reflection.id, { topics: newTopics });
+                                                                    }}
+                                                                    className={`px-2.5 py-1 rounded-lg text-[9px] font-bold transition-all ${isSelected
+                                                                        ? 'bg-accent text-white'
+                                                                        : 'bg-white-smoke dark:bg-background-dark text-silver hover:text-accent hover:bg-accent/10 border border-border-light dark:border-border-dark'}`}
+                                                                >
+                                                                    {topic}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
                                                 </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
+
+                                                {/* Review Status Selector */}
+                                                <div className="space-y-2">
+                                                    <p className="text-[9px] font-black text-silver uppercase tracking-widest">Review Status</p>
+                                                    <div className="flex gap-2">
+                                                        {[
+                                                            { id: 'not-reviewed', label: 'Not Reviewed', icon: Circle },
+                                                            { id: 'needs-review', label: 'Needs Review', icon: AlertCircle },
+                                                            { id: 'mastered', label: 'Mastered', icon: CheckCircle2 }
+                                                        ].map(status => {
+                                                            const isActive = reflection.reviewStatus === status.id;
+                                                            return (
+                                                                <button
+                                                                    key={status.id}
+                                                                    onClick={() => store.updateDSAProblem(reflection.id, { reviewStatus: status.id as PracticeReflection['reviewStatus'] })}
+                                                                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${isActive
+                                                                        ? getReviewStatusStyle(status.id) + ' border-current'
+                                                                        : 'bg-white-smoke dark:bg-background-dark text-silver border-border-light dark:border-border-dark hover:border-accent/30'}`}
+                                                                >
+                                                                    <status.icon className="w-4 h-4" />
+                                                                    {status.label.split(' ')[0]}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+
+                                                {/* Time & Link */}
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div className="space-y-1.5">
+                                                        <p className="text-[9px] font-black text-silver uppercase tracking-widest">Time Spent (min)</p>
+                                                        <input
+                                                            type="number"
+                                                            className="w-full bg-surface-light dark:bg-surface-dark text-[11px] font-medium p-3 rounded-xl border border-border-light dark:border-border-dark focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                                            placeholder="e.g. 45"
+                                                            defaultValue={reflection.timeSpent || ''}
+                                                            onBlur={(e) => store.updateDSAProblem(reflection.id, { timeSpent: parseInt(e.target.value) || undefined })}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <p className="text-[9px] font-black text-silver uppercase tracking-widest">Problem Link</p>
+                                                        <input
+                                                            type="url"
+                                                            className="w-full bg-surface-light dark:bg-surface-dark text-[11px] font-medium p-3 rounded-xl border border-border-light dark:border-border-dark focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                                            placeholder="https://..."
+                                                            defaultValue={reflection.link || ''}
+                                                            onBlur={(e) => store.updateDSAProblem(reflection.id, { link: e.target.value })}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Action Buttons */}
+                                                <div className="flex items-center justify-between pt-3 border-t border-border-light dark:border-border-dark">
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => store.duplicateDSAProblem(reflection.id)}
+                                                            className="flex items-center gap-1.5 px-4 py-2 bg-white-smoke dark:bg-background-dark text-silver rounded-xl text-[10px] font-bold uppercase tracking-wider hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all border border-border-light dark:border-border-dark"
+                                                        >
+                                                            <Copy className="w-3.5 h-3.5" /> Duplicate
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                if (confirm('Delete this reflection?')) {
+                                                                    store.deleteDSAProblem(reflection.id);
+                                                                }
+                                                            }}
+                                                            className="flex items-center gap-1.5 px-4 py-2 bg-white-smoke dark:bg-background-dark text-silver rounded-xl text-[10px] font-bold uppercase tracking-wider hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all border border-border-light dark:border-border-dark"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" /> Delete
+                                                        </button>
+                                                    </div>
+                                                    {reflection.link && (
+                                                        <button
+                                                            onClick={() => window.open(reflection.link, '_blank')}
+                                                            className="flex items-center gap-1.5 px-4 py-2 bg-accent/10 text-accent rounded-xl text-[10px] font-bold uppercase tracking-wider hover:bg-accent/20 transition-all"
+                                                        >
+                                                            <ExternalLink className="w-3.5 h-3.5" /> Open Problem
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
+                        );
+                    })
                 )}
             </div>
         </div>
     );
 }
 
+
 // --- SECTION 3: VIDEO RESOURCE LIBRARY ---
 function VideoLibrarySection({ store, onAdd }: { store: LifeTrackerStore; onAdd: () => void }) {
+    const { logBlockedAttempt, checkKeywords, checkUrl } = useContentProtection();
     const state = store.getState();
     const videos: VideoResource[] = state.videoResources;
     const [searchQuery, setSearchQuery] = useState('');
@@ -628,7 +954,18 @@ function VideoLibrarySection({ store, onAdd }: { store: LifeTrackerStore; onAdd:
                         type="text"
                         placeholder="Search Intel & Archives..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (val.trim()) {
+                                const keywordResult = checkKeywords(val);
+                                if (keywordResult.blocked) {
+                                    alert(`Search Blocked: ${keywordResult.reason}`);
+                                    logBlockedAttempt(undefined, val, keywordResult.reason);
+                                    return;
+                                }
+                            }
+                            setSearchQuery(val);
+                        }}
                         className="w-full pl-12 pr-6 py-4 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl text-sm font-bold placeholder:text-silver/50 focus:outline-none focus:ring-2 focus:ring-accent/10 transition-all shadow-soft"
                     />
                 </div>
@@ -754,7 +1091,16 @@ function VideoLibrarySection({ store, onAdd }: { store: LifeTrackerStore; onAdd:
                                             </button>
                                         )}
                                         <button
-                                            onClick={() => video.url && window.open(video.url, '_blank')}
+                                            onClick={() => {
+                                                if (!video.url) return;
+                                                const protectionResult = checkUrl(video.url);
+                                                if (protectionResult.blocked) {
+                                                    alert(`Access Blocked: ${protectionResult.reason}`);
+                                                    logBlockedAttempt(video.url, undefined, protectionResult.reason);
+                                                    return;
+                                                }
+                                                window.open(video.url, '_blank');
+                                            }}
                                             className="py-4 bg-white-smoke dark:bg-background-dark border border-border-light dark:border-border-dark text-accent rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-elegant hover:shadow-luxury transition-all flex items-center justify-center gap-2"
                                         >
                                             Launch <ExternalLink className="w-4 h-4" />
@@ -890,6 +1236,7 @@ function ProjectsVaultSection({ store, onAdd }: { store: LifeTrackerStore; onAdd
 
 // --- SECTION 5: KNOWLEDGE BASE ---
 function KnowledgeBaseSection({ store, onAddConcept, onAddLog, onAddJournal }: { store: LifeTrackerStore; onAddConcept: () => void; onAddLog: () => void; onAddJournal: () => void }) {
+    const { logBlockedAttempt, checkKeywords } = useContentProtection();
     const state = store.getState();
     const [selectedType, setSelectedType] = useState<'Concept' | 'Debug' | 'Daily'>('Concept');
 
@@ -910,6 +1257,17 @@ function KnowledgeBaseSection({ store, onAddConcept, onAddLog, onAddJournal }: {
                 <input
                     type="text"
                     placeholder="Search Knowledge Base / Logs / Daily..."
+                    onChange={(e) => {
+                        const val = e.target.value;
+                        if (val.trim()) {
+                            const keywordResult = checkKeywords(val);
+                            if (keywordResult.blocked) {
+                                alert(`Search Blocked: ${keywordResult.reason}`);
+                                logBlockedAttempt(undefined, val, keywordResult.reason);
+                                return;
+                            }
+                        }
+                    }}
                     className="w-full pl-12 pr-6 py-4 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl text-sm font-bold placeholder:text-silver/50 focus:outline-none focus:ring-2 focus:ring-accent/10 transition-all shadow-soft"
                 />
             </div>
@@ -1291,6 +1649,7 @@ function AddContentOverlay({
     store: LifeTrackerStore;
     activePathId?: string;
 }) {
+    const { logBlockedAttempt, checkKeywords, checkUrl } = useContentProtection();
     const [formData, setFormData] = useState<ContentFormData>({
         title: '',
         content: '',
@@ -1308,6 +1667,32 @@ function AddContentOverlay({
             return;
         }
 
+        // Content Protection Check
+        // Check Keywords in Title and Content
+        const titleResult = checkKeywords(formData.title);
+        const contentResult = checkKeywords(formData.content);
+
+        if (titleResult.blocked) {
+            alert(`Content Blocked: ${titleResult.reason}`);
+            logBlockedAttempt(undefined, formData.title, titleResult.reason);
+            return;
+        }
+        if (contentResult.blocked) {
+            alert(`Content Blocked: ${contentResult.reason}`);
+            logBlockedAttempt(undefined, formData.content, contentResult.reason);
+            return;
+        }
+
+        // Check URL if applicable
+        if (formData.url) {
+            const urlResult = checkUrl(formData.url);
+            if (urlResult.blocked) {
+                alert(`URL Blocked: ${urlResult.reason}`);
+                logBlockedAttempt(formData.url, undefined, urlResult.reason);
+                return;
+            }
+        }
+
         switch (type) {
             case 'paths': {
                 if (!activePathId) return;
@@ -1323,11 +1708,14 @@ function AddContentOverlay({
             }
             case 'dsa':
                 store.addDSAProblem({
+                    platform: 'LeetCode',
+                    problemId: formData.title.split(' ')[0] || '1',
                     title: formData.title,
                     difficulty: formData.difficulty,
-                    category: formData.category,
-                    status: 'review',
-                    notes: formData.content
+                    topics: formData.techStack || [],
+                    whatILearned: formData.content || '',
+                    reviewStatus: 'not-reviewed',
+                    status: 'solved'
                 });
                 break;
             case 'videos':

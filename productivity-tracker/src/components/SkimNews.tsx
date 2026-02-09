@@ -4,11 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Search, Zap, Cpu, Briefcase, Palette, Rocket, TrendingUp,
     ArrowLeft, Settings, X, Plus, Check, Loader2, Sparkles,
-    ExternalLink
+    ExternalLink, ShieldAlert
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { searchNews, fetchTopHeadlines } from '../services/newsService';
 import type { NewsArticle } from '../services/newsService';
+import { useContentProtection } from '../contexts/ContentProtectionContext';
 
 // ============================================
 // DEFAULT TOPICS (Core 6)
@@ -29,6 +30,7 @@ const DEFAULT_TOPICS = [
 
 export default function SkimNews() {
     const navigate = useNavigate();
+    const { logBlockedAttempt, checkKeywords, checkUrl } = useContentProtection();
 
     // State
     const [allTopics, setAllTopics] = useState(DEFAULT_TOPICS);
@@ -36,12 +38,14 @@ export default function SkimNews() {
     const [articles, setArticles] = useState<NewsArticle[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [error, setError] = useState<string | null>(null);
 
     // Customization State
     const [showCustomize, setShowCustomize] = useState(false);
     const [newTopicInput, setNewTopicInput] = useState('');
     const [customTopics, setCustomTopics] = useState<string[]>([]);
 
+    // ... (useEffect for local storage and topics building remain same)
     // Load saved custom topics from localStorage
     useEffect(() => {
         const saved = localStorage.getItem('skim-news-custom-topics');
@@ -66,10 +70,7 @@ export default function SkimNews() {
         setAllTopics([...DEFAULT_TOPICS, ...customTopicItems]);
     }, [customTopics]);
 
-    // ============================================
-    // LOOPING TOPICS - Selected first, others follow
-    // ============================================
-
+    // ... (useMemo for orderedTopics remains same)
     const orderedTopics = useMemo(() => {
         const activeIndex = allTopics.findIndex(t => t.id === activeTopicId);
         if (activeIndex === -1) return allTopics;
@@ -81,9 +82,6 @@ export default function SkimNews() {
         ];
     }, [allTopics, activeTopicId]);
 
-    // ============================================
-    // SEARCH HANDLER
-    // ============================================
 
     // ============================================
     // LOAD NEWS FUNCTION
@@ -92,10 +90,20 @@ export default function SkimNews() {
     const loadNews = useCallback(async () => {
         setLoading(true);
         setArticles([]);
+        setError(null);
 
         try {
             const activeTopic = allTopics.find(t => t.id === activeTopicId);
             const query = activeTopic?.label || 'technology';
+
+            // Check if Topic Label is blocked (e.g. if custom topic was somehow added before block)
+            const protectionResult = checkKeywords(query);
+            if (protectionResult.blocked) {
+                setError(`Topic blocked: ${protectionResult.reason}`);
+                logBlockedAttempt(query, 'topic', protectionResult.reason);
+                setLoading(false);
+                return;
+            }
 
             const results = await searchNews(query);
 
@@ -107,10 +115,11 @@ export default function SkimNews() {
             }
         } catch (error) {
             console.error('Failed to load news:', error);
+            setError('Failed to load news');
         } finally {
             setLoading(false);
         }
-    }, [activeTopicId, allTopics]);
+    }, [activeTopicId, allTopics, checkKeywords, logBlockedAttempt]);
 
     // Load news when topic changes
     useEffect(() => {
@@ -121,25 +130,33 @@ export default function SkimNews() {
         e.preventDefault();
         if (!searchQuery.trim()) return;
 
+        // Content Protection Check
+        const protectionResult = checkKeywords(searchQuery);
+        if (protectionResult.blocked) {
+            setError(`Search blocked: ${protectionResult.reason}`);
+            logBlockedAttempt(searchQuery, 'keyword', protectionResult.reason);
+            return;
+        }
+
         setLoading(true);
+        setError(null);
 
         try {
             const results = await searchNews(searchQuery);
             setArticles(results.slice(0, 10));
         } catch (error) {
             console.error('Search failed:', error);
+            setError('Search failed');
         } finally {
             setLoading(false);
         }
     };
 
-    // ============================================
-    // TOPIC SELECTION - Looping behavior
-    // ============================================
-
+    // ... (selectTopic remains same)
     const selectTopic = (topicId: string) => {
         setActiveTopicId(topicId);
         setSearchQuery('');
+        setError(null);
     };
 
     // ============================================
@@ -148,6 +165,15 @@ export default function SkimNews() {
 
     const addCustomTopic = () => {
         if (!newTopicInput.trim()) return;
+
+        // Content Protection Check
+        const protectionResult = checkKeywords(newTopicInput);
+        if (protectionResult.blocked) {
+            alert(`Topic blocked: ${protectionResult.reason}`); // Simple alert for modal
+            logBlockedAttempt(newTopicInput, 'topic', protectionResult.reason);
+            return;
+        }
+
         if (customTopics.includes(newTopicInput.trim())) return;
 
         const updated = [...customTopics, newTopicInput.trim()];
@@ -175,6 +201,12 @@ export default function SkimNews() {
 
     // Open external link
     const openArticle = (url: string) => {
+        const protectionResult = checkUrl(url);
+        if (protectionResult.blocked) {
+            logBlockedAttempt(url, undefined, protectionResult.reason);
+            alert(`Access Blocked: ${protectionResult.reason}`);
+            return;
+        }
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
@@ -259,6 +291,12 @@ export default function SkimNews() {
                         <div className="flex flex-col items-center justify-center py-20">
                             <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-3" />
                             <p className="text-gray-500 text-sm">Loading news...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="flex flex-col items-center justify-center py-20">
+                            <ShieldAlert className="w-12 h-12 text-red-500 mb-3" />
+                            <h3 className="text-lg font-semibold text-gray-700 mb-1">Content Blocked</h3>
+                            <p className="text-gray-500 text-sm">{error}</p>
                         </div>
                     ) : articles.length > 0 ? (
                         <motion.div

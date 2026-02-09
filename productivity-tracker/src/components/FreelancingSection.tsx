@@ -10,6 +10,8 @@ import {
     CheckSquare, Square
 } from 'lucide-react';
 import { THEME_CLASSES, LUXURY_ANIMATIONS } from '../utils/theme';
+import { useContentProtection } from '../contexts/ContentProtectionContext';
+import { checkUrl, checkKeywords } from '../services/contentFilter';
 
 interface ExternalAccount {
     id: string;
@@ -53,6 +55,7 @@ const ACCOUNT_TYPES: { id: ExternalAccount['type'], label: string, icon: typeof 
 
 const FreelancingSection: React.FC = () => {
     const navigate = useNavigate();
+    const { settings, logBlockedAttempt } = useContentProtection();
     const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'identity'>('overview');
 
     // State
@@ -377,7 +380,17 @@ const FreelancingSection: React.FC = () => {
                                                     </div>
                                                 </div>
                                                 <button
-                                                    onClick={() => window.open(acc.url, '_blank')}
+                                                    onClick={() => {
+                                                        if (settings.protectionLevel !== 'off') {
+                                                            const protectionResult = checkUrl(acc.url, settings.protectionLevel, settings.customBlockedDomains);
+                                                            if (protectionResult.blocked) {
+                                                                alert(`Access Blocked: ${protectionResult.reason}`);
+                                                                logBlockedAttempt(acc.url, undefined, protectionResult.reason);
+                                                                return;
+                                                            }
+                                                        }
+                                                        window.open(acc.url, '_blank');
+                                                    }}
                                                     className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all"
                                                 >
                                                     <ExternalLink className="w-4 h-4 text-subtext-light dark:text-subtext-dark" />
@@ -440,6 +453,7 @@ const FreelancingSection: React.FC = () => {
 
 // Sub-components (Modals)
 const AccountModal: React.FC<{ onClose: () => void, onSave: (acc: Omit<ExternalAccount, 'id'>) => void }> = ({ onClose, onSave }) => {
+    const { settings, logBlockedAttempt } = useContentProtection();
     const [name, setName] = useState('');
     const [type, setType] = useState<ExternalAccount['type']>('marketplace');
     const [url, setUrl] = useState('');
@@ -488,7 +502,32 @@ const AccountModal: React.FC<{ onClose: () => void, onSave: (acc: Omit<ExternalA
                     </div>
 
                     <button
-                        onClick={() => onSave({ name, type, url, strategyNotes: notes })}
+                        onClick={() => {
+                            if (settings.protectionLevel !== 'off') {
+                                // Check Keywords in Name and Notes
+                                const nameResult = checkKeywords(name, settings.protectionLevel, settings.customBlockedKeywords);
+                                const notesResult = checkKeywords(notes, settings.protectionLevel, settings.customBlockedKeywords);
+                                if (nameResult.blocked) {
+                                    alert(`Content Blocked: ${nameResult.reason}`);
+                                    logBlockedAttempt(undefined, name, nameResult.reason);
+                                    return;
+                                }
+                                if (notesResult.blocked) {
+                                    alert(`Content Blocked: ${notesResult.reason}`);
+                                    logBlockedAttempt(undefined, notes, notesResult.reason);
+                                    return;
+                                }
+
+                                // Check URL
+                                const urlResult = checkUrl(url, settings.protectionLevel, settings.customBlockedDomains);
+                                if (urlResult.blocked) {
+                                    alert(`URL Blocked: ${urlResult.reason}`);
+                                    logBlockedAttempt(url, undefined, urlResult.reason);
+                                    return;
+                                }
+                            }
+                            onSave({ name, type, url, strategyNotes: notes });
+                        }}
                         className={`w-full py-5 rounded-2xl font-black ${THEME_CLASSES.BTN_PRIMARY}`}
                     >
                         Save Identity

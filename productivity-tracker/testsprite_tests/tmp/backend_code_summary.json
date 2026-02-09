@@ -1,0 +1,82 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "Firebase Cloud Functions (v2)",
+        "Genkit AI",
+        "Firestore",
+        "Realtime Database",
+        "Firebase Storage",
+        "Supabase",
+        "Zod"
+    ],
+    "features": [
+        {
+            "name": "AI Daily Summary",
+            "description": "Generates AI summaries of user productivity data using Genkit and Supabase stats.",
+            "files": [
+                "functions/src/ai/dailySummary.ts"
+            ],
+            "api_doc": {
+                "openapi": "3.0.0",
+                "info": {
+                    "title": "AI Daily Summary API",
+                    "version": "1.0.0"
+                },
+                "paths": {
+                    "generateDailySummaryCallable": {
+                        "post": {
+                            "summary": "Generate a daily summary",
+                            "requestBody": {
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "date": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "Session Creation Triggers",
+            "description": "Automatically updates user stats and streaks in Firestore when a new session document is created.",
+            "files": [
+                "functions/src/triggers/onSessionCreate.ts"
+            ]
+        },
+        {
+            "name": "Security Rules - Firestore",
+            "description": "Defines access control for user profiles and FCM tokens.",
+            "files": [
+                "firestore.rules"
+            ]
+        },
+        {
+            "name": "Security Rules - Realtime Database",
+            "description": "Global access control for RTDB data.",
+            "files": [
+                "database.rules.json"
+            ]
+        },
+        {
+            "name": "Security Rules - Storage",
+            "description": "Access control for file uploads and downloads.",
+            "files": [
+                "storage.rules"
+            ]
+        }
+    ]
+}

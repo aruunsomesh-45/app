@@ -22,6 +22,7 @@ import {
     type InjuryNote,
     type NextSessionRecommendation
 } from '../utils/workoutStore';
+import { lifeTrackerStore as store } from '../utils/lifeTrackerStore';
 
 // --- Data Definitions ---
 
@@ -317,8 +318,30 @@ export const EditWorkoutLayout: React.FC<{
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [coverImage, setCoverImage] = useState<string | null>(() => {
         const override = getCategoryOverride(initialData.id || title);
-        return override?.img || initialData.image || null;
+        const val = override?.img || initialData.image || null;
+        // If it looks like a path (not data: or http), return null to wait for async resolution
+        if (val && !val.startsWith('data:') && !val.startsWith('http')) return null;
+        return val;
     });
+
+    // Resolve cover image if it's a Supabase path
+    useEffect(() => {
+        const loadCover = async () => {
+            const override = getCategoryOverride(initialData.id || title);
+            const val = override?.img || initialData.image || null;
+
+            if (val && !val.startsWith('data:') && !val.startsWith('http')) {
+                const signedUrl = await store.getPrivateFileUrl('workout-media', val);
+                if (signedUrl) {
+                    setCoverImage(signedUrl);
+                }
+            } else if (val && (val.startsWith('data:') || val.startsWith('http'))) {
+                // Ideally we already set this in useState, but ensuring sync
+                setCoverImage(val);
+            }
+        };
+        loadCover();
+    }, [initialData.id, title, initialData.image]);
 
     // Session tracking state
     const [sessionStartTime] = useState<Date>(new Date());
@@ -372,17 +395,25 @@ export const EditWorkoutLayout: React.FC<{
     }, [exercises]);
 
     // Handle image upload
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64 = reader.result as string;
-                setCoverImage(base64);
-                saveCategoryOverride(initialData.id || title, { img: base64 });
-                window.dispatchEvent(new Event('routinesUpdated'));
-            };
-            reader.readAsDataURL(file);
+            try {
+                // @ts-ignore
+                const path = await store.uploadFile(file, 'workout-media');
+                if (path) {
+                    // Resolve URL immediately for UI
+                    const signedUrl = await store.getPrivateFileUrl('workout-media', path);
+                    if (signedUrl) setCoverImage(signedUrl);
+
+                    // Save PATH to storage
+                    saveCategoryOverride(initialData.id || title, { img: path });
+                    window.dispatchEvent(new Event('routinesUpdated'));
+                }
+            } catch (error) {
+                console.error("Upload failed", error);
+                alert("Failed to upload image");
+            }
         }
     };
 

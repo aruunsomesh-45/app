@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection - users can read/write their own profile
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Users can create their own profile, but role must be 'user' or unset
+      allow create: if request.auth != null && request.auth.uid == userId &&
+                    (!('role' in request.resource.data) || request.resource.data.role == 'user');
+      
+      // Users can update their own profile, but cannot change their role
+      allow update: if request.auth != null && request.auth.uid == userId &&
+                    request.resource.data.role == resource.data.role;
+      
+      // Only admins can read all users (for admin panel)
+      allow read: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      
+      // Only admins can update other users' roles
+      allow update: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+
+      // FCM Tokens subcollection
+      match /fcm_tokens/{tokenId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Default deny for other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

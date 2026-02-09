@@ -1,0 +1,65 @@
+﻿Product Requirements Document (PRD)
+Table of Contents
+1. Problem Statement
+2. Target Audience
+3. User Personas
+4. Core Features and Functionality
+5. Module/Section Breakdown
+6. Sample Learning Paths / User Journeys
+7. Content Style and Format
+8. Monetization Model
+9. Technical Requirements
+10. Success Metrics
+Problem Statement
+Many beginners interested in startups and stock market investing struggle to find a structured, beginner-friendly resource that combines practical guidance and financial literacy. This app aims to solve that gap by offering dual-track learning in an intuitive, accessible format.
+Target Audience
+- Young adults (16â€“30 years)
+- Aspiring entrepreneurs
+- College students
+- Beginner investors with no prior financial education
+User Personas
+1. Riya, 22 â€“ College student curious about startups. Wants to launch a side project but doesn't know how to begin.
+2. Arjun, 28 â€“ Works a full-time job. Interested in investing but confused by stock market jargon and fears taking risks.
+Core Features and Functionality
+- Dual-track content: 'Start a Startup' and 'Stock Market Basics'
+- Interactive lessons (text, audio, video)
+- Progress tracking dashboard
+- Quizzes and mini-certificates
+- Glossary for all technical terms
+- User login & saved progress across devices
+Module/Section Breakdown
+Startup Track (examples):
+  - What is a Startup?
+  - MVP & Product-Market Fit
+  - Funding & Pitching
+  - Legal Structures & Team Roles
+Stock Market Track (examples):
+  - What are Stocks & Funds?
+  - SIPs & Diversification
+  - Technical Analysis (candles, trends)
+  - Market Types & Risk Management
+Sample Learning Paths / User Journeys
+- Onboarding â†’ Choose learning track â†’ Complete modules â†’ Quiz â†’ Unlock next stage
+- Example: User finishes 'What is a Startup?' â†’ takes a quiz â†’ Unlocks 'Startup Ideation'
+Content Style and Format
+- Short lessons (2â€“5 minutes)
+- Mixed media (cards, audio explainers, animated videos)
+- Quizzes every 3 lessons
+- Glossary popups
+- Light/dark mode
+- Gamified achievements (badges, streaks)
+Monetization Model
+- Freemium: Basic modules free
+- Pro version: Unlocks mentorship Q&A, advanced content, or certificate
+- Optional: Ads between lessons (non-intrusive)
+Technical Requirements
+- Platforms: Android, iOS, Web
+- Firebase/Backend for login and sync
+- Local cache for offline access
+- Notifications for streaks and reminders
+Success Metrics
+- Module completion rate
+- Daily/weekly active users
+- Quiz performance trends
+- User retention (D7, D30)
+- Feedback form ratings (content clarity, usefulness)

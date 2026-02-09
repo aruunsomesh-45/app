@@ -2,16 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import NanoBananaAI from './NanoBananaAI';
-import { THEME_CLASSES } from '../utils/theme';
+
+import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../contexts/NotificationContext';
+import Button from './ui/Button';
+import Toast from './ui/Toast';
 
 import {
-    Bell, Bolt, Target, ArrowRight,
+    Bell, Target, ArrowRight,
     Dumbbell, Code, Brain, BookOpen, Cpu,
     Users, Briefcase, Fingerprint, Laptop, Sparkles, TrendingUp,
-    Utensils, Zap, Wind, Timer, MoreVertical,
-    Activity, Heart, Upload, BookPlus, FolderPlus,
-    Flame, Footprints, Plus, Trash2, XCircle, StickyNote, Calendar, LayoutGrid
+    Utensils, Zap, Wind, Timer,
+    Activity, Heart, Moon, Footprints, Plus, XCircle, LayoutGrid, Link as LinkIcon, CheckSquare, Calculator, FileText
 } from 'lucide-react';
+import StepCalculator from './calculators/StepCalculator';
+import SleepCalculator from './calculators/SleepCalculator';
+import GoalAssistant from './GoalAssistant';
+import GoalAssistantWidget from './GoalAssistantWidget';
+import { useLifeTracker } from '../utils/lifeTrackerStore';
+import { getVisibleSections, SECTION_REGISTRY, type InterestCategory, type PrimaryGoal } from '../utils/sectionRegistry';
+
+
+interface Vital {
+    label: string;
+    value: string;
+    icon: React.ElementType;
+    color: string;
+    bg: string;
+}
 
 interface Routine {
     id: string;
@@ -23,6 +41,7 @@ interface Routine {
     desc: string;
     img?: string | null;
     isCustom?: boolean;
+    entries?: any[];
 }
 
 interface LifeArea {
@@ -47,27 +66,17 @@ interface AntiGoal {
     why?: string;
 }
 
-interface DailyNote {
-    id: string;
-    text: string;
-    completed: boolean;
-    type: 'general' | 'meeting' | 'reminder' | 'reflection';
-}
 
-const LifeAreaPill: React.FC<{ icon: React.ElementType, title: string, color: string, indicator?: React.ReactNode }> = ({ icon: Icon, title, color, indicator }) => (
-    <div className="snap-start shrink-0 flex items-center gap-2 pl-3 pr-4 py-2 bg-surface-light dark:bg-surface-dark rounded-full border border-border-light dark:border-border-dark shadow-soft whitespace-nowrap cursor-pointer hover:shadow-elegant transition-all duration-300">
-        <Icon className={`w-5 h-5 ${color}`} />
-        <span className="text-sm font-medium text-text-light dark:text-text-dark">{title}</span>
-        {indicator}
-    </div>
-);
+
+
 
 const STATIC_ROUTINES = [
     { id: 'static-board', title: 'Personal Board', icon: LayoutGrid, color: 'text-gray-800', bg: 'bg-gray-100', link: '/board', desc: 'Widgets', img: '/hero-image.png' },
     { id: 'static-workout', title: 'Workout', icon: Dumbbell, color: 'text-orange-500', bg: 'bg-orange-50', link: '/section/workout', desc: 'Active', img: '/images/section-workout.png' },
     { id: 'static-coding', title: 'Coding', icon: Code, color: 'text-blue-500', bg: 'bg-blue-50', link: '/section/coding', desc: '3 Projects', img: '/images/section-coding.jpg' },
     { id: 'static-meditation', title: 'Meditation', icon: Brain, color: 'text-purple-500', bg: 'bg-purple-50', link: '/section/meditation', desc: '10 min/day', img: '/images/section-meditation.jpg' },
-    { id: 'static-breathwork', title: 'Breathwork', icon: Wind, color: 'text-rose-500', bg: 'bg-rose-50', link: '/section/meditation?type=breathing', desc: 'Active' },
+    { id: 'static-notes', title: 'Insights & Notes', icon: FileText, color: 'text-violet-500', bg: 'bg-violet-50', link: '/section/notes', desc: 'Reflect', img: '/images/section-reading.jpg' },
+    { id: 'static-breathwork', title: 'Breathwork', icon: Wind, color: 'text-rose-500', bg: 'bg-rose-50', link: '/section/meditation?type=breathing', desc: 'Active', img: '/images/section-breathwork.png' },
     { id: 'static-reading', title: 'Reading', icon: BookOpen, color: 'text-yellow-500', bg: 'bg-yellow-50', link: '/section/reading', desc: 'Chapter 4', img: '/images/section-reading.jpg' },
     { id: 'static-networking', title: 'Networking', icon: Users, color: 'text-pink-500', bg: 'bg-pink-50', link: '/section/networking', desc: '2 Sessions', img: '/images/section-teaching.jpg' },
     { id: 'static-ai', title: 'AI', icon: Cpu, color: 'text-teal-500', bg: 'bg-teal-50', link: '/section/ai', desc: 'Learning', img: '/images/section-ai.png' },
@@ -76,20 +85,116 @@ const STATIC_ROUTINES = [
     { id: 'static-freelancing', title: 'Freelancing', icon: Laptop, color: 'text-blue-600', bg: 'bg-blue-50', link: '/section/freelancing', desc: 'Active Gigs', img: '/images/section-freelancing.png' },
     { id: 'static-looksmaxing', title: 'Looksmaxing', icon: Sparkles, color: 'text-rose-500', bg: 'bg-rose-50', link: '/section/looksmaxing', desc: 'Routine', img: '/images/section-looksmaxing-new.png' },
     { id: 'static-market', title: 'Market', icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-50', link: '/section/market', desc: 'Analysis', img: '/images/section-market.png' },
+    { id: 'static-financial-learning', title: 'Wealth Builder', icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-50', link: '/section/finance-learning', desc: 'Startup & Stocks', img: '/images/section-market.png' },
     { id: 'static-cooking', title: 'Cooking', icon: Utensils, color: 'text-red-500', bg: 'bg-red-50', link: '/section/cooking', desc: 'Recipes', img: '/images/section-cooking.png' },
-    { id: 'static-kickboxing', title: 'Kickboxing', icon: Zap, color: 'text-orange-600', bg: 'bg-orange-50', link: '/workout/kickboxing', desc: 'Striking' },
-    { id: 'static-mobility', title: 'Mobility Flow', icon: Wind, color: 'text-sky-500', bg: 'bg-sky-50', link: '/workout/mobility', desc: 'Flexibility' },
-    { id: 'static-endurance', title: 'Endurance Run', icon: Timer, color: 'text-emerald-600', bg: 'bg-emerald-50', link: '/workout/endurance', desc: 'Cardio' },
-    { id: 'static-powerlifting', title: 'Powerlifting', icon: Dumbbell, color: 'text-indigo-600', bg: 'bg-indigo-50', link: '/workout/powerlifting', desc: 'Strength' },
-    { id: 'static-plyometrics', title: 'Plyometrics', icon: Sparkles, color: 'text-amber-500', bg: 'bg-amber-50', link: '/workout/plyometrics', desc: 'Explosive' }
+    { id: 'static-kickboxing', title: 'Kickboxing', icon: Zap, color: 'text-orange-600', bg: 'bg-orange-50', link: '/workout/kickboxing', desc: 'Striking', img: '/images/section-kickboxing.png' },
+    { id: 'static-mobility', title: 'Mobility Flow', icon: Wind, color: 'text-sky-500', bg: 'bg-sky-50', link: '/workout/mobility', desc: 'Flexibility', img: '/images/section-mobility.png' },
+    { id: 'static-endurance', title: 'Endurance Run', icon: Timer, color: 'text-emerald-600', bg: 'bg-emerald-50', link: '/workout/endurance', desc: 'Cardio', img: '/images/track-run.png' },
+    { id: 'static-powerlifting', title: 'Powerlifting', icon: Dumbbell, color: 'text-indigo-600', bg: 'bg-indigo-50', link: '/workout/powerlifting', desc: 'Strength', img: '/images/squat.png' },
+    { id: 'static-plyometrics', title: 'Plyometrics', icon: Sparkles, color: 'text-amber-500', bg: 'bg-amber-50', link: '/workout/plyometrics', desc: 'Explosive', img: '/images/section-plyometrics.png' }
+];
+
+const VITALS_DEFAULT = [
+    { label: 'Energy', value: 'High', icon: Zap, color: 'text-yellow-500', bg: 'bg-yellow-50' },
+    { label: 'Sleep', value: '7.2h', icon: Moon, color: 'text-indigo-500', bg: 'bg-indigo-50' },
+    { label: 'Steps', value: '8.4k', icon: Footprints, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+    { label: 'Focus', value: 'Deep', icon: Target, color: 'text-rose-500', bg: 'bg-rose-50' },
 ];
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+    const { user, isAuthenticated, isAdmin } = useAuth();
+    const store = useLifeTracker();
+    const {
+        requestPermission,
+        permissionGranted,
+        notifyIncompleteAction,
+        checkAndNotifyPendingTasks
+    } = useNotifications();
     const [isNanoBananaOpen, setIsNanoBananaOpen] = useState(false);
-    const [deletingId, setDeletingId] = useState<string | null>(null);
-    const [routines, setRoutines] = useState<Routine[]>(STATIC_ROUTINES);
-    const [currentTime, setCurrentTime] = useState(new Date());
+    const [showWeeklyToast, setShowWeeklyToast] = useState(false);
+    const [isGoalAssistantOpen, setIsGoalAssistantOpen] = useState(false);
+
+    // Request notification permission on first visit
+    useEffect(() => {
+        if (isAuthenticated && !permissionGranted) {
+            // Ask for permission after a short delay
+            const timeout = setTimeout(() => {
+                requestPermission();
+            }, 3000);
+            return () => clearTimeout(timeout);
+        }
+    }, [isAuthenticated, permissionGranted, requestPermission]);
+
+    // Check for pending tasks when dashboard loads
+    useEffect(() => {
+        if (isAuthenticated && permissionGranted) {
+            // Check for pending tasks after data loads
+            const timeout = setTimeout(() => {
+                checkAndNotifyPendingTasks();
+            }, 5000);
+            return () => clearTimeout(timeout);
+        }
+    }, [isAuthenticated, permissionGranted, checkAndNotifyPendingTasks]);
+
+    // Check onboarding and notify if incomplete
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            const storeState = store.getState();
+            const profile = storeState.userProfile;
+
+            if (!profile?.onboardingCompleted && permissionGranted) {
+                // Notify about incomplete onboarding after 10 seconds
+                const timeout = setTimeout(() => {
+                    notifyIncompleteAction(
+                        'Complete Your Setup',
+                        'Personalize your experience by completing the onboarding.',
+                        '/onboarding'
+                    );
+                }, 10000);
+                return () => clearTimeout(timeout);
+            }
+        }
+    }, [isAuthenticated, user, store, permissionGranted, notifyIncompleteAction]);
+
+    useEffect(() => {
+        const checkWeeklyToast = () => {
+            const now = new Date();
+            // Check if it's Monday (1)
+            const isMonday = now.getDay() === 1;
+
+            // For testing/demo purposes, we can uncomment this to force it:
+            // const isMonday = true; 
+
+            if (isMonday) {
+                const todayStr = now.toDateString();
+                const lastShown = localStorage.getItem('lastWeeklyToast');
+                if (lastShown !== todayStr) {
+                    setShowWeeklyToast(true);
+                    localStorage.setItem('lastWeeklyToast', todayStr);
+                }
+            }
+        };
+        checkWeeklyToast();
+    }, []);
+
+
+    // Get time-based greeting
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good Morning';
+        if (hour < 17) return 'Good Afternoon';
+        return 'Good Evening';
+    };
+
+    // Get display name
+    const getDisplayName = () => {
+        if (!isAuthenticated || !user) return 'Guest';
+        return user.displayName || user.email?.split('@')[0] || 'User';
+    };
+
+    const [routines, setRoutines] = useState<Routine[]>([]);
+    const [vitals, setVitals] = useState<Vital[]>(VITALS_DEFAULT);
     const [isEditingLifeAreas, setIsEditingLifeAreas] = useState(false);
     const [lifeAreas, setLifeAreas] = useState<LifeArea[]>(() => {
         const saved = localStorage.getItem('dashboard_life_areas');
@@ -109,62 +214,273 @@ const Dashboard: React.FC = () => {
         setLifeAreas((prev: LifeArea[]) => prev.map((area: LifeArea) => area.id === id ? { ...area, [field]: value } : area));
     };
 
-    useEffect(() => {
-        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-        return () => clearInterval(timer);
-    }, []);
 
-    const [steps, setSteps] = useState(8432);
-    const stepGoal = 10000;
-    const [streak, setStreak] = useState(12);
 
     // Planner Previews
     const [priorities] = useState<Priority[]>(() => JSON.parse(localStorage.getItem('planner_priorities') || '[]'));
     const [antiGoals] = useState<AntiGoal[]>(() => JSON.parse(localStorage.getItem('planner_anti_goals') || '[]'));
-    const [notes] = useState<DailyNote[]>(() => JSON.parse(localStorage.getItem('planner_notes') || '[]'));
-    const [weeklyGoals] = useState<string[]>(() => JSON.parse(localStorage.getItem('planner_weekly_goals') || '[]'));
+
+    // Focus Score State
+    const [focusPeriod, setFocusPeriod] = useState<'Today' | 'Weekly' | 'Monthly'>('Today');
+
+    const [focusData, setFocusData] = useState({
+        Today: { score: 0, data: [65, 75, 84, 80, 72, 84] },
+        Weekly: { score: 0, data: [70, 65, 80, 78, 85, 90, 78] },
+        Monthly: { score: 0, data: [75, 80, 78, 85, 82, 88, 80, 75, 82] }
+    });
+
+    useEffect(() => {
+        const calculateStats = () => {
+            const state = store.getState();
+            const today = new Date().toISOString().split('T')[0];
+
+            // Calculate Today's Stats
+            const dailyTasks = state?.dailyTasks || [];
+            const todayTasks = dailyTasks.filter(t => t.date === today);
+            const goalsCompleted = todayTasks.filter(t => t.completed).length;
+            const totalGoals = todayTasks.length;
+
+            const meditationSessions = state?.meditationSessions || [];
+            const meditationMinutes = meditationSessions
+                .filter((s: { date: string }) => s.date === today)
+                .reduce((acc, s) => acc + (s.duration || 0), 0);
+
+            const sectionLogs = state?.sectionLogs || [];
+            const workouts = sectionLogs
+                .filter((log: { sectionId: string; date: string }) => log.sectionId === 'workout' && log.date === today).length;
+
+            // Simple Focus Score Calculation (0-100)
+            let score = 0;
+            // Goals: up to 40 points
+            if (totalGoals > 0) score += (goalsCompleted / totalGoals) * 40;
+            // Meditation: up to 20 points (20 mins = max)
+            score += Math.min(meditationMinutes / 20, 1) * 20;
+            // Workouts: up to 40 points (1 workout = max)
+            score += Math.min(workouts, 1) * 40;
+
+            const finalScore = Math.round(Math.min(score, 100));
+
+            setFocusData(prev => ({
+                ...prev,
+                Today: {
+                    score: finalScore,
+                    data: [...prev.Today.data.slice(1), finalScore]
+                }
+            }));
+
+            // Update Vitals based on real stats
+            setVitals(prev => prev.map(v => {
+                if (v.label === 'Focus') {
+                    return { ...v, value: finalScore > 80 ? 'Deep' : finalScore > 50 ? 'Flow' : 'Low' };
+                }
+                if (v.label === 'Energy') {
+                    return { ...v, value: workouts > 0 ? 'High' : 'Stable' };
+                }
+                return v;
+            }));
+        };
+
+        calculateStats();
+        // Subscribe to store updates
+        const unsubscribe = store.subscribe(calculateStats);
+        return () => unsubscribe();
+    }, [store]);
+
+    const currentFocus = focusData[focusPeriod];
+
 
     useEffect(() => {
         const loadCustomRoutines = () => {
-            const hidden = JSON.parse(localStorage.getItem('hiddenRoutines') || '[]');
             const customData = localStorage.getItem('customCategories');
 
             let mappedCustom: Routine[] = [];
             if (customData) {
                 const parsed = JSON.parse(customData);
-                mappedCustom = parsed.map((cat: { id: string; title: string; subtitle?: string; img?: string | null }) => {
+                mappedCustom = parsed.map((cat: { id: string; title: string; subtitle?: string; img?: string | null; type?: 'workout' | 'links' | 'checklist' | 'prd-generated'; displayType?: string; entries?: any[] }) => {
                     const key = `category_override_${cat.id}`;
                     const overrideStr = localStorage.getItem(key);
                     const override = overrideStr ? JSON.parse(overrideStr) : null;
 
+                    let Icon = Dumbbell;
+                    let desc = 'Custom Section';
+                    let link = `/section/custom/${cat.id}`;
+                    let defaultImg = null;
+
+                    if (cat.type === 'prd-generated') {
+                        // PRD-generated sections
+                        Icon = Calculator;
+                        desc = cat.displayType || 'AI Generated';
+                        link = `/section/dynamic/${cat.id}`;
+                        if (cat.displayType === 'tracker') defaultImg = '/images/section-workout.png';
+                        else if (cat.displayType === 'calculator') defaultImg = '/images/section-calculator.png';
+                        else if (cat.displayType === 'journal') defaultImg = '/images/section-journal.png';
+                        else if (cat.displayType === 'steps') defaultImg = '/images/section-steps.png';
+                        else defaultImg = '/images/section-ai.png';
+                    } else if (cat.type === 'links') {
+                        Icon = LinkIcon;
+                        desc = 'Links';
+                        defaultImg = '/images/section-links.png';
+                    } else if (cat.type === 'checklist') {
+                        Icon = CheckSquare;
+                        desc = 'Tasks';
+                        defaultImg = '/images/section-checklist.png';
+                    } else {
+                        // Default / Workout
+                        Icon = Dumbbell;
+                        desc = 'Workout';
+                        defaultImg = '/images/section-workout.png';
+                    }
+
                     return {
                         id: cat.id,
                         title: override?.title || cat.title,
-                        icon: Dumbbell,
+                        icon: Icon,
                         color: 'text-indigo-500',
                         bg: 'bg-indigo-50',
-                        link: `/section/custom/${cat.id}`,
-                        desc: cat.subtitle || 'Custom Workout',
-                        img: override?.img || cat.img,
-                        isCustom: true
+                        link,
+                        desc: cat.subtitle || desc,
+                        img: override?.img || cat.img || defaultImg,
+                        isCustom: true,
+                        entries: cat.entries || []
                     };
                 });
             }
 
             setRoutines(() => {
-                const visibleStatic = STATIC_ROUTINES.filter(r => !hidden.includes(r.id)).map(r => {
-                    const key = `category_override_${r.id}`;
-                    const overrideStr = localStorage.getItem(key);
-                    const override = overrideStr ? JSON.parse(overrideStr) : null;
+                const hidden = JSON.parse(localStorage.getItem('hiddenRoutines') || '[]');
 
-                    return {
-                        ...r,
-                        title: override?.title || r.title,
-                        img: override?.img || r.img
-                    };
-                });
-                return [...visibleStatic, ...mappedCustom];
+                // Get user preferences for filtering
+                const profile = store.state.userProfile;
+                const interests: InterestCategory[] = (profile?.userInterests || []) as InterestCategory[];
+                const goal: PrimaryGoal | null = (profile?.primaryGoal || null) as PrimaryGoal | null;
+                const hasCompletedOnboarding = profile?.onboardingCompleted || false;
+
+                let filteredStatic: Routine[];
+
+                if (hasCompletedOnboarding && interests.length > 0) {
+                    // Use section registry to get visible sections based on preferences
+                    const visibleSections = getVisibleSections(interests, goal);
+                    const visibleIds = visibleSections.map(s => s.id);
+
+                    // Map visible sections to routines using STATIC_ROUTINES data
+                    filteredStatic = STATIC_ROUTINES
+                        .filter(r => {
+                            // Map static routine IDs to section registry IDs
+                            const sectionId = r.id.replace('static-', '');
+                            return visibleIds.includes(sectionId) && !hidden.includes(r.id);
+                        })
+                        .map(r => {
+                            const key = `category_override_${r.id}`;
+                            const overrideStr = localStorage.getItem(key);
+                            const override = overrideStr ? JSON.parse(overrideStr) : null;
+                            return {
+                                ...r,
+                                title: override?.title || r.title,
+                                img: override?.img || r.img
+                            };
+                        });
+
+                    // Sort by priority goal matching
+                    if (goal) {
+                        filteredStatic.sort((a, b) => {
+                            const sectionA = SECTION_REGISTRY.find(s => `static-${s.id}` === a.id);
+                            const sectionB = SECTION_REGISTRY.find(s => `static-${s.id}` === b.id);
+                            const aPriority = sectionA?.priorityGoal === goal ? 1 : 0;
+                            const bPriority = sectionB?.priorityGoal === goal ? 1 : 0;
+                            return bPriority - aPriority;
+                        });
+                    }
+                } else {
+                    // No onboarding completed - show all sections (legacy behavior)
+                    filteredStatic = STATIC_ROUTINES.filter(r => !hidden.includes(r.id)).map(r => {
+                        const key = `category_override_${r.id}`;
+                        const overrideStr = localStorage.getItem(key);
+                        const override = overrideStr ? JSON.parse(overrideStr) : null;
+                        return {
+                            ...r,
+                            title: override?.title || r.title,
+                            img: override?.img || r.img
+                        };
+                    });
+                }
+
+                return [...filteredStatic, ...mappedCustom];
             });
+
+            // Calculate dynamic vitals from custom categories
+            if (customData) {
+                const categories = JSON.parse(customData);
+                const today = new Date().toISOString().split('T')[0];
+
+                // 1. Steps Tracker
+                const stepTracker = categories.find((cat: any) =>
+                    (cat.displayType === 'tracker' || cat.displayType === 'steps' || cat.title.toLowerCase().includes('step'))
+                );
+                if (stepTracker && stepTracker.entries) {
+                    const todaySteps = stepTracker.entries
+                        .filter((e: any) => e.timestamp && e.timestamp.startsWith(today))
+                        .reduce((sum: number, e: any) => sum + (Number(e.steps) || 0), 0);
+                    if (todaySteps > 0) {
+                        setVitals(v => v.map(vital =>
+                            vital.label === 'Steps'
+                                ? { ...vital, value: todaySteps >= 1000 ? `${(todaySteps / 1000).toFixed(1)}k` : todaySteps.toString() }
+                                : vital
+                        ));
+                    }
+                }
+
+                // 2. Water Tracker
+                const waterTracker = categories.find((cat: any) =>
+                    (cat.displayType === 'water' || cat.title.toLowerCase().includes('water'))
+                );
+                if (waterTracker && waterTracker.entries) {
+                    const todayWater = waterTracker.entries
+                        .filter((e: any) => e.timestamp && e.timestamp.startsWith(today))
+                        .reduce((sum: number, e: any) => sum + (Number(e.intake) || 0), 0);
+                    if (todayWater > 0) {
+                        setVitals(v => v.map(vital =>
+                            vital.label === 'Water'
+                                ? { ...vital, value: `${(todayWater / 1000).toFixed(1)}L` }
+                                : vital
+                        ));
+                    }
+                }
+
+                // 3. Calorie/Nutrition Tracker
+                const calorieTracker = categories.find((cat: any) =>
+                    (cat.displayType === 'calculator' || cat.displayType === 'nutrition' || cat.title.toLowerCase().includes('calorie'))
+                );
+                if (calorieTracker && calorieTracker.entries) {
+                    const lastEntry = [...calorieTracker.entries].reverse().find((e: any) => e.targetCalories);
+                    if (lastEntry) {
+                        setVitals(v => v.map(vital =>
+                            vital.label === 'Calories'
+                                ? { ...vital, value: lastEntry.targetCalories.toString() }
+                                : vital
+                        ));
+                    }
+                }
+
+                // 4. Reading Tracker
+                const readingTracker = categories.find((cat: any) =>
+                    (cat.displayType === 'reading' || cat.title.toLowerCase().includes('read'))
+                );
+                if (readingTracker && readingTracker.entries) {
+                    const completed = readingTracker.entries.filter((e: any) => e.status === 'Completed').length;
+                    if (completed > 0) {
+                        setVitals(v => {
+                            const hasReading = v.some(vital => vital.label === 'Books');
+                            if (hasReading) {
+                                return v.map(vital =>
+                                    vital.label === 'Books' ? { ...vital, value: completed.toString() } : vital
+                                );
+                            } else {
+                                return [...v, { icon: BookOpen, label: 'Books', value: completed.toString(), color: 'text-amber-500', bg: 'bg-amber-50' }];
+                            }
+                        });
+                    }
+                }
+            }
         };
 
         loadCustomRoutines();
@@ -177,194 +493,152 @@ const Dashboard: React.FC = () => {
         };
     }, []);
 
-    const handleDeleteRoutine = (e: React.MouseEvent, id: string, isCustom: boolean) => {
-        e.stopPropagation();
-        if (isCustom) {
-            const customData = localStorage.getItem('customCategories');
-            if (customData) {
-                const parsed = JSON.parse(customData);
-                const updated = parsed.filter((c: { id: string }) => c.id !== id);
-                localStorage.setItem('customCategories', JSON.stringify(updated));
-                window.dispatchEvent(new Event('routinesUpdated'));
-            }
-        } else {
-            const hidden = JSON.parse(localStorage.getItem('hiddenRoutines') || '[]');
-            localStorage.setItem('hiddenRoutines', JSON.stringify([...hidden, id]));
-            window.dispatchEvent(new Event('routinesUpdated'));
-        }
-        setDeletingId(null);
-    };
+
 
     const handleAddRoutine = () => {
         navigate('/workout/categories/add');
     };
 
     return (
-        <div className="min-h-screen bg-background-light dark:bg-background-dark pb-28 font-sans transition-colors duration-500">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#111] pb-28 font-sans text-gray-900 dark:text-white transition-colors duration-500">
             {/* Nano Banana AI Chat Overlay */}
             <NanoBananaAI isOpen={isNanoBananaOpen} onClose={() => setIsNanoBananaOpen(false)} />
 
             {/* Header */}
-            <header className="sticky top-0 z-40 px-6 py-4 flex justify-between items-center bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-border-light dark:border-border-dark">
+            <header className="sticky top-0 z-40 px-6 py-4 flex justify-between items-center bg-[#FAFAFA]/90 dark:bg-[#111]/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-accent shadow-glow">
-                        <img
-                            alt="User"
-                            className="w-full h-full object-cover"
-                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
-                        />
-                    </div>
                     <div>
-                        <p className="text-xs text-subtext-light dark:text-subtext-dark font-medium uppercase tracking-wider">Good Morning, {new Date().getHours() < 12 ? '☀️' : '🌙'}</p>
-                        <h1 className="text-lg font-bold leading-none text-heading-light dark:text-text-dark">Arun</h1>
-                        <p className="text-[10px] text-accent font-bold mt-1 flex items-center gap-1">
-                            {currentTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                            <span className="w-1 h-1 rounded-full bg-silver"></span>
-                            {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
-                        </p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{getGreeting()}</p>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-xl font-black leading-none tracking-tight">{getDisplayName()}</h1>
+                            {isAdmin && (
+                                <span className="text-[8px] font-bold uppercase tracking-wider bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded-full">
+                                    Admin
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     <button
                         onClick={() => navigate('/planner')}
-                        className="p-2 rounded-full bg-slate-50 shadow-soft border border-slate-200 hover:scale-105 transition-transform flex items-center justify-center"
+                        className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 hover:scale-105 transition-transform flex items-center justify-center"
                     >
-                        <Target className="w-5 h-5 text-slate-600" />
+                        <Target className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     </button>
                     <button
                         onClick={() => setIsNanoBananaOpen(true)}
-                        className="p-2 rounded-full bg-[#FFE135] shadow-soft border border-[#FDD835] hover:scale-105 transition-transform flex items-center justify-center"
+                        className="p-2 rounded-full bg-[#FFE135] shadow-sm border border-[#FDD835] hover:scale-105 transition-transform flex items-center justify-center"
                     >
                         <span className="text-lg">🍌</span>
                     </button>
-                    <button className="relative p-2 rounded-full bg-surface-light dark:bg-surface-dark shadow-soft border border-border-light dark:border-border-dark hover:scale-105 transition-transform">
-                        <Bell className="w-5 h-5 text-text-light dark:text-subtext-dark" />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-accent rounded-full border border-surface-light dark:border-surface-dark"></span>
+                    <button className="relative p-2 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 hover:scale-105 transition-transform">
+                        <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-gray-800"></span>
                     </button>
+                    {/* <UserMenu /> */}
                 </div>
             </header>
 
             <main className="px-6 pt-6 space-y-8 max-w-md mx-auto">
                 {/* Focus Score Card */}
-                <section className="animate-fade-in relative overflow-hidden rounded-2xl bg-gradient-to-br from-graphite via-carbon-black to-graphite text-white-smoke shadow-luxury p-6">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent/15 blur-3xl rounded-full translate-y-1/2 -translate-x-1/2"></div>
-
-                    <div className="relative z-10 flex justify-between items-start">
-                        <div>
-                            <h2 className="text-3xl font-bold tracking-tight text-white-smoke">Today's Focus</h2>
-                            <p className="text-silver text-sm mt-1">Focus on what truly matters.</p>
-
-                            <div className="mt-6">
-                                <div className="flex items-end gap-2 mb-2">
-                                    <span className="text-4xl font-bold text-accent">84%</span>
-                                    <span className="text-sm text-silver mb-1">Focus Score</span>
-                                </div>
-                                <div className="w-full bg-white-smoke/10 rounded-full h-2">
-                                    <div className="bg-accent h-2 rounded-full transition-all duration-700" style={{ width: '84%' }}></div>
-                                </div>
+                {/* Focus Score Card */}
+                {/* Focus Score Card */}
+                <section className="animate-in slide-in-from-bottom-4 duration-500">
+                    <div className="relative overflow-hidden rounded-[1.5rem] bg-black text-white p-5 shadow-xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 className="text-xl font-black tracking-tighter leading-none">{focusPeriod === 'Today' ? "Today's" : focusPeriod} Focus</h2>
+                                <p className="text-gray-400 text-[10px] font-bold mt-1 uppercase tracking-wide">Productivity Score</p>
+                            </div>
+                            <div className="flex bg-gray-900 rounded-full p-1 border border-gray-800 scale-90 origin-right">
+                                {(['Today', 'Weekly', 'Monthly'] as const).map((period) => (
+                                    <button
+                                        key={period}
+                                        onClick={() => setFocusPeriod(period)}
+                                        className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${focusPeriod === period ? 'bg-white text-black' : 'text-gray-500 hover:text-white'}`}
+                                    >
+                                        {period}
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                        <div className="p-3 bg-white-smoke/5 rounded-xl border border-white-smoke/10 backdrop-blur-sm">
-                            <Bolt className="text-accent w-8 h-8 fill-current" />
-                        </div>
-                    </div>
-                </section>
 
-                {/* Vitals: Streak & Steps */}
-                <section className="grid grid-cols-2 gap-4">
-                    {/* Streaks Calculator Card */}
-                    <div className="enhanced-card-mini card-glow-orange card-interactive card-animate-scale relative overflow-hidden group" style={{ borderRadius: '2rem' }}>
-                        <div className="absolute -top-6 -right-6 w-20 h-20 bg-accent/10 blur-2xl rounded-full"></div>
-                        <div className="relative z-10 flex flex-col h-full">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-2 bg-accent/10 rounded-xl">
-                                    <Flame className="w-5 h-5 text-accent fill-accent animate-pulse" />
-                                </div>
-                                <button
-                                    onClick={() => setStreak(prev => prev + 1)}
-                                    className="w-7 h-7 rounded-full bg-accent text-white-smoke flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-elegant"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                </button>
+                        <div className="flex items-end justify-between gap-4">
+                            <div className="flex flex-col">
+                                <span className="text-5xl font-black tracking-tighter leading-none">{currentFocus.score}</span>
+                                <span className="text-[10px] font-bold text-green-500 mt-1">Excellent Score</span>
                             </div>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-3xl font-black text-heading-light dark:text-text-dark">{streak}</span>
-                                <span className="text-xs font-bold text-subtext-light dark:text-subtext-dark">Days</span>
-                            </div>
-                            <p className="text-[10px] font-black text-subtext-light dark:text-subtext-dark uppercase tracking-widest mt-1 mb-3">Goal: 30</p>
 
-                            <div className="flex gap-1 mt-auto">
-                                {[1, 2, 3, 4, 5, 6, 7].map((d) => (
-                                    <div key={d} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${d <= (streak % 7 || 7) ? 'bg-accent shadow-glow' : 'bg-border-light dark:bg-border-dark'}`}></div>
+                            {/* Bar Chart Visualization - Compact */}
+                            <div className="h-12 flex items-end justify-between gap-1.5 w-1/2">
+                                {currentFocus.data.map((h, i) => (
+                                    <div key={i} className="flex flex-col items-center gap-1 w-full group">
+                                        <div
+                                            className={`w-full rounded-t-sm transition-all duration-500 ease-out ${i === currentFocus.data.length - 1 ? 'bg-white' : 'bg-gray-800 group-hover:bg-gray-700'}`}
+                                            style={{ height: `${h}%` }}
+                                        ></div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    {/* Steps Calculator Card */}
-                    <div className="enhanced-card-mini card-glow-accent card-interactive card-animate-scale card-animate-stagger-1 relative overflow-hidden group" style={{ borderRadius: '2rem' }}>
-                        <div className="absolute -top-6 -right-6 w-20 h-20 bg-accent/10 blur-2xl rounded-full"></div>
-                        <div className="relative z-10 flex flex-col h-full">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="p-2 bg-accent/10 rounded-xl">
-                                    <Footprints className="w-5 h-5 text-accent" />
-                                </div>
-                                <button
-                                    onClick={() => setSteps(prev => prev + 1000)}
-                                    className="w-7 h-7 rounded-full bg-accent text-white-smoke flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-elegant"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
+                {/* Goal Assistant Widget */}
+                <section>
+                    <GoalAssistantWidget onClick={() => setIsGoalAssistantOpen(true)} />
+                </section>
 
-                            <div className="mt-1">
-                                <span className="text-2xl font-black text-heading-light dark:text-text-dark">{steps.toLocaleString()}</span>
-                                <div className="w-full bg-border-light dark:bg-border-dark h-2 rounded-full mt-2 overflow-hidden">
-                                    <div
-                                        className="h-full bg-accent rounded-full transition-all duration-1000"
-                                        style={{ width: `${Math.min(100, (steps / stepGoal) * 100)}%` }}
-                                    ></div>
+                {/* Calculators Grid */}
+                <section className="grid grid-cols-2 gap-4">
+                    <StepCalculator />
+                    <SleepCalculator />
+                </section>
+
+                {/* Vitals Grid */}
+                <section className="grid grid-cols-2 gap-4">
+                    {vitals.map((vital, index) => (
+                        <div key={index} className="bg-white dark:bg-[#252525] p-5 rounded-[2rem] border border-gray-100 dark:border-white/5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="flex items-center gap-3">
+                                <div className={`p-3 rounded-2xl ${vital.bg} ${vital.color}`}>
+                                    <vital.icon className="w-5 h-5 fill-current" />
                                 </div>
-                                <div className="flex justify-between items-center mt-2">
-                                    <p className="text-[10px] font-black text-subtext-light dark:text-subtext-dark uppercase tracking-widest">
-                                        Goal: {stepGoal.toLocaleString()}
-                                    </p>
-                                    <span className="text-[10px] font-black text-accent uppercase tracking-widest">
-                                        {Math.round((steps / stepGoal) * 100)}%
-                                    </span>
+                                <div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{vital.label}</p>
+                                    <p className="text-xl font-black text-gray-900 dark:text-white leading-none mt-0.5">{vital.value}</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </section>
 
-                {/* Life Areas Scroll */}
+                {/* Life Areas - Minimal Horizontal Scroll */}
                 <section>
-                    <div className="flex justify-between items-center mb-3">
+                    <div className="flex justify-between items-center mb-3 px-1">
                         <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500">Life Areas</h3>
                         <button
                             onClick={() => setIsEditingLifeAreas(!isEditingLifeAreas)}
-                            className="text-primary text-xs font-semibold hover:text-accent transition-colors"
+                            className="text-gray-400 text-[10px] font-bold uppercase tracking-widest hover:text-gray-900 dark:hover:text-white transition-colors"
                         >
                             {isEditingLifeAreas ? 'Done' : 'Edit'}
                         </button>
                     </div>
 
                     {isEditingLifeAreas ? (
-                        <div className="space-y-3 bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-border-light dark:border-border-dark shadow-soft">
+                        <div className="bg-white dark:bg-[#1A1A1A] rounded-[1.5rem] p-4 border border-gray-100 dark:border-gray-800 space-y-4">
                             {lifeAreas.map((area: LifeArea) => (
                                 <div key={area.id} className="flex flex-col gap-2">
                                     <div className="flex items-center justify-between">
-                                        <label className="text-[10px] font-bold text-subtext-light dark:text-subtext-dark uppercase tracking-widest">{area.id}</label>
-                                        <span className="text-xs font-bold text-accent">{area.value}%</span>
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{area.id}</label>
+                                        <span className="text-xs font-bold text-gray-900 dark:text-gray-100">{area.value}%</span>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <input
                                             type="text"
                                             value={area.title}
                                             onChange={(e) => handleAreaUpdate(area.id, 'title', e.target.value)}
-                                            className="flex-1 px-3 py-1.5 text-sm bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg focus:outline-none focus:border-accent"
+                                            className="flex-1 px-3 py-1.5 text-xs font-bold bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:border-black dark:focus:border-white transition-colors"
                                             placeholder="Area Name"
                                         />
                                         <input
@@ -373,162 +647,105 @@ const Dashboard: React.FC = () => {
                                             max="100"
                                             value={area.value}
                                             onChange={(e) => handleAreaUpdate(area.id, 'value', parseInt(e.target.value))}
-                                            className="w-24 accent-accent"
+                                            className="w-24 accent-black dark:accent-white"
                                         />
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="flex space-x-3 overflow-x-auto pb-2 snap-x -mx-6 px-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <div className="flex space-x-3 overflow-x-auto pb-4 snap-x -mx-6 px-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                             {lifeAreas.map((area: LifeArea) => (
-                                <LifeAreaPill
+                                <div
                                     key={area.id}
-                                    icon={area.id === 'physical' ? Activity : area.id === 'life' ? Heart : Sparkles}
-                                    title={area.title}
-                                    color={area.color}
-                                    indicator={
-                                        <div className="flex items-center gap-1.5 ml-2">
+                                    className="flex-shrink-0 snap-start bg-white dark:bg-[#1A1A1A] p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm min-w-[140px] flex flex-col items-start gap-3"
+                                >
+                                    <div className={`p-2 rounded-xl bg-gray-50 dark:bg-black/50 text-gray-900 dark:text-white`}>
+                                        {area.id === 'physical' ? <Activity className="w-4 h-4" /> : area.id === 'life' ? <Heart className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xs font-black text-gray-900 dark:text-white mb-1">{area.title}</h4>
+                                        <div className="flex items-center gap-1.5">
                                             <div className={`w-1.5 h-1.5 rounded-full ${area.indicatorColor}`}></div>
-                                            <span className="text-[10px] font-bold text-subtext-light dark:text-subtext-dark">{area.value}%</span>
+                                            <span className="text-[10px] font-bold text-gray-400">{area.value}% Satisfaction</span>
                                         </div>
-                                    }
-                                />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     )}
                 </section>
 
                 {/* Priorities & Anti-Goals Grid */}
-                <section className="space-y-4">
-                    {/* Planner Quick Link with Detailed Sections */}
-                    <section>
-                        <motion.div
-                            whileHover={{ scale: 1.01 }}
-                            onClick={() => navigate('/planner')}
-                            className="enhanced-card card-interactive bg-white border border-slate-200 shadow-sm p-6 flex flex-col group cursor-pointer"
-                            style={{ borderRadius: '1.5rem' }}
-                        >
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 shadow-sm shadow-orange-200">
-                                        <Target className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-black text-slate-900 text-lg">Focus Planner</h3>
-                                        <p className="text-slate-500 text-xs font-medium">Your daily execution OS</p>
-                                    </div>
+                <section>
+                    <motion.div
+                        whileHover={{ scale: 1.01 }}
+                        onClick={() => navigate('/planner')}
+                        className="bg-white dark:bg-[#1A1A1A] border border-gray-100 dark:border-gray-800 shadow-sm p-6 flex flex-col group cursor-pointer relative overflow-hidden"
+                        style={{ borderRadius: '1.5rem' }}
+                    >
+                        <div className="flex items-center justify-between mb-6 relative z-10">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gray-50 dark:bg-black rounded-2xl flex items-center justify-center text-gray-900 dark:text-white shadow-sm border border-gray-100 dark:border-gray-800">
+                                    <Target className="w-6 h-6" />
                                 </div>
-                                <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-black group-hover:text-white group-hover:border-black transition-all">
-                                    <ArrowRight className="w-5 h-5" />
+                                <div>
+                                    <h3 className="font-black text-gray-900 dark:text-white text-lg">Focus Planner</h3>
+                                    <p className="text-gray-400 text-xs font-medium">Your Daily OS</p>
                                 </div>
                             </div>
+                            <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-black flex items-center justify-center text-gray-400 group-hover:bg-black group-hover:dark:bg-white group-hover:text-white group-hover:dark:text-black transition-all">
+                                <ArrowRight className="w-4 h-4" />
+                            </div>
+                        </div>
 
-                            {/* 4 Sections Stacked One-by-One */}
-                            <div className="space-y-3">
-                                {/* Priorities */}
-                                <div className="flex items-center gap-3 p-3 bg-orange-50/30 rounded-2xl border border-orange-100/50">
-                                    <div className="p-2 bg-white rounded-xl shadow-sm">
-                                        <Target className="w-4 h-4 text-orange-600" />
+                        {/* 4 Sections Stacked One-by-One */}
+                        <div className="space-y-2 relative z-10">
+                            {/* Priorities */}
+                            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-black/50 rounded-xl border border-gray-100 dark:border-gray-800/50">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-1.5 bg-white dark:bg-[#1A1A1A] rounded-lg shadow-sm">
+                                        <Target className="w-3.5 h-3.5 text-gray-900 dark:text-white" />
                                     </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Priorities</p>
-                                        <p className="text-sm font-black text-slate-900">{priorities.filter(p => !p.done).length} Active</p>
-                                    </div>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Priorities</span>
                                 </div>
-
-                                {/* Anti-Goals */}
-                                <div className="flex items-center gap-3 p-3 bg-red-50/30 rounded-2xl border border-red-100/50">
-                                    <div className="p-2 bg-white rounded-xl shadow-sm">
-                                        <XCircle className="w-4 h-4 text-red-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Anti-Goals</p>
-                                        <p className="text-sm font-black text-slate-900">{antiGoals.length} Set</p>
-                                    </div>
-                                </div>
-
-                                {/* Daily Notes */}
-                                <div className="flex items-center gap-3 p-3 bg-yellow-50/30 rounded-2xl border border-yellow-100/50">
-                                    <div className="p-2 bg-white rounded-xl shadow-sm">
-                                        <StickyNote className="w-4 h-4 text-yellow-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Daily Notes</p>
-                                        <p className="text-sm font-black text-slate-900">{notes.length} Logs</p>
-                                    </div>
-                                </div>
-
-                                {/* Weekly Goals */}
-                                <div className="flex items-center gap-3 p-3 bg-emerald-50/30 rounded-2xl border border-emerald-100/50">
-                                    <div className="p-2 bg-white rounded-xl shadow-sm">
-                                        <Calendar className="w-4 h-4 text-emerald-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Weekly</p>
-                                        <p className="text-sm font-black text-slate-900">{weeklyGoals.length} Goals</p>
-                                    </div>
-                                </div>
+                                <p className="text-xs font-black text-gray-900 dark:text-white">{priorities.filter(p => !p.done).length} Active</p>
                             </div>
 
-                            {/* Footer Indicator */}
-                            <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Click to expand details</span>
-                                <div className="flex -space-x-2">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="w-5 h-5 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400">
-                                            {i}
-                                        </div>
-                                    ))}
+                            {/* Anti-Goals */}
+                            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-black/50 rounded-xl border border-gray-100 dark:border-gray-800/50">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-1.5 bg-white dark:bg-[#1A1A1A] rounded-lg shadow-sm">
+                                        <XCircle className="w-3.5 h-3.5 text-gray-900 dark:text-white" />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Anti-Goals</span>
                                 </div>
+                                <p className="text-xs font-black text-gray-900 dark:text-white">{antiGoals.length} Set</p>
                             </div>
-                        </motion.div>
-                    </section>
+                        </div>
+                    </motion.div>
                 </section>
 
                 {/* Learning Hub - Featured Section */}
                 <section>
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
+                        whileHover={{ scale: 1.01 }}
                         onClick={() => navigate('/learning')}
-                        className="enhanced-card card-glow-soft card-interactive card-animate-scale card-animate-stagger-4 relative overflow-hidden bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark"
-                        style={{ borderRadius: '1.5rem' }}
+                        className="bg-black text-white rounded-[1.5rem] p-6 relative overflow-hidden cursor-pointer"
                     >
-                        {/* Subtle Background Elements */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-accent/10 transition-colors duration-700"></div>
-
-                        <div className="relative z-10 p-6 flex flex-col items-center text-center">
-                            <div className="w-16 h-16 bg-surface-light dark:bg-surface-dark rounded-2xl flex items-center justify-center text-accent shadow-soft border border-border-light dark:border-border-dark mb-4">
-                                <Brain className="w-8 h-8" />
+                        <div className="relative z-10 flex flex-col h-full justify-between gap-6">
+                            <div>
+                                <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center text-white border border-white/20 mb-4">
+                                    <Brain className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-2xl font-black mb-2">Learning Hub</h3>
+                                <p className="text-gray-400 text-sm max-w-[200px] leading-relaxed">
+                                    Master any topic with AI mind maps and personalized podcasts.
+                                </p>
                             </div>
 
-                            <h3 className="text-heading-light dark:text-text-dark font-black text-2xl mb-2">Learning Hub</h3>
-                            <p className="text-subtext-light dark:text-subtext-dark text-sm leading-relaxed mb-6 max-w-xs">
-                                Master any topic with AI-generated mind maps, summaries, and personalized podcasts.
-                            </p>
-
-                            <div className="flex gap-2 mb-6">
-                                <span className="px-3 py-1 bg-surface-light dark:bg-surface-dark text-subtext-light dark:text-subtext-dark rounded-full text-[10px] font-bold uppercase tracking-wider border border-border-light dark:border-border-dark">
-                                    AI Powered
-                                </span>
-                                <span className="px-3 py-1 bg-surface-light dark:bg-surface-dark text-subtext-light dark:text-subtext-dark rounded-full text-[10px] font-bold uppercase tracking-wider border border-border-light dark:border-border-dark">
-                                    Mind Maps
-                                </span>
-                                <span className="px-3 py-1 bg-surface-light dark:bg-surface-dark text-subtext-light dark:text-subtext-dark rounded-full text-[10px] font-bold uppercase tracking-wider border border-border-light dark:border-border-dark">
-                                    Deep Learning
-                                </span>
-                            </div>
-
-                            <button className="group relative px-8 py-3 bg-accent text-white-smoke rounded-xl font-bold flex items-center gap-2 hover:shadow-glow transition-all active:scale-95">
-                                <span>Start Learning</span>
-                                <motion.div
-                                    animate={{ x: [0, 5, 0] }}
-                                    transition={{ repeat: Infinity, duration: 1.5 }}
-                                >
-                                    →
-                                </motion.div>
+                            <button className="self-start px-5 py-2.5 bg-white text-black rounded-lg text-xs font-black uppercase tracking-wider flex items-center gap-2 hover:bg-gray-200 transition-colors">
+                                Start Learning <ArrowRight className="w-3 h-3" />
                             </button>
                         </div>
                     </motion.div>
@@ -538,137 +755,104 @@ const Dashboard: React.FC = () => {
                 {/* Categories Grid */}
                 <section>
                     <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500">Category Status</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500">Quick Access</h3>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        {routines.map((item, i) => {
-
-                            return (
-                                <div
-                                    key={i}
-                                    onClick={() => navigate(item.link)}
-                                    className={`
-                                        enhanced-card-mini card-interactive card-animate-scale
-                                        relative overflow-hidden p-4 transition-all duration-300 group cursor-pointer
-                                        ${item.img ? 'h-40' : 'h-auto card-glow-accent'}
-                                    `}
-                                    style={{ borderRadius: '1.5rem', animationDelay: `${i * 0.03}s` }}
-                                >
-                                    {item.img && (
-                                        <>
+                    <div className="grid grid-cols-2 gap-3">
+                        {routines.map((item, i) => (
+                            <div
+                                key={i}
+                                onClick={() => navigate(item.link)}
+                                className={`
+                                    relative overflow-hidden p-4 group cursor-pointer
+                                    bg-white dark:bg-[#1A1A1A] border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden
+                                     flex flex-col justify-end h-44
+                                `}
+                                style={{ borderRadius: '1.5rem', animationDelay: `${i * 0.03}s` }}
+                            >
+                                {item.img ? (
+                                    <>
+                                        <div className="absolute inset-0 z-0 bg-gray-50 dark:bg-gray-900 rounded-[1.5rem] overflow-hidden">
                                             <img
                                                 src={item.img}
-                                                alt={item.title}
-                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                alt=""
+                                                className="w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
                                             />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                                        </>
-                                    )}
-
-                                    <div className="relative z-10 flex flex-col h-full justify-between">
-                                        <div className="flex justify-between items-start">
-                                            <div className={`
-                                                w-10 h-10 rounded-xl flex items-center justify-center 
-                                                ${item.img ? 'bg-white/20 backdrop-blur-md text-white' : `${item.bg} ${item.color}`}
-                                            `}>
-                                                <item.icon className="w-5 h-5" />
-                                            </div>
-
-                                            <div className="relative">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setDeletingId(deletingId === item.id ? null : item.id);
-                                                    }}
-                                                    className={`p-1.5 rounded-full transition-all duration-300 ${item.img ? 'hover:bg-white/20 text-white' : 'hover:bg-gray-100 text-gray-400'}`}
-                                                >
-                                                    <MoreVertical className="w-5 h-5" />
-                                                </button>
-
-                                                {deletingId === item.id && (
-                                                    <button
-                                                        onClick={(e) => handleDeleteRoutine(e, item.id, !!item.isCustom)}
-                                                        className="absolute right-0 top-10 bg-red-600 text-white text-[10px] font-bold px-3 py-2 rounded-lg shadow-xl flex items-center gap-1 z-50 animate-in fade-in zoom-in-95 duration-200 min-w-[80px]"
-                                                    >
-                                                        <Trash2 className="w-3.5 h-3.5" /> Delete
-                                                    </button>
-                                                )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                                        </div>
+                                        <div className="relative z-10 w-full pt-2">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/10 shrink-0">
+                                                    <item.icon className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-base text-white leading-tight drop-shadow-sm">
+                                                        {item.title}
+                                                    </h4>
+                                                    <p className="text-[10px] font-bold text-white/90 mt-0.5">
+                                                        {item.isCustom && item.entries ? `${item.entries.length} Entries` : (item.desc || 'View Section')}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
-
-                                        {/* Quick Actions for Reading - Center View */}
-                                        {item.id === 'static-reading' && (
-                                            <div className="flex justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 scale-90 group-hover:scale-100">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        navigate('/section/reading/library', { state: { openModal: 'book' } });
-                                                    }}
-                                                    className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-lg border border-white/30 text-white flex items-center justify-center hover:bg-white/40 hover:scale-110 active:scale-95 transition-all shadow-luxury"
-                                                    title="Add Book"
-                                                >
-                                                    <BookPlus className="w-5 h-5" />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        navigate('/section/reading/library', { state: { openModal: 'folder' } });
-                                                    }}
-                                                    className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-lg border border-white/30 text-white flex items-center justify-center hover:bg-white/40 hover:scale-110 active:scale-95 transition-all shadow-luxury"
-                                                    title="New Folder"
-                                                >
-                                                    <FolderPlus className="w-5 h-5" />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        navigate('/section/reading/library', { state: { openModal: 'pdf' } });
-                                                    }}
-                                                    className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-lg border border-white/30 text-white flex items-center justify-center hover:bg-white/40 hover:scale-110 active:scale-95 transition-all shadow-luxury"
-                                                    title="Upload PDF"
-                                                >
-                                                    <Upload className="w-5 h-5" />
-                                                </button>
+                                    </>
+                                ) : (
+                                    <div className="relative z-10 flex flex-col gap-3">
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-black flex items-center justify-center text-gray-900 dark:text-white shrink-0">
+                                                    <item.icon className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-base text-gray-900 dark:text-white leading-tight">
+                                                        {item.title}
+                                                    </h4>
+                                                    <p className="text-[10px] font-bold text-gray-400 mt-0.5">
+                                                        {item.desc || 'View'}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        )}
-
-                                        {item.id !== 'static-reading' && (
-                                            <div>
-                                                <h4 className={`font-bold text-lg leading-tight ${item.img ? 'text-white' : 'text-gray-900'}`}>
-                                                    {item.title}
-                                                </h4>
-                                                <p className={`text-xs font-medium mt-1 ${item.img ? 'text-gray-300' : 'text-gray-500'}`}>
-                                                    {item.desc}
-                                                </p>
-                                            </div>
-                                        )}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                )}
+                            </div>
+                        ))}
                     </div>
 
-                    <button
+                    <Button
+                        variant="primary"
+                        fullWidth
+                        size="lg"
+                        className="rounded-2xl mt-4"
                         onClick={handleAddRoutine}
-                        className={`w-full py-4 rounded-2xl shadow-soft border border-border-light dark:border-border-dark font-bold transition-all flex items-center justify-center gap-2 group ${THEME_CLASSES.BTN_SECONDARY}`}
+                        leftIcon={<Plus className="w-5 h-5" />}
                     >
-                        <div className="w-8 h-8 rounded-full bg-border-light dark:bg-border-dark flex items-center justify-center group-hover:bg-accent/10 transition-colors">
-                            <span className="material-icons-round text-xl">+</span>
-                        </div>
-                        Add New Routine
-                    </button>
+                        Add Custom Section
+                    </Button>
                 </section>
             </main>
+
+            <Toast
+                isVisible={showWeeklyToast}
+                onClose={() => setShowWeeklyToast(false)}
+                message="📈 Weekly Recap is ready! Check your progress."
+                type="success"
+            />
 
             {/* Floating Action Button */}
             <div className="fixed bottom-28 right-6 z-[60]">
                 <button
                     onClick={handleAddRoutine}
-                    className="w-14 h-14 bg-accent text-white-smoke rounded-full shadow-luxury hover:shadow-glow flex items-center justify-center hover:scale-110 active:scale-95 transition-all outline-none"
+                    className="w-14 h-14 bg-black dark:bg-white text-white dark:text-black rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
                 >
-                    <Plus className="w-6 h-6 text-white-smoke" />
+                    <Plus className="w-6 h-6" />
                 </button>
             </div>
+
+            {/* Goal Assistant Modal */}
+            <GoalAssistant
+                isOpen={isGoalAssistantOpen}
+                onClose={() => setIsGoalAssistantOpen(false)}
+            />
         </div >
     );
 };

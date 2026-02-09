@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { performWebSearch } from '../services/webSearchService';
 import type { SearchResult } from '../services/webSearchService';
+import { useContentProtection } from '../contexts/ContentProtectionContext';
+import { checkUrl, checkKeywords } from '../services/contentFilter';
 
 // ============================================
 // MAIN COMPONENT - Google-like Search
@@ -13,6 +15,7 @@ import type { SearchResult } from '../services/webSearchService';
 
 const SearchDirectory: React.FC = () => {
     const navigate = useNavigate();
+    const { settings, logBlockedAttempt } = useContentProtection();
 
     // State
     const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +30,16 @@ const SearchDirectory: React.FC = () => {
 
     const performSearch = useCallback(async (query: string) => {
         if (!query.trim()) return;
+
+        // Content Protection Check - Keywords
+        if (settings.protectionLevel !== 'off') {
+            const keywordResult = checkKeywords(query, settings.protectionLevel, settings.customBlockedKeywords);
+            if (keywordResult.blocked) {
+                alert(`Search Blocked: ${keywordResult.reason}`);
+                logBlockedAttempt(undefined, query, keywordResult.reason);
+                return;
+            }
+        }
 
         setIsLoading(true);
         setError(null);
@@ -65,6 +78,14 @@ const SearchDirectory: React.FC = () => {
 
     // Open external link
     const openExternalLink = (url: string) => {
+        if (settings.protectionLevel !== 'off') {
+            const protectionResult = checkUrl(url, settings.protectionLevel, settings.customBlockedDomains);
+            if (protectionResult.blocked) {
+                alert(`Access Blocked: ${protectionResult.reason}`);
+                logBlockedAttempt(url, undefined, protectionResult.reason);
+                return;
+            }
+        }
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 

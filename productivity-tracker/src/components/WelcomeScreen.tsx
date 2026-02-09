@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Button from './ui/Button';
 import loginBgVideo from '../assets/login-bg.mp4';
 
 const WelcomeScreen: React.FC = () => {
@@ -71,22 +72,25 @@ const WelcomeScreen: React.FC = () => {
 
                 {/* 6) Buttons (pill shaped, stacked) */}
                 <div className="w-full space-y-4 max-w-xs">
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => navigate('/dashboard')}
-                        className="w-full bg-black text-white py-[18px] rounded-full font-bold text-[16px] shadow-2xl active:bg-gray-900 transition-all uppercase tracking-wide"
+                    <Button
+                        variant="primary"
+                        size="xl"
+                        fullWidth
+                        className="rounded-full shadow-2xl py-[18px]"
+                        onClick={() => navigate('/login')}
                     >
                         Login
-                    </motion.button>
+                    </Button>
 
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full bg-white border-2 border-gray-100 text-gray-900 py-[18px] rounded-full font-bold text-[16px] hover:bg-gray-50 transition-all uppercase tracking-wide"
+                    <Button
+                        variant="outline"
+                        size="xl"
+                        fullWidth
+                        className="rounded-full border-2 border-gray-100 py-[18px]"
+                        onClick={() => navigate('/signup')}
                     >
                         Sign Up
-                    </motion.button>
+                    </Button>
                 </div>
 
                 {/* Extra spacer for mobile bottom safety */}

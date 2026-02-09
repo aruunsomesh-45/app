@@ -1,5 +1,10 @@
 // LifeTracker Central Data Store
-// Manages all life systems data with localStorage persistence
+// Manages all life systems data with localStorage persistence and cloud sync
+import { supabase } from '../lib/supabase';
+import { v4 as uuidv4 } from 'uuid';
+import { getCurrentFirebaseUid } from '../api/authApi';
+import { functions } from './firebaseConfig';
+import { httpsCallable } from 'firebase/functions';
 
 // Types
 export interface MeditationSession {
@@ -43,7 +48,8 @@ export interface Book {
     folderId?: string; // Which folder this book belongs to
     pdfFileName?: string; // Uploaded PDF file name
     pdfFileSize?: number; // PDF file size in bytes
-    pdfDataUrl?: string; // PDF file content as data URL
+    pdfDataUrl?: string; // PDF file content as data URL (Legacy)
+    pdfPath?: string; // Supabase Storage path
     pdfCoverImage?: string; // Extracted first page as image data URL (deprecated - use coverImage)
     coverImage?: string; // Manually uploaded cover image (preferred)
     description?: string; // Book description/notes
@@ -76,6 +82,7 @@ export interface LifeNote {
     tags: string[];
     date: string;
     createdAt: string;
+    attachmentPath?: string;
 }
 
 export interface StreakData {
@@ -159,17 +166,24 @@ export interface CodingLearningPath {
     weeks: CodingLearningWeek[];
 }
 
-export interface DSAProblem {
+export interface PracticeReflection {
     id: string;
-    title: string;
+    platform: 'LeetCode' | 'HackerRank' | 'Codeforces' | 'Other';
+    problemId: string; // Question Number / Problem ID
+    title: string; // Problem Title (optional but stored)
+    topics: string[]; // Multi-select: Arrays, Strings, Two Pointers, etc.
     difficulty: 'easy' | 'medium' | 'hard';
-    category: 'DSA' | 'CS Core' | 'System Design';
-    notes?: string;
-    learnings?: string;
-    status: 'pending' | 'solved' | 'review';
-    link?: string;
+    whatILearned: string; // Key insight, algorithm, mistakes, optimization
+    comparisonNotes?: string; // How this relates to similar problems
+    reviewStatus: 'not-reviewed' | 'needs-review' | 'mastered';
     dateSolved?: string;
+    timeSpent?: number; // in minutes
+    status: 'pending' | 'solved' | 'review'; // backward compat
+    link?: string;
 }
+
+// Backward compatibility alias
+export type DSAProblem = PracticeReflection;
 
 export interface CSNote {
     id: string;
@@ -240,6 +254,16 @@ export interface SkillMastery {
 }
 
 // ==================== BRANDING TYPES ====================
+import type { FinancialLearningProgress, TrackType } from '../components/FinancialLearningSection/types';
+
+export interface SectionLog {
+    id: string;
+    sectionId: string; // e.g., 'workout', 'coding'
+    text: string;
+    date: string;
+}
+
+
 export type ContentIntent = 'Authority' | 'Trust' | 'Relatability' | 'Teaching' | 'Lead Generation';
 
 export interface ExpertisePillar {
@@ -353,7 +377,20 @@ export interface NetworkingSystem {
 
 export interface UserProfile {
     firstName: string;
+    lastName?: string;
+    title?: string; // e.g., "Full Stack Engineer"
+    bio?: string;
     avatar?: string;
+    email?: string;
+    joinedDate?: string;
+    preferences?: {
+        theme?: 'light' | 'dark' | 'system';
+        notifications?: boolean;
+    };
+    // Onboarding & Personalization
+    userInterests?: string[]; // e.g., ['fitness', 'coding', 'finance']
+    primaryGoal?: string; // e.g., 'career_growth'
+    onboardingCompleted?: boolean;
 }
 
 export interface LifeTrackerState {
@@ -391,6 +428,12 @@ export interface LifeTrackerState {
     // Networking
     networking: NetworkingSystem;
 
+    // Financial Learning
+    financialLearning: FinancialLearningProgress;
+
+    // Section Logs (Generic)
+    sectionLogs: SectionLog[];
+
     // Dashboard / Profile
     dailyFocus: string;
     lastDailyFocusDate: string;
@@ -426,7 +469,7 @@ const getInitialState = (): LifeTrackerState => ({
             coreThemes: [],
             knownFor: '',
             antiThemes: [],
-            intent: '',
+            intent: 'Authority',
             comparisonMapping: []
         },
         audienceIntelligence: {
@@ -434,9 +477,9 @@ const getInitialState = (): LifeTrackerState => ({
             recurringPainPoints: [],
             repeatedQuestions: []
         },
-        consistencyScores: [],
-        contentItems: [],
         platforms: [],
+        contentItems: [],
+        consistencyScores: [],
         lastUpdated: new Date().toISOString()
     },
     networking: {
@@ -447,9 +490,24 @@ const getInitialState = (): LifeTrackerState => ({
         },
         lastUpdated: new Date().toISOString()
     },
+    financialLearning: {
+        currentTrack: 'startup',
+        unlockedModules: ['startup-101'],
+        completedLessons: [],
+        quizScores: {},
+        totalXp: 0,
+        streak: 0,
+        lastActiveDate: null
+    },
+    sectionLogs: [],
     dailyFocus: '',
     lastDailyFocusDate: '',
-    userProfile: { firstName: 'Developer' },
+    userProfile: {
+        firstName: 'User',
+        title: 'Productivity Master',
+        joinedDate: new Date().toISOString(),
+        preferences: { theme: 'system', notifications: true }
+    }
 });
 
 // Storage Key
@@ -486,11 +544,268 @@ const isSameDay = (date1: string, date2: string): boolean => {
 
 // Store Class
 export class LifeTrackerStore {
-    private state: LifeTrackerState;
+    public state: LifeTrackerState;
     private listeners: Set<() => void> = new Set();
+    private firebaseUid: string | null = null;
+    private cloudSyncEnabled: boolean = false;
 
     constructor() {
         this.state = this.loadFromStorage();
+        // Check if there's a Firebase user already (page refresh scenario)
+        this.initFromFirebase();
+    }
+
+    /**
+     * Initialize from Firebase Auth if user is already logged in
+     */
+    private async initFromFirebase() {
+        const uid = getCurrentFirebaseUid();
+        if (uid) {
+            console.log('🔄 Firebase user found, enabling cloud sync...');
+            await this.setFirebaseUid(uid);
+        }
+    }
+
+    /**
+     * Set the Firebase UID and enable cloud sync
+     * Called by AuthContext after successful Firebase authentication
+     */
+    async setFirebaseUid(uid: string | null): Promise<void> {
+        this.firebaseUid = uid;
+        if (uid) {
+            this.cloudSyncEnabled = true;
+            console.log('☁️ Cloud sync enabled for user:', uid);
+            await this.loadFromSupabase();
+        } else {
+            this.cloudSyncEnabled = false;
+            console.log('☁️ Cloud sync disabled - no user');
+        }
+    }
+
+    /**
+     * Get the current Firebase UID
+     */
+    getFirebaseUid(): string | null {
+        return this.firebaseUid;
+    }
+
+    /**
+     * Check if cloud sync is enabled
+     */
+    isCloudSyncEnabled(): boolean {
+        return this.cloudSyncEnabled;
+    }
+
+    /**
+     * Sync data to Supabase (with firebase_uid)
+     */
+    private async syncToSupabase(table: string, data: any) {
+        if (!this.firebaseUid || !this.cloudSyncEnabled) return;
+        try {
+            const { error } = await supabase.from(table).insert({ ...data, firebase_uid: this.firebaseUid });
+            if (error) console.error(`Error syncing to ${table}:`, error);
+            else console.log(`✅ Synced to ${table}`);
+        } catch (err) {
+            console.error(`Exception syncing to ${table}:`, err);
+        }
+    }
+
+    /**
+     * Trigger the daily stats aggregation cloud function
+     */
+    private async triggerDailyStats(date?: string) {
+        if (!this.firebaseUid || !this.cloudSyncEnabled) return;
+
+        try {
+            console.log('🔄 Triggering daily stats aggregation...');
+            const triggerStats = httpsCallable(functions, 'manuallyTriggerDailyStats');
+            // Fire and forget - don't await to keep UI responsive
+            triggerStats({ date: date || getToday() })
+                .then(() => console.log('✅ Daily stats aggregation triggered'))
+                .catch((err) => console.error('❌ Error triggering daily stats:', err));
+        } catch (error) {
+            console.error('Error invoking daily stats function:', error);
+        }
+    }
+
+
+
+    // ==================== STORAGE ====================
+
+    async uploadFile(file: File, bucket: 'avatars' | 'book-covers' | 'workout-media' | 'note-attachments' | 'book-pdfs'): Promise<string | null> {
+        if (!this.firebaseUid) {
+            console.error("User not authenticated for upload");
+            return null;
+        }
+
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${this.firebaseUid}/${Date.now()}.${fileExt}`;
+        const filePath = fileName;
+
+        try {
+            const { error: uploadError } = await supabase.storage
+                .from(bucket)
+                .upload(filePath, file);
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            if (bucket === 'avatars' || bucket === 'book-covers') {
+                const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
+                return data.publicUrl;
+            } else {
+                // For private buckets, return the path. 
+                // Components will need to sign a URL to view it.
+                return filePath;
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            return null;
+        }
+    }
+
+    async getPrivateFileUrl(bucket: 'workout-media' | 'note-attachments' | 'book-pdfs', path: string): Promise<string | null> {
+        if (!this.firebaseUid) return null;
+        try {
+            const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 3600); // 1 hour expiry
+            if (error) throw error;
+            return data.signedUrl;
+        } catch (error) {
+            console.error('Error getting signed URL:', error);
+            return null;
+        }
+    }
+
+    private async loadFromSupabase() {
+        if (!this.firebaseUid) {
+            console.log('⚠️ Cannot load from Supabase - no Firebase UID');
+            return;
+        }
+
+        console.log('📥 Loading data from Supabase for user:', this.firebaseUid);
+
+        try {
+            // 1. Meditation Sessions
+            const { data: meditationData } = await supabase
+                .from('meditation_sessions')
+                .select('*')
+                .eq('firebase_uid', this.firebaseUid)
+                .order('date', { ascending: false });
+            if (meditationData) {
+                this.state.meditationSessions = meditationData.map((m: any) => ({
+                    id: m.id,
+                    date: m.date,
+                    duration: m.duration,
+                    type: m.type,
+                    moodBefore: m.mood_before,
+                    moodAfter: m.mood_after,
+                    createdAt: m.created_at
+                }));
+                // Re-calculate streak based on fetched data
+                // this.recalculateMeditationStreak(); // TODO: Implement if needed, or rely on local logic
+            }
+
+            // 2. Books
+            const { data: booksData } = await supabase.from('books').select('*').eq('firebase_uid', this.firebaseUid);
+            if (booksData) {
+                this.state.books = booksData.map((b: any) => ({
+                    id: b.id,
+                    title: b.title,
+                    author: b.author,
+                    totalPages: b.total_pages,
+                    currentPage: b.current_page,
+                    status: b.status,
+                    coverImage: b.cover_image,
+                    coverColor: b.cover_color || '#3b82f6', // Default blue-500
+                    startedAt: b.started_at,
+                    completedAt: b.completed_at,
+                    folderId: undefined, // Schema doesn't have folders yet
+                    pdfFileName: undefined,
+                    pdfFileSize: undefined,
+                    pdfDataUrl: undefined,
+                    pdfCoverImage: undefined
+                }));
+            }
+
+            // 3. Reading Sessions
+            const { data: readingData } = await supabase.from('reading_sessions').select('*').eq('firebase_uid', this.firebaseUid);
+            if (readingData) {
+                this.state.readingSessions = readingData.map((r: any) => ({
+                    id: r.id,
+                    bookId: r.book_id,
+                    date: r.date,
+                    pagesRead: r.pages_read,
+                    startPage: r.start_page,
+                    endPage: r.end_page,
+                    note: r.note,
+                    createdAt: r.created_at
+                }));
+            }
+
+            // 4. Daily Tasks
+            const { data: tasksData } = await supabase.from('daily_tasks').select('*').eq('firebase_uid', this.firebaseUid);
+            if (tasksData) {
+                this.state.dailyTasks = tasksData.map((t: any) => ({
+                    id: t.id,
+                    title: t.title,
+                    category: t.category,
+                    completed: t.completed,
+                    date: t.date,
+                    createdAt: t.created_at
+                }));
+            }
+
+            // 5. Life Notes
+            const { data: notesData } = await supabase.from('life_notes').select('*').eq('firebase_uid', this.firebaseUid);
+            if (notesData) {
+                this.state.notes = notesData.map((n: any) => ({
+                    id: n.id,
+                    content: n.content,
+                    linkedSystem: n.linked_system,
+                    mood: n.mood,
+                    tags: n.tags,
+                    date: n.date,
+                    createdAt: n.created_at
+                }));
+            }
+
+            // 6. Financial Learning Progress
+            const { data: financialData } = await supabase
+                .from('financial_learning_progress')
+                .select('*')
+                .eq('firebase_uid', this.firebaseUid)
+                .maybeSingle();
+
+            if (financialData) {
+                this.state.financialLearning = {
+                    currentTrack: financialData.current_track as TrackType,
+                    unlockedModules: financialData.unlocked_modules || [],
+                    completedLessons: financialData.completed_lessons || [],
+                    quizScores: financialData.quiz_scores || {},
+                    totalXp: financialData.total_xp || 0,
+                    streak: financialData.streak || 0,
+                    lastActiveDate: financialData.last_active_date
+                };
+            }
+
+            // 7. Section Logs
+            const { data: logsData } = await supabase.from('section_logs').select('*').eq('firebase_uid', this.firebaseUid);
+            if (logsData) {
+                this.state.sectionLogs = logsData.map((l: any) => ({
+                    id: l.id,
+                    sectionId: l.section_id,
+                    text: l.text,
+                    date: l.date
+                }));
+            }
+
+            this.saveToStorage(); // Update local cache
+            this.notify();
+            console.log('✅ Data loaded from Supabase successfully');
+        } catch (error) {
+            console.error('❌ Error loading data from Supabase:', error);
+        }
     }
 
     private loadFromStorage(): LifeTrackerState {
@@ -531,7 +846,7 @@ export class LifeTrackerStore {
     addMeditationSession(session: Omit<MeditationSession, 'id' | 'createdAt'>): MeditationSession {
         const newSession: MeditationSession = {
             ...session,
-            id: generateId(),
+            id: uuidv4(),
             createdAt: new Date().toISOString(),
         };
 
@@ -539,6 +854,19 @@ export class LifeTrackerStore {
         this.updateMeditationStreak(session.date);
         this.saveToStorage();
         this.notify();
+
+        this.syncToSupabase('meditation_sessions', {
+            id: newSession.id,
+            date: newSession.date,
+            duration: newSession.duration,
+            type: newSession.type,
+            mood_before: newSession.moodBefore,
+            mood_after: newSession.moodAfter,
+            created_at: newSession.createdAt
+        });
+
+        this.triggerDailyStats(newSession.date);
+
         return newSession;
     }
 
@@ -591,7 +919,7 @@ export class LifeTrackerStore {
     addBook(book: Omit<Book, 'id' | 'startedAt' | 'status' | 'currentPage'>): Book {
         const newBook: Book = {
             ...book,
-            id: generateId(),
+            id: uuidv4(),
             currentPage: 0,
             status: 'reading',
             startedAt: new Date().toISOString(),
@@ -600,6 +928,20 @@ export class LifeTrackerStore {
         this.state.books = [newBook, ...this.state.books];
         this.saveToStorage();
         this.notify();
+
+        this.syncToSupabase('books', {
+            id: newBook.id,
+            title: newBook.title,
+            author: newBook.author,
+            total_pages: newBook.totalPages,
+            current_page: newBook.currentPage,
+            status: newBook.status,
+            cover_image: newBook.coverImage,
+            cover_color: newBook.coverColor,
+            started_at: newBook.startedAt,
+            created_at: new Date().toISOString() // Schema requires created_at
+        });
+
         return newBook;
     }
 
@@ -614,7 +956,7 @@ export class LifeTrackerStore {
     addReadingSession(session: Omit<ReadingSession, 'id' | 'createdAt'>): ReadingSession {
         const newSession: ReadingSession = {
             ...session,
-            id: generateId(),
+            id: uuidv4(),
             createdAt: new Date().toISOString(),
         };
 
@@ -627,12 +969,38 @@ export class LifeTrackerStore {
             if (book.currentPage >= book.totalPages) {
                 book.status = 'completed';
                 book.completedAt = new Date().toISOString();
+
+                // Update book status in Supabase
+                this.firebaseUid && supabase.from('books').update({
+                    status: 'completed',
+                    completed_at: book.completedAt,
+                    current_page: book.currentPage
+                }).eq('id', book.id).eq('firebase_uid', this.firebaseUid).then();
+            } else {
+                // Update book progress in Supabase
+                this.firebaseUid && supabase.from('books').update({
+                    current_page: book.currentPage
+                }).eq('id', book.id).eq('firebase_uid', this.firebaseUid).then();
             }
         }
 
         this.updateReadingStreak(session.date);
         this.saveToStorage();
         this.notify();
+
+        this.syncToSupabase('reading_sessions', {
+            id: newSession.id,
+            book_id: newSession.bookId,
+            date: newSession.date,
+            pages_read: newSession.pagesRead,
+            start_page: newSession.startPage,
+            end_page: newSession.endPage,
+            note: newSession.note,
+            created_at: newSession.createdAt
+        });
+
+        this.triggerDailyStats(newSession.date);
+
         return newSession;
     }
 
@@ -713,10 +1081,10 @@ export class LifeTrackerStore {
         return newBook;
     }
 
-    uploadPdfToBook(bookId: string, fileName: string, fileSize: number, pdfDataUrl: string, pdfCoverImage?: string): void {
+    uploadPdfToBook(bookId: string, fileName: string, fileSize: number, pdfDataUrl: string, pdfCoverImage?: string, pdfPath?: string): void {
         this.state.books = this.state.books.map(book =>
             book.id === bookId
-                ? { ...book, pdfFileName: fileName, pdfFileSize: fileSize, pdfDataUrl, pdfCoverImage }
+                ? { ...book, pdfFileName: fileName, pdfFileSize: fileSize, pdfDataUrl, pdfCoverImage, pdfPath }
                 : book
         );
         this.saveToStorage();
@@ -861,7 +1229,7 @@ export class LifeTrackerStore {
     addDailyTask(task: Omit<DailyTask, 'id' | 'createdAt' | 'completed'>): DailyTask {
         const newTask: DailyTask = {
             ...task,
-            id: generateId(),
+            id: uuidv4(),
             completed: false,
             createdAt: new Date().toISOString(),
         };
@@ -869,6 +1237,18 @@ export class LifeTrackerStore {
         this.state.dailyTasks = [newTask, ...this.state.dailyTasks];
         this.saveToStorage();
         this.notify();
+
+        this.syncToSupabase('daily_tasks', {
+            id: newTask.id,
+            title: newTask.title,
+            category: newTask.category,
+            completed: newTask.completed,
+            date: newTask.date,
+            created_at: newTask.createdAt
+        });
+
+        this.triggerDailyStats(newTask.date);
+
         return newTask;
     }
 
@@ -878,12 +1258,14 @@ export class LifeTrackerStore {
         );
         this.saveToStorage();
         this.notify();
+        this.triggerDailyStats();
     }
 
     deleteTask(taskId: string): void {
         this.state.dailyTasks = this.state.dailyTasks.filter(task => task.id !== taskId);
         this.saveToStorage();
         this.notify();
+        this.triggerDailyStats();
     }
 
     getTodayTasks(): DailyTask[] {
@@ -930,13 +1312,25 @@ export class LifeTrackerStore {
     addNote(note: Omit<LifeNote, 'id' | 'createdAt'>): LifeNote {
         const newNote: LifeNote = {
             ...note,
-            id: generateId(),
+            id: uuidv4(),
             createdAt: new Date().toISOString(),
         };
 
         this.state.notes = [newNote, ...this.state.notes];
         this.saveToStorage();
         this.notify();
+
+        this.syncToSupabase('life_notes', {
+            id: newNote.id,
+            content: newNote.content,
+            linked_system: newNote.linkedSystem,
+            mood: newNote.mood,
+            tags: newNote.tags,
+            date: newNote.date,
+            created_at: newNote.createdAt,
+            attachment_path: newNote.attachmentPath
+        });
+
         return newNote;
     }
 
@@ -993,7 +1387,7 @@ export class LifeTrackerStore {
     }
 
     addDSAProblem(problem: Omit<DSAProblem, 'id'>): DSAProblem {
-        const dateSolved = problem.status === 'solved' ? getToday() : undefined;
+        const dateSolved = problem.dateSolved || getToday();
         const newProblem: DSAProblem = { ...problem, id: generateId(), dateSolved };
         this.state.dsaProblems = [newProblem, ...this.state.dsaProblems];
         if (problem.status === 'solved') this.updateCodingStreak(getToday());
@@ -1013,6 +1407,28 @@ export class LifeTrackerStore {
         if (updates.status === 'solved') this.updateCodingStreak(getToday());
         this.saveToStorage();
         this.notify();
+    }
+
+    deleteDSAProblem(problemId: string): void {
+        this.state.dsaProblems = this.state.dsaProblems.filter(p => p.id !== problemId);
+        this.saveToStorage();
+        this.notify();
+    }
+
+    duplicateDSAProblem(problemId: string): DSAProblem | null {
+        const original = this.state.dsaProblems.find(p => p.id === problemId);
+        if (!original) return null;
+
+        const duplicated: DSAProblem = {
+            ...original,
+            id: generateId(),
+            title: `${original.title} (Copy)`,
+            dateSolved: getToday()
+        };
+        this.state.dsaProblems = [duplicated, ...this.state.dsaProblems];
+        this.saveToStorage();
+        this.notify();
+        return duplicated;
     }
 
     addCSNote(note: Omit<CSNote, 'id' | 'updatedAt'>): CSNote {
@@ -1367,6 +1783,161 @@ export class LifeTrackerStore {
                 coding.streak > 0 ? { name: 'Coding', count: coding.streak } : null,
             ].filter(Boolean),
         };
+    }
+    updateUserProfile(updates: Partial<UserProfile>) {
+        this.state.userProfile = { ...this.state.userProfile, ...updates };
+        this.saveToStorage();
+        this.notify();
+    }
+
+    exportData(): string {
+        return JSON.stringify(this.state, null, 2);
+    }
+
+    importData(jsonString: string): boolean {
+        try {
+            const parsed = JSON.parse(jsonString);
+            // Basic validation
+            if (!parsed.meditationSessions || !parsed.userProfile) {
+                console.error("Invalid data format");
+                return false;
+            }
+            this.state = { ...this.state, ...parsed };
+            this.saveToStorage();
+            this.notify();
+            return true;
+        } catch (e) {
+            console.error("Failed to parse import data", e);
+            return false;
+        }
+    }
+
+    clearAllData() {
+        localStorage.removeItem('lifeTrackerData');
+        this.state = getInitialState();
+        this.notify();
+    }
+
+    // ==================== FINANCIAL LEARNING ACTIONS ====================
+
+    switchFinancialTrack(track: TrackType) {
+        this.state.financialLearning.currentTrack = track;
+        this.saveToStorage();
+        this.syncFinancialProgress();
+        this.notify();
+    }
+
+    // ==================== FINANCIAL LEARNING ACTIONS ====================
+
+    private async syncFinancialProgress() {
+        if (!this.firebaseUid) return;
+        const progress = this.state.financialLearning;
+
+        try {
+            const { error } = await supabase.from('financial_learning_progress').upsert({
+                firebase_uid: this.firebaseUid,
+                current_track: progress.currentTrack,
+                unlocked_modules: progress.unlockedModules,
+                completed_lessons: progress.completedLessons,
+                quiz_scores: progress.quizScores,
+                total_xp: progress.totalXp,
+                streak: progress.streak,
+                last_active_date: progress.lastActiveDate,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' });
+
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error syncing financial progress:', error);
+        }
+    }
+
+    async addSectionLog(sectionId: string, text: string) {
+        const newLog: SectionLog = {
+            id: uuidv4(),
+            sectionId,
+            text,
+            date: new Date().toISOString()
+        };
+
+        this.state.sectionLogs = [newLog, ...this.state.sectionLogs];
+        this.saveToStorage();
+        this.notify();
+
+        if (this.firebaseUid) {
+            const { error } = await supabase.from('section_logs').insert({
+                id: newLog.id,
+                firebase_uid: this.firebaseUid,
+                section_id: newLog.sectionId,
+                text: newLog.text,
+                date: newLog.date
+            });
+            if (error) console.error('Error syncing section log:', error);
+        }
+    }
+
+    async deleteSectionLog(logId: string) {
+        this.state.sectionLogs = this.state.sectionLogs.filter(l => l.id !== logId);
+        this.saveToStorage();
+        this.notify();
+
+        if (this.firebaseUid) {
+            const { error } = await supabase.from('section_logs').delete().eq('id', logId).eq('firebase_uid', this.firebaseUid);
+            if (error) console.error('Error deleting section log:', error);
+        }
+    }
+
+    async completeFinancialLesson(lessonId: string, durationXp: number = 10) {
+        if (!this.state.financialLearning.completedLessons.includes(lessonId)) {
+            this.state.financialLearning.completedLessons.push(lessonId);
+            this.state.financialLearning.totalXp += durationXp;
+            this.updateFinancialStreak();
+            this.saveToStorage();
+            await this.syncFinancialProgress();
+            this.notify();
+        }
+    }
+
+    async unlockFinancialModule(moduleId: string) {
+        if (!this.state.financialLearning.unlockedModules.includes(moduleId)) {
+            this.state.financialLearning.unlockedModules.push(moduleId);
+            this.saveToStorage();
+            await this.syncFinancialProgress();
+            this.notify();
+        }
+    }
+
+    async submitFinancialQuiz(quizId: string, score: number) {
+        this.state.financialLearning.quizScores[quizId] = score;
+        if (score >= 80) {
+            this.state.financialLearning.totalXp += 50; // Bonus for passing
+        }
+        this.updateFinancialStreak();
+        this.saveToStorage();
+        await this.syncFinancialProgress();
+        this.notify();
+    }
+
+    private updateFinancialStreak() {
+        const today = new Date().toISOString().split('T')[0];
+        const lastActive = this.state.financialLearning.lastActiveDate;
+
+        if (lastActive !== today) {
+            if (lastActive) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                if (lastActive === yesterdayStr) {
+                    this.state.financialLearning.streak += 1;
+                } else {
+                    this.state.financialLearning.streak = 1;
+                }
+            } else {
+                this.state.financialLearning.streak = 1;
+            }
+            this.state.financialLearning.lastActiveDate = today;
+        }
     }
 }
 

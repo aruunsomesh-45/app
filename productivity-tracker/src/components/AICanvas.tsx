@@ -6,6 +6,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { generateOpenAIContent } from '../services/openaiService';
+import type { CustomCategory } from '../types/category';
 
 // Types
 interface CanvasBlock {
@@ -16,8 +17,9 @@ interface CanvasBlock {
     description: string;
     note: string;
     icon: string;
-    category: 'revenue' | 'efficiency' | 'creative' | 'automation';
+    category: 'revenue' | 'efficiency' | 'creative' | 'automation' | 'datasource';
     color: string;
+    dataSourceId?: string;
 }
 
 interface Connection {
@@ -46,6 +48,7 @@ const categoryColors: Record<string, { bg: string; border: string; text: string;
     efficiency: { bg: 'bg-blue-50', border: 'border-blue-300', text: 'text-blue-600', glow: 'shadow-blue-200' },
     creative: { bg: 'bg-purple-50', border: 'border-purple-300', text: 'text-purple-600', glow: 'shadow-purple-200' },
     automation: { bg: 'bg-amber-50', border: 'border-amber-300', text: 'text-amber-600', glow: 'shadow-amber-200' },
+    datasource: { bg: 'bg-indigo-50', border: 'border-indigo-300', text: 'text-indigo-600', glow: 'shadow-indigo-200' },
 };
 
 interface AICanvasProps {
@@ -74,10 +77,20 @@ const AICanvas: React.FC<AICanvasProps> = ({ onExit }) => {
     // New block form state
     const [newBlockTitle, setNewBlockTitle] = useState('');
     const [newBlockDescription, setNewBlockDescription] = useState('');
-    const [newBlockCategory, setNewBlockCategory] = useState<'revenue' | 'efficiency' | 'creative' | 'automation'>('efficiency');
+    const [newBlockCategory, setNewBlockCategory] = useState<'revenue' | 'efficiency' | 'creative' | 'automation' | 'datasource'>('efficiency');
     const [isBrainstorming, setIsBrainstorming] = useState(false);
     const [brainstormPrompt, setBrainstormPrompt] = useState('');
     const [showBrainstormModal, setShowBrainstormModal] = useState(false);
+    const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
+    const [selectedDataSource, setSelectedDataSource] = useState<string>('');
+
+    // Load custom categories
+    useEffect(() => {
+        const data = localStorage.getItem('customCategories');
+        if (data) {
+            setCustomCategories(JSON.parse(data));
+        }
+    }, [showAddModal]);
 
     // Load saved canvas data
     useEffect(() => {
@@ -107,19 +120,25 @@ const AICanvas: React.FC<AICanvasProps> = ({ onExit }) => {
             revenue: 'trending',
             efficiency: 'zap',
             creative: 'sparkles',
-            automation: 'bot'
+            automation: 'bot',
+            datasource: 'workflow'
         };
+
+        const finalTitle = newBlockCategory === 'datasource' && selectedDataSource
+            ? customCategories.find(c => c.id === selectedDataSource)?.title || newBlockTitle
+            : newBlockTitle;
 
         const newBlock: CanvasBlock = {
             id: 'block-' + Date.now(),
-            x: -pan.x + 100 + Math.random() * 50,
-            y: -pan.y + 100 + Math.random() * 50,
-            title: newBlockTitle,
-            description: newBlockDescription,
+            x: -pan.x + 150,
+            y: -pan.y + 150,
+            title: finalTitle,
+            description: newBlockDescription || (newBlockCategory === 'datasource' ? 'Data Pipeline' : ''),
             note: '',
             icon: iconByCategory[newBlockCategory],
             category: newBlockCategory,
             color: categoryColors[newBlockCategory].text,
+            dataSourceId: newBlockCategory === 'datasource' ? selectedDataSource : undefined
         };
 
         setBlocks([...blocks, newBlock]);
@@ -514,7 +533,7 @@ const AICanvas: React.FC<AICanvasProps> = ({ onExit }) => {
                                 <div>
                                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest pl-2">Category</label>
                                     <div className="flex flex-wrap gap-2 mt-2">
-                                        {(['revenue', 'efficiency', 'creative', 'automation'] as const).map((cat) => (
+                                        {(['revenue', 'efficiency', 'creative', 'automation', 'datasource'] as const).map((cat) => (
                                             <button
                                                 key={cat}
                                                 onClick={() => setNewBlockCategory(cat)}
@@ -525,6 +544,22 @@ const AICanvas: React.FC<AICanvasProps> = ({ onExit }) => {
                                         ))}
                                     </div>
                                 </div>
+
+                                {newBlockCategory === 'datasource' && (
+                                    <div className="animate-in fade-in slide-in-from-top-1">
+                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest pl-2">Select Pipeline Source</label>
+                                        <select
+                                            value={selectedDataSource}
+                                            onChange={(e) => setSelectedDataSource(e.target.value)}
+                                            className="w-full h-12 bg-indigo-50 border border-indigo-100 rounded-xl px-4 text-sm font-bold text-indigo-700 mt-2 focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                                        >
+                                            <option value="">Choose Tracker...</option>
+                                            {customCategories.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.title}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
 
                                 <button onClick={addBlock} className="w-full h-12 bg-violet-600 text-white rounded-xl font-black uppercase tracking-widest text-xs mt-4 shadow-lg shadow-violet-200 hover:bg-violet-700 transition-colors">
                                     Create Node
@@ -671,11 +706,13 @@ const DraggableBlock: React.FC<DraggableBlockProps> = ({
     const [prevPropsX, setPrevPropsX] = useState(block.x);
     const [prevPropsY, setPrevPropsY] = useState(block.y);
 
-    if (!isDragging && (block.x !== prevPropsX || block.y !== prevPropsY)) {
-        setPrevPropsX(block.x);
-        setPrevPropsY(block.y);
-        setPosition({ x: block.x, y: block.y });
-    }
+    useEffect(() => {
+        if (!isDragging && (block.x !== prevPropsX || block.y !== prevPropsY)) {
+            setPrevPropsX(block.x);
+            setPrevPropsY(block.y);
+            setPosition({ x: block.x, y: block.y });
+        }
+    }, [block.x, block.y, isDragging, prevPropsX, prevPropsY]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         if (mode !== 'design') return;

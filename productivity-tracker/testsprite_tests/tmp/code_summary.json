@@ -1,0 +1,112 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "React",
+        "Vite",
+        "Tailwind CSS",
+        "Firebase (Auth, Firestore, Functions, Messaging, RTDB, Storage)",
+        "Supabase",
+        "Notion API",
+        "Google Gemini API",
+        "OpenAI API",
+        "GSAP",
+        "Framer Motion",
+        "Lenis"
+    ],
+    "features": [
+        {
+            "name": "Authentication",
+            "description": "Google and Phone authentication using Firebase, with PIN-based protection for sensitive settings.",
+            "files": [
+                "src/components/AuthScreen.tsx",
+                "src/services/authService.ts",
+                "src/contexts/AuthContext.tsx",
+                "src/components/PINSetupModal.tsx"
+            ]
+        },
+        {
+            "name": "Dashboard & Stats",
+            "description": "Unified dashboard for productivity metrics, goals, and system status.",
+            "files": [
+                "src/components/Dashboard.tsx",
+                "src/components/Stats.tsx",
+                "src/components/AIDashboard.tsx"
+            ]
+        },
+        {
+            "name": "AI Productivity Suite",
+            "description": "AI-powered tools including agents, canvas, notebook, and prompt library using Gemini and OpenAI.",
+            "files": [
+                "src/components/AIAgents.tsx",
+                "src/components/AICanvas.tsx",
+                "src/components/AINotebook.tsx",
+                "src/components/AITools.tsx",
+                "src/services/geminiService.ts",
+                "src/services/openaiService.ts"
+            ]
+        },
+        {
+            "name": "Health & Monitoring",
+            "description": "Step tracking and sleep monitoring services with dedicated widgets.",
+            "files": [
+                "src/services/stepTrackingService.ts",
+                "src/services/sleepMonitoringService.ts",
+                "src/components/calculators/StepCalculator.tsx",
+                "src/components/calculators/SleepCalculator.tsx"
+            ]
+        },
+        {
+            "name": "Reading & Library",
+            "description": "Comprehensive reading system with PDF support and YouTube source integration.",
+            "files": [
+                "src/components/ReadingLibraryNew.tsx",
+                "src/components/ReadingSystem.tsx",
+                "src/components/AddYouTubeSource.tsx",
+                "src/services/youtubeService.ts"
+            ]
+        },
+        {
+            "name": "Content Protection",
+            "description": "System-wide DNS filtering instructions and in-app content filtering for keywords and URLs.",
+            "files": [
+                "src/services/contentFilter.ts",
+                "src/components/DNSInstructionsModal.tsx",
+                "src/components/ProtectionLevelSelector.tsx"
+            ]
+        },
+        {
+            "name": "Educational Sections",
+            "description": "Dedicated sections for Financial Learning, Business, Freelancing, and Coding.",
+            "files": [
+                "src/components/FinancialLearningSection/",
+                "src/components/BusinessSection.tsx",
+                "src/components/FreelancingSection.tsx",
+                "src/components/CodingSection.tsx"
+            ]
+        },
+        {
+            "name": "Meditation & Wellness",
+            "description": "Integrated meditation system with audio support.",
+            "files": [
+                "src/components/MeditationSystem.tsx",
+                "src/services/freesoundService.ts"
+            ]
+        },
+        {
+            "name": "Notion Integration",
+            "description": "Bidirectional sync and data management with Notion databases.",
+            "files": [
+                "src/services/notionService.ts",
+                "src/components/NotesReflection.tsx"
+            ]
+        },
+        {
+            "name": "Notification System",
+            "description": "Context-aware notifications for incomplete actions and system alerts.",
+            "files": [
+                "src/contexts/NotificationContext.tsx",
+                "src/hooks/useActionNotification.ts"
+            ]
+        }
+    ]
+}

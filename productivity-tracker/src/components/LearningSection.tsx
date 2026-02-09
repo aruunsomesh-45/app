@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    ArrowLeft, Brain, ChevronDown, ChevronUp,
+    ArrowLeft, ChevronDown, ChevronUp,
     Play, Pause, Volume2, VolumeX, Lightbulb, Network, Sparkles,
     Check, AlertCircle, Zap, Baby, GraduationCap, Award,
     MessageCircle, Link2, BookMarked, Headphones, Map,
@@ -222,166 +222,46 @@ const LearningSection: React.FC = () => {
         setIsGenerating(true);
         setError(null);
 
-        // Retry logic for handling API overload errors
-        const maxRetries = 3;
+        try {
+            // Use Firebase Cloud Function with Genkit AI
+            const { getFunctions, httpsCallable } = await import('firebase/functions');
+            const functions = getFunctions();
+            const learningHubGenerate = httpsCallable(functions, 'learningHubGenerate');
 
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-            try {
-                const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-                if (!apiKey) {
-                    throw new Error('Gemini API key not found. Please add VITE_GEMINI_API_KEY to your .env file.\n\nGet your FREE API key at: https://aistudio.google.com/app/apikey');
-                }
+            const result = await learningHubGenerate({
+                userInput: userInput
+            });
 
-                // Import and use the centralized AI service with automatic OpenAI fallback
-                const { generateContent } = await import('../services/geminiService');
+            const parsed = result.data as Omit<GeneratedContent, 'id' | 'userInput' | 'timestamp'>;
 
-                const prompt = `You are an AI learning assistant. Analyze this content and return ONLY valid JSON.
+            const newContent: GeneratedContent = {
+                id: Date.now().toString(),
+                userInput: userInput,
+                timestamp: Date.now(),
+                ...parsed
+            };
 
-TOPIC: ${userInput}
+            setGeneratedContent(newContent);
+            setSavedContent(prev => [newContent, ...prev]);
+            setUserInput('');
+            setIsGenerating(false);
 
-Return this EXACT JSON structure (keep responses CONCISE to avoid truncation):
+        } catch (err) {
+            console.error('Learning Hub Error:', err);
 
-{
-  "tldr": "2-3 sentence summary of the topic",
-  "eli5": "Simple 100-word explanation a child could understand",
-  "simple": "300-400 word beginner explanation with examples",
-  "normal": "500-600 word intermediate explanation with technical details",
-  "deep": "700-800 word advanced explanation with in-depth analysis",
-  "analogy": "A memorable analogy (2-3 sentences)",
-  "realWorldExample": "100-150 word real-world application example",
-  "commonMistakes": ["mistake 1", "mistake 2", "mistake 3"],
-  "keyTakeaways": ["takeaway 1", "takeaway 2", "takeaway 3", "takeaway 4", "takeaway 5"],
-  "relatedConcepts": ["concept 1", "concept 2", "concept 3", "concept 4"],
-  "mindMap": {
-    "core": "Main concept name",
-    "why": "50-word explanation of why this exists",
-    "where": "50-word explanation of where it's used",
-    "children": [
-      {"concept": "Sub-concept 1", "examples": ["ex1", "ex2"], "applications": ["app1", "app2"]},
-      {"concept": "Sub-concept 2", "examples": ["ex1", "ex2"], "applications": ["app1", "app2"]},
-      {"concept": "Sub-concept 3", "examples": ["ex1", "ex2"], "applications": ["app1", "app2"]}
-    ]
-  },
-  "podcastScript": {
-    "beginner": "200-300 word friendly podcast script for beginners",
-    "normal": "300-400 word informative podcast script for intermediate learners",
-    "deep": "400-500 word technical podcast script for advanced learners"
-  }
-}
+            const errorMessage = err instanceof Error ? err.message : String(err);
 
-IMPORTANT: Keep ALL text fields SHORT to ensure complete JSON. Return ONLY the JSON, nothing else.`;
-
-                // Use the centralized service - it will try Gemini 2.0/1.5 first, then OpenAI
-                const text = await generateContent(apiKey, prompt);
-
-
-
-                // Clean the response to extract JSON
-                let jsonText = text.trim();
-
-                console.log('Raw AI response (first 500 chars):', jsonText.substring(0, 500));
-
-                // Remove markdown code blocks if present
-                if (jsonText.startsWith('```json')) {
-                    jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-                } else if (jsonText.startsWith('```')) {
-                    jsonText = jsonText.replace(/```\n?/g, '');
-                }
-
-                // Try to find JSON object within the text
-                // Look for the first { and last }
-                const firstBrace = jsonText.indexOf('{');
-                const lastBrace = jsonText.lastIndexOf('}');
-
-                if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-                    jsonText = jsonText.substring(firstBrace, lastBrace + 1);
-                }
-
-                // Remove any text before the first {
-                jsonText = jsonText.substring(jsonText.indexOf('{'));
-
-                // Remove any text after the last }
-                const lastBraceIndex = jsonText.lastIndexOf('}');
-                if (lastBraceIndex !== -1) {
-                    jsonText = jsonText.substring(0, lastBraceIndex + 1);
-                }
-
-                // The JSON from Gemini is properly formatted with real newlines.
-                // We need to escape newlines/tabs ONLY inside string values, not at the structural level.
-                // Use a regex to find string contents and escape control characters within them.
-                jsonText = jsonText.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, (match) => {
-                    // This is a string value, escape control characters inside it
-                    return match
-                        .replace(/\n/g, '\\n')
-                        .replace(/\r/g, '\\r')
-                        .replace(/\t/g, '\\t');
-                });
-
-                console.log('Cleaned JSON (first 500 chars):', jsonText.substring(0, 500));
-
-                let parsed;
-                try {
-                    parsed = JSON.parse(jsonText);
-                } catch (parseError) {
-                    console.error('JSON Parse Error:', parseError);
-                    console.error('Failed JSON text (first 1000 chars):', jsonText.substring(0, 1000));
-
-                    // If this is the last attempt and we have JSON errors, try with a simpler prompt
-                    if (attempt === maxRetries) {
-                        throw new Error(`Failed to parse AI response after ${maxRetries} attempts.\n\n🔍 Debug Info:\n- Error: ${parseError instanceof Error ? parseError.message : 'Unknown error'}\n- First 200 chars: ${jsonText.substring(0, 200)}\n\n💡 Tip: Try a much shorter, simpler topic like "Python" or "What is AI?"\n\n📝 Check browser console (F12) for full details.`);
-                    } else {
-                        // Not the last attempt, so just continue to next attempt
-                        console.warn(`JSON parse failed on attempt ${attempt}, will retry...`);
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        continue;
-                    }
-                }
-
-
-                const newContent: GeneratedContent = {
-                    id: Date.now().toString(),
-                    userInput: userInput,
-                    timestamp: Date.now(),
-                    ...parsed
-                };
-
-                setGeneratedContent(newContent);
-                setSavedContent(prev => [newContent, ...prev]);
-                setUserInput('');
-
-                // Success! Break out of retry loop
-                setIsGenerating(false);
-                return;
-
-            } catch (err) {
-                console.error(`Attempt ${attempt}/${maxRetries} failed:`, err);
-
-                // Check if it's a 503 error (overloaded)
-                const errorMessage = err instanceof Error ? err.message : String(err);
-                const is503Error = errorMessage.includes('503') || errorMessage.includes('overloaded');
-
-                if (is503Error && attempt < maxRetries) {
-                    // Wait before retrying (exponential backoff: 2s, 4s, 8s)
-                    const waitTime = Math.pow(2, attempt) * 1000;
-                    setError(`⏳ API is busy (Attempt ${attempt}/${maxRetries}). Retrying in ${waitTime / 1000}s...`);
-                    await new Promise(resolve => setTimeout(resolve, waitTime));
-                    continue; // Try again
-                } else if (attempt === maxRetries) {
-                    // All retries exhausted
-                    if (is503Error) {
-                        setError('⚠️ Gemini API is currently overloaded. This is temporary!\n\n📝 What to do:\n1. Wait 2-3 minutes and try again\n2. Try a shorter or simpler topic\n3. The API will work again soon! 🙏');
-                    } else {
-                        setError(err instanceof Error ? err.message : 'Failed to generate learning content. Please try again.');
-                    }
-                    setIsGenerating(false);
-                    return;
-                } else {
-                    // Non-503 error, don't retry
-                    setError(err instanceof Error ? err.message : 'Failed to generate learning content. Please try again.');
-                    setIsGenerating(false);
-                    return;
-                }
+            if (errorMessage.includes('unauthenticated')) {
+                setError('Please sign in to use the Learning Hub');
+            } else if (errorMessage.includes('503') || errorMessage.includes('overloaded') || errorMessage.includes('resource-exhausted')) {
+                setError('⚠️ AI service is currently busy. This is temporary!\n\n📝 What to do:\n1. Wait 2-3 minutes and try again\n2. Try a shorter or simpler topic\n3. The service will work again soon! 🙏');
+            } else if (errorMessage.includes('JSON') || errorMessage.includes('parse')) {
+                setError('Failed to process AI response. Please try a shorter or simpler topic.');
+            } else {
+                setError(errorMessage || 'Failed to generate learning content. Please try again.');
             }
+
+            setIsGenerating(false);
         }
     };
 
@@ -411,7 +291,7 @@ IMPORTANT: Keep ALL text fields SHORT to ensure complete JSON. Return ONLY the J
                             <ArrowLeft className="w-5 h-5 text-gray-700" />
                         </button>
                         <div className="flex items-center gap-2">
-                            <Brain className="w-6 h-6 text-accent" />
+
                             <h1 className="text-xl font-bold text-gray-900 dark:text-text-dark">Learning Hub</h1>
                         </div>
                         <button

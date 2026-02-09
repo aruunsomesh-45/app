@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send } from 'lucide-react';
-import { generateContent } from '../services/geminiService';
+
+import { useContentProtection } from '../contexts/ContentProtectionContext';
+import { checkKeywords } from '../services/contentFilter';
 
 interface Message {
     id: string;
@@ -9,7 +11,8 @@ interface Message {
     timestamp: Date;
 }
 
-const NanoBananaAI: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+const NanoBananaAI: React.FC<{ isOpen: boolean; onClose: () => void; initialMessage?: string }> = ({ isOpen, onClose, initialMessage }) => {
+    const { settings, logBlockedAttempt } = useContentProtection();
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
@@ -18,12 +21,24 @@ const NanoBananaAI: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
             timestamp: new Date()
         }
     ]);
+
+    useEffect(() => {
+        if (isOpen && initialMessage) {
+            setMessages(prev => [
+                ...prev,
+                {
+                    id: Date.now().toString(),
+                    text: initialMessage,
+                    sender: 'ai',
+                    timestamp: new Date()
+                }
+            ]);
+        }
+    }, [isOpen, initialMessage]);
+
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-
-    // Initialize Gemini API
-    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,6 +50,37 @@ const NanoBananaAI: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
 
     const handleSend = async () => {
         if (!input.trim()) return;
+
+        // Content Protection Check
+        if (settings.protectionLevel !== 'off') {
+            const protectionResult = checkKeywords(
+                input,
+                settings.protectionLevel,
+                settings.customBlockedKeywords
+            );
+
+            if (protectionResult.blocked) {
+                logBlockedAttempt(input, 'keyword', protectionResult.reason);
+
+                const userMsg: Message = {
+                    id: Date.now().toString(),
+                    text: input,
+                    sender: 'user',
+                    timestamp: new Date()
+                };
+
+                const blockedMsg: Message = {
+                    id: (Date.now() + 1).toString(),
+                    text: `🔒 Content Blocked. ${protectionResult.reason}`,
+                    sender: 'ai',
+                    timestamp: new Date()
+                };
+
+                setMessages(prev => [...prev, userMsg, blockedMsg]);
+                setInput('');
+                return;
+            }
+        }
 
         const userMsg: Message = {
             id: Date.now().toString(),
@@ -48,21 +94,27 @@ const NanoBananaAI: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
         setIsLoading(true);
 
         try {
-            if (!API_KEY || API_KEY === 'your_gemini_api_key_here') {
-                throw new Error("API Key missing or invalid. Please set your VITE_GEMINI_API_KEY in the .env file.");
-            }
+            // Use Firebase Cloud Function with Genkit AI
+            const { getFunctions, httpsCallable } = await import('firebase/functions');
+            const functions = getFunctions();
+            const nanoBananaChat = httpsCallable(functions, 'nanoBananaChat');
 
-            const systemPrompt = `You are Nano Banana, a personal AI productivity coach. 
-            Keep your text responses encouraging and focused on productivity.
-            
-            User says: ${input}`;
+            // Build conversation history (last 5 messages)
+            const conversationHistory = messages.slice(-5).map(msg => ({
+                role: msg.sender === 'user' ? 'user' as const : 'assistant' as const,
+                content: msg.text
+            }));
 
-            // Use geminiService with automatic model discovery and fallback
-            const text = await generateContent(API_KEY, systemPrompt);
+            const result = await nanoBananaChat({
+                message: input,
+                conversationHistory
+            });
+
+            const data = result.data as { response: string; timestamp: number };
 
             const aiMsg: Message = {
                 id: (Date.now() + 1).toString(),
-                text: text.trim(),
+                text: data.response,
                 sender: 'ai',
                 timestamp: new Date()
             };
@@ -75,10 +127,12 @@ const NanoBananaAI: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
 
             // Check for common error types
             const errorStr = String(error);
-            if (errorStr.includes("API_KEY_INVALID") || errorStr.includes("invalid key") || errorStr.includes("403") || errorStr.includes("401")) {
-                displayError = "Invalid API Key! 🍌 Please generate a new key at: https://aistudio.google.com/app/apikey and update your .env file.";
-            } else if (errorStr.includes("model not found") || errorStr.includes("404")) {
-                displayError = "Model error! 🍌 Make sure you have access to Gemini models in your region.";
+            if (errorStr.includes("unauthenticated")) {
+                displayError = "Please sign in to use Nano Banana! 🍌";
+            } else if (errorStr.includes("API_KEY_INVALID") || errorStr.includes("invalid key") || errorStr.includes("403") || errorStr.includes("401")) {
+                displayError = "AI service configuration error. Please contact support.";
+            } else if (errorStr.includes("503") || errorStr.includes("overloaded") || errorStr.includes("resource-exhausted")) {
+                displayError = "AI service is busy right now. Please try again in a moment! 🍌";
             } else if (error instanceof Error) {
                 displayError = `AI Error: ${error.message}`;
             }

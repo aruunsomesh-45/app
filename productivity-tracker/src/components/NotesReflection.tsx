@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     ArrowLeft, Plus, Search, Tag,
     Dumbbell, Brain, BookOpen, Sparkles,
-    Calendar, X, Edit3
+    Calendar, X, Edit3, Paperclip, FileText, Loader2
 } from 'lucide-react';
 import { useLifeTracker } from '../utils/lifeTrackerStore';
 import type { LifeNote } from '../utils/lifeTrackerStore';
@@ -34,6 +34,8 @@ const NotesReflection: React.FC = () => {
     const [noteMood, setNoteMood] = useState<number | undefined>(undefined);
     const [noteTags, setNoteTags] = useState<string[]>([]);
     const [tagInput, setTagInput] = useState('');
+    const [attachmentPath, setAttachmentPath] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Filter notes
     const filteredNotes = allNotes.filter(note => {
@@ -76,13 +78,34 @@ const NotesReflection: React.FC = () => {
             mood: noteMood,
             tags: noteTags,
             date: new Date().toISOString().split('T')[0],
+            attachmentPath: attachmentPath || undefined,
         });
 
         setNoteContent('');
         setNoteSystem('general');
         setNoteMood(undefined);
         setNoteTags([]);
+        setAttachmentPath(null);
         setShowAddNoteModal(false);
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        try {
+            // @ts-ignore
+            const path = await store.uploadFile(file, 'note-attachments');
+            if (path) {
+                setAttachmentPath(path);
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert('Failed to upload file.');
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const formatDate = (dateStr: string): string => {
@@ -232,6 +255,11 @@ const NotesReflection: React.FC = () => {
 
                                                 {/* Content */}
                                                 <p className="text-gray-700 whitespace-pre-wrap">{note.content}</p>
+
+                                                {/* Attachment */}
+                                                {note.attachmentPath && (
+                                                    <NoteAttachmentView path={note.attachmentPath} />
+                                                )}
 
                                                 {/* Tags */}
                                                 {note.tags.length > 0 && (
@@ -406,6 +434,44 @@ const NotesReflection: React.FC = () => {
                                         </button>
                                     </div>
                                 </div>
+
+                                {/* Attachment Upload */}
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">Attachment</label>
+                                    <div className="flex items-center gap-3">
+                                        <label className={`cursor-pointer px-4 py-3 rounded-xl border border-dashed border-gray-300 flex items-center gap-2 hover:bg-gray-50 transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                onChange={handleFileUpload}
+                                                disabled={isUploading}
+                                            />
+                                            {isUploading ? (
+                                                <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                                            ) : (
+                                                <Paperclip className="w-4 h-4 text-gray-500" />
+                                            )}
+                                            <span className="text-sm text-gray-500">
+                                                {isUploading ? 'Uploading...' : 'Attach File'}
+                                            </span>
+                                        </label>
+
+                                        {attachmentPath && (
+                                            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg border border-slate-100">
+                                                <FileText className="w-4 h-4 text-slate-500" />
+                                                <span className="text-xs text-slate-600 truncate max-w-[150px]">
+                                                    {attachmentPath.split('/').pop()}
+                                                </span>
+                                                <button
+                                                    onClick={() => setAttachmentPath(null)}
+                                                    className="p-1 hover:bg-slate-200 rounded-full"
+                                                >
+                                                    <X className="w-3 h-3 text-slate-400" />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
                             <motion.button
@@ -422,6 +488,48 @@ const NotesReflection: React.FC = () => {
                 )}
             </AnimatePresence>
         </div>
+    );
+};
+
+
+const NoteAttachmentView: React.FC<{ path: string }> = ({ path }) => {
+    const store = useLifeTracker();
+    const [url, setUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    React.useEffect(() => {
+        const fetchUrl = async () => {
+            // @ts-ignore
+            const signed = await store.getPrivateFileUrl('note-attachments', path);
+            setUrl(signed);
+            setLoading(false);
+        };
+        fetchUrl();
+    }, [path, store]);
+
+    if (loading) return <div className="mt-2 text-xs text-gray-400">Loading attachment...</div>;
+    if (!url) return null;
+
+    const isImage = path.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+
+    if (isImage) {
+        return (
+            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 max-w-xs">
+                <img src={url} alt="Attachment" className="w-full h-auto" />
+            </div>
+        );
+    }
+
+    return (
+        <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+        >
+            <Paperclip className="w-4 h-4 text-gray-500" />
+            <span className="text-xs font-medium text-gray-700">View Attachment</span>
+        </a>
     );
 };
 

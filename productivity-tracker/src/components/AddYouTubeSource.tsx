@@ -9,13 +9,18 @@ import {
     ExternalLink,
     Loader2,
     MessageSquare,
-    Save
+    ShieldAlert,
+    Save,
 } from 'lucide-react';
 import youtubeService from '../services/youtubeService';
 import { saveYouTubeVideo } from '../services/notionService';
 
+import { useContentProtection } from '../contexts/ContentProtectionContext';
+import { checkUrl } from '../services/contentFilter';
+
 const AddYouTubeSource: React.FC = () => {
     const navigate = useNavigate();
+    const { settings, logBlockedAttempt } = useContentProtection();
 
     // Form State
     const [title, setTitle] = useState('');
@@ -35,7 +40,7 @@ const AddYouTubeSource: React.FC = () => {
     // UI State
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [urlStatus, setUrlStatus] = useState<'idle' | 'valid' | 'invalid'>('idle');
+    const [urlStatus, setUrlStatus] = useState<'idle' | 'valid' | 'invalid' | 'blocked'>('idle');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
@@ -46,6 +51,18 @@ const AddYouTubeSource: React.FC = () => {
                 setUrlStatus('idle');
                 setMetadata(null);
                 return;
+            }
+
+            // Content Protection Check
+            if (settings.protectionLevel !== 'off') {
+                const protectionResult = checkUrl(url, settings.protectionLevel, settings.customBlockedDomains);
+                if (protectionResult.blocked) {
+                    setUrlStatus('blocked');
+                    setError(`Blocked: ${protectionResult.reason}`);
+                    logBlockedAttempt(url, undefined, protectionResult.reason);
+                    setMetadata(null);
+                    return;
+                }
             }
 
             if (youtubeService.isValidYouTubeUrl(url)) {
@@ -96,7 +113,7 @@ const AddYouTubeSource: React.FC = () => {
         }, 800);
 
         return () => clearTimeout(timer);
-    }, [url, title]);
+    }, [url, title, settings, logBlockedAttempt]);
 
     const handleSave = async () => {
         if (!url || urlStatus !== 'valid') return;
@@ -163,9 +180,10 @@ const AddYouTubeSource: React.FC = () => {
                         <div className="relative group">
                             <div className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors ${urlStatus === 'valid' ? 'text-emerald-500' :
                                 urlStatus === 'invalid' ? 'text-rose-500' :
-                                    'text-slate-400 group-focus-within:text-indigo-500'
+                                    urlStatus === 'blocked' ? 'text-orange-500' :
+                                        'text-slate-400 group-focus-within:text-indigo-500'
                                 }`}>
-                                <Youtube className="w-5 h-5" />
+                                {urlStatus === 'blocked' ? <ShieldAlert className="w-5 h-5" /> : <Youtube className="w-5 h-5" />}
                             </div>
                             <input
                                 value={url}
@@ -173,7 +191,8 @@ const AddYouTubeSource: React.FC = () => {
                                 placeholder="https://youtube.com/watch?v=..."
                                 className={`w-full bg-white border-2 rounded-2xl py-4 pl-14 pr-12 text-slate-900 font-medium transition-all outline-none ${urlStatus === 'valid' ? 'border-emerald-100 focus:border-emerald-500 shadow-sm shadow-emerald-50' :
                                     urlStatus === 'invalid' ? 'border-rose-100 focus:border-rose-500 shadow-sm shadow-rose-50' :
-                                        'border-slate-100 focus:border-indigo-500'
+                                        urlStatus === 'blocked' ? 'border-orange-100 focus:border-orange-500 shadow-sm shadow-orange-50' :
+                                            'border-slate-100 focus:border-indigo-500'
                                     }`}
                             />
                             <div className="absolute right-5 top-1/2 -translate-y-1/2">
@@ -183,6 +202,7 @@ const AddYouTubeSource: React.FC = () => {
                                     <>
                                         {urlStatus === 'valid' && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
                                         {urlStatus === 'invalid' && <AlertCircle className="w-5 h-5 text-rose-500" />}
+                                        {urlStatus === 'blocked' && <ShieldAlert className="w-5 h-5 text-orange-500" />}
                                     </>
                                 )}
                             </div>
@@ -190,6 +210,11 @@ const AddYouTubeSource: React.FC = () => {
                         {urlStatus === 'invalid' && (
                             <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase tracking-wider">
                                 ❌ Please enter a valid YouTube URL
+                            </p>
+                        )}
+                        {urlStatus === 'blocked' && (
+                            <p className="text-[10px] text-orange-500 font-bold ml-1 uppercase tracking-wider">
+                                🛡️ Content Blocked by Protection Settings
                             </p>
                         )}
                     </div>

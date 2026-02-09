@@ -12,14 +12,56 @@ import {
     Sparkles,
     Layout,
     Bolt,
-    Globe
+    Globe,
+    Target,
+    Activity,
+    RefreshCw
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import NanoBananaAI from './NanoBananaAI';
+import {
+    aiInsightsApi,
+    aggregationApi
+} from '../services/cloudFunctionsApi';
+import { toast } from 'react-hot-toast';
 
 const AIDashboard: React.FC = () => {
     const navigate = useNavigate();
     const [isNanoBananaOpen, setIsNanoBananaOpen] = useState(false);
+    const [loadingAction, setLoadingAction] = useState<string | null>(null);
+    const [generatedInsight, setGeneratedInsight] = useState<string | undefined>(undefined);
+
+    const handleAction = async (action: string) => {
+        setLoadingAction(action);
+        setGeneratedInsight(undefined);
+        try {
+            let result;
+            if (action === 'daily') {
+                const today = new Date().toISOString().split('T')[0];
+                await aggregationApi.triggerDailyAggregation(today);
+                result = await aiInsightsApi.generateDailySummary(today);
+                toast.success('Daily Summary Generated!');
+            } else if (action === 'weekly') {
+                result = await aiInsightsApi.generateWeeklyReview(); // Defaults to current week
+                toast.success('Weekly Review Generated!');
+            } else if (action === 'goals') {
+                result = await aiInsightsApi.generateGoalSuggestions();
+                toast.success('Goal Suggestions Ready!');
+            }
+
+            if (result && result.content) {
+                setGeneratedInsight(result.content);
+            }
+
+            // Open chat to see results
+            setIsNanoBananaOpen(true);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to generate. Try again.');
+        } finally {
+            setLoadingAction(null);
+        }
+    };
 
     const layers = [
         {
@@ -86,7 +128,15 @@ const AIDashboard: React.FC = () => {
 
     return (
         <div className="ai-section mt-10 min-h-screen bg-[#F5F5F5] font-sans antialiased text-[#333333] transition-colors duration-300 relative flex justify-center">
-            <NanoBananaAI isOpen={isNanoBananaOpen} onClose={() => setIsNanoBananaOpen(false)} />
+            {/* AI Modal */}
+            <NanoBananaAI
+                isOpen={isNanoBananaOpen}
+                onClose={() => {
+                    setIsNanoBananaOpen(false);
+                    setGeneratedInsight(undefined);
+                }}
+                initialMessage={generatedInsight}
+            />
 
             <div className="w-full max-w-md h-full min-h-screen bg-[#F5F5F5] relative flex flex-col pb-24">
                 {/* Header */}
@@ -181,35 +231,111 @@ const AIDashboard: React.FC = () => {
                     ))}
                 </main>
 
-                {/* Future Proofing Grid */}
-                <div className="px-6 mt-8 grid grid-cols-2 gap-5">
-                    <div className="bg-transparent p-6 rounded-[2.5rem] border-2 border-dashed border-[#CCCCCC] flex flex-col items-center justify-center opacity-40 hover:opacity-100 hover:border-[#847777] hover:bg-white transition-all cursor-pointer group">
-                        <Layout className="w-5 h-5 text-[#333333] mb-2 group-hover:text-[#847777] transition-colors" />
-                        <p className="text-[9px] font-black text-[#333333] uppercase tracking-widest group-hover:text-[#847777]">Dashboard Config</p>
-                    </div>
-                    <div className="bg-transparent p-6 rounded-[2.5rem] border-2 border-dashed border-[#CCCCCC] flex flex-col items-center justify-center opacity-40 hover:opacity-100 hover:border-[#847777] hover:bg-white transition-all cursor-pointer group">
-                        <Bolt className="w-5 h-5 text-[#333333] mb-2 group-hover:text-[#847777] transition-colors" />
-                        <p className="text-[9px] font-black text-[#333333] uppercase tracking-widest group-hover:text-[#847777]">Automations</p>
-                    </div>
-                </div>
+            </div>
 
-                {/* Floating Command Button - Dior Accent (Scrollable) */}
-                <div className="flex justify-center mt-8 mb-12 relative z-10">
+            {/* AI Control Panel */}
+            <div className="px-6 mt-8">
+                <h3 className="text-xs font-black text-[#847777] uppercase tracking-[0.2em] mb-4 pl-2">Neural Functions</h3>
+                <div className="grid grid-cols-1 gap-4">
                     <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setIsNanoBananaOpen(true)}
-                        className="bg-gradient-to-r from-[#847777] to-[#5a4f4f] text-white px-8 py-5 rounded-full shadow-2xl shadow-[#847777]/40 flex items-center gap-4 group border border-[#847777]/50"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleAction('daily')}
+                        disabled={!!loadingAction}
+                        className="enhanced-card p-5 flex items-center justify-between group bg-white border border-gray-200 rounded-[1.5rem]"
                     >
-                        <div className="bg-white/10 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-md border border-white/20">
-                            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors">
+                                <Activity className="w-5 h-5" />
+                            </div>
+                            <div className="text-left">
+                                <h4 className="font-bold text-gray-900">Daily Summary</h4>
+                                <p className="text-[10px] uppercase tracking-wider text-gray-500">Aggregate & Analyze</p>
+                            </div>
                         </div>
-                        <span className="font-black uppercase tracking-[0.3em] text-[11px] italic">Command AI-OS</span>
+                        {loadingAction === 'daily' ? (
+                            <RefreshCw className="w-5 h-5 text-gray-400 animate-spin" />
+                        ) : (
+                            <ArrowLeft className="w-5 h-5 text-gray-300 rotate-180 group-hover:text-blue-500 transition-colors" />
+                        )}
+                    </motion.button>
+
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleAction('weekly')}
+                        disabled={!!loadingAction}
+                        className="enhanced-card p-5 flex items-center justify-between group bg-white border border-gray-200 rounded-[1.5rem]"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-purple-50 text-purple-600 group-hover:bg-purple-100 transition-colors">
+                                <Layout className="w-5 h-5" />
+                            </div>
+                            <div className="text-left">
+                                <h4 className="font-bold text-gray-900">Weekly Review</h4>
+                                <p className="text-[10px] uppercase tracking-wider text-gray-500">Deep Insights</p>
+                            </div>
+                        </div>
+                        {loadingAction === 'weekly' ? (
+                            <RefreshCw className="w-5 h-5 text-gray-400 animate-spin" />
+                        ) : (
+                            <ArrowLeft className="w-5 h-5 text-gray-300 rotate-180 group-hover:text-purple-500 transition-colors" />
+                        )}
+                    </motion.button>
+
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleAction('goals')}
+                        disabled={!!loadingAction}
+                        className="enhanced-card p-5 flex items-center justify-between group bg-white border border-gray-200 rounded-[1.5rem]"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-amber-50 text-amber-600 group-hover:bg-amber-100 transition-colors">
+                                <Target className="w-5 h-5" />
+                            </div>
+                            <div className="text-left">
+                                <h4 className="font-bold text-gray-900">Goal Buddy</h4>
+                                <p className="text-[10px] uppercase tracking-wider text-gray-500">Unblock & Suggest</p>
+                            </div>
+                        </div>
+                        {loadingAction === 'goals' ? (
+                            <RefreshCw className="w-5 h-5 text-gray-400 animate-spin" />
+                        ) : (
+                            <ArrowLeft className="w-5 h-5 text-gray-300 rotate-180 group-hover:text-amber-500 transition-colors" />
+                        )}
                     </motion.button>
                 </div>
-
-                <div className="h-28 w-full"></div>
             </div>
+
+            {/* Future Proofing Grid */}
+            <div className="px-6 mt-8 grid grid-cols-2 gap-5">
+                <div className="bg-transparent p-6 rounded-[2.5rem] border-2 border-dashed border-[#CCCCCC] flex flex-col items-center justify-center opacity-40 hover:opacity-100 hover:border-[#847777] hover:bg-white transition-all cursor-pointer group">
+                    <Layout className="w-5 h-5 text-[#333333] mb-2 group-hover:text-[#847777] transition-colors" />
+                    <p className="text-[9px] font-black text-[#333333] uppercase tracking-widest group-hover:text-[#847777]">Dashboard Config</p>
+                </div>
+                <div className="bg-transparent p-6 rounded-[2.5rem] border-2 border-dashed border-[#CCCCCC] flex flex-col items-center justify-center opacity-40 hover:opacity-100 hover:border-[#847777] hover:bg-white transition-all cursor-pointer group">
+                    <Bolt className="w-5 h-5 text-[#333333] mb-2 group-hover:text-[#847777] transition-colors" />
+                    <p className="text-[9px] font-black text-[#333333] uppercase tracking-widest group-hover:text-[#847777]">Automations</p>
+                </div>
+            </div>
+
+            {/* Floating Command Button - Dior Accent (Scrollable) */}
+            <div className="flex justify-center mt-8 mb-12 relative z-10">
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setIsNanoBananaOpen(true)}
+                    className="bg-gradient-to-r from-[#847777] to-[#5a4f4f] text-white px-8 py-5 rounded-full shadow-2xl shadow-[#847777]/40 flex items-center gap-4 group border border-[#847777]/50"
+                >
+                    <div className="bg-white/10 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-md border border-white/20">
+                        <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
+                    </div>
+                    <span className="font-black uppercase tracking-[0.3em] text-[11px] italic">Command AI-OS</span>
+                </motion.button>
+            </div>
+
+            <div className="h-28 w-full"></div>
         </div>
     );
 };

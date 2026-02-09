@@ -8,6 +8,7 @@ const AddCategory: React.FC = () => {
     const [title, setTitle] = useState('');
     const [subtitle, setSubtitle] = useState('');
     const [image, setImage] = useState<string | null>(null);
+    const [type, setType] = useState<'workout' | 'links' | 'checklist'>('workout');
 
     const handleSave = () => {
         if (!title.trim()) return;
@@ -15,9 +16,15 @@ const AddCategory: React.FC = () => {
         const newCategory = {
             id: uuidv4(),
             title,
-            subtitle: subtitle || 'Custom Routine',
-            img: image,
-            workouts: [] // Initialize with empty workouts
+            subtitle: subtitle || 'Custom Section',
+            img: image || (
+                type === 'links' ? '/images/section-ai.png' :
+                    type === 'checklist' ? '/images/section-ai.png' :
+                        '/images/section-workout.png'
+            ),
+            type: type, // specific type
+            workouts: [], // used if type is workout
+            items: [] // used if type is links or checklist
         };
 
         // Save to LocalStorage
@@ -56,15 +63,15 @@ const AddCategory: React.FC = () => {
                 <div className="flex w-12 items-center justify-start">
                     <button
                         onClick={() => navigate(-1)}
-                        className="text-[#61896f] text-base font-bold leading-normal tracking-[0.015em] shrink-0 cursor-pointer"
+                        className="text-[#61896f] text-base font-bold leading-normal tracking-[0.015em] cursor-pointer"
                     >
                         Cancel
                     </button>
                 </div>
                 <h2 className="text-[#111813] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
-                    Create New Routine
+                    Create Custom Section
                 </h2>
-                <div className="w-12"></div> {/* Spacer */}
+                <div className="w-12"></div>
             </header>
 
             <main className="flex-1 overflow-y-auto">
@@ -80,59 +87,92 @@ const AddCategory: React.FC = () => {
                                     ) : (
                                         <>
                                             <Camera className="w-9 h-9 text-[#61896f]" />
-                                            <span className="text-xs font-semibold text-[#61896f]">Add Photo</span>
+                                            <span className="text-xs font-semibold text-[#61896f]">Add Icon/Photo</span>
                                         </>
                                     )}
                                 </div>
                             </label>
                             <div className="flex flex-col items-center justify-center">
                                 <p className="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">
-                                    Upload Routine Cover
-                                </p>
-                                <p className="text-[#61896f] text-base font-normal leading-normal text-center mt-1">
-                                    Pick an image that motivates you
+                                    Section Appearance
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Form Fields - Matching Hybrid Training Design */}
+                {/* Form Fields */}
                 <div className="px-6 space-y-8 pt-4">
-                    {/* Routine Title / Heading */}
+                    {/* Routine Title */}
                     <div className="flex flex-col w-full">
                         <label className="flex flex-col flex-1">
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.1em] pb-1 px-1">Heading</p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.1em] pb-1 px-1">Title</p>
                             <input
                                 type="text"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                placeholder="e.g., Morning Mobility"
+                                placeholder="e.g., Finance, Travel, Ideas"
                                 className="w-full bg-transparent border-0 border-b border-gray-100 focus:border-[#2bee6c] focus:ring-0 px-1 py-2 text-2xl font-black text-[#111813] placeholder-gray-200 transition-colors"
                             />
                         </label>
                     </div>
 
-                    {/* Subtitle / Subheading */}
+                    {/* Subtitle */}
                     <div className="flex flex-col w-full">
                         <label className="flex flex-col flex-1">
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.1em] pb-2 px-1">Subheading</p>
-                            <textarea
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.1em] pb-2 px-1">Subtitle</p>
+                            <input
                                 value={subtitle}
                                 onChange={(e) => setSubtitle(e.target.value)}
-                                placeholder="e.g., 15 mins to start your day"
-                                className="w-full bg-gray-50 rounded-2xl border-0 focus:ring-1 focus:ring-[#2bee6c]/50 px-4 py-4 text-base text-[#111813] resize-none placeholder-gray-400 leading-relaxed min-h-[120px]"
+                                placeholder="Short description"
+                                className="w-full bg-transparent border-0 border-b border-gray-100 focus:border-[#2bee6c] focus:ring-0 px-4 py-2 text-base text-[#111813] placeholder-gray-400"
                             />
                         </label>
                     </div>
+
+                    {/* Type Selector */}
+                    <div className="flex flex-col w-full">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.1em] pb-2 px-1">Section Type</p>
+                        <div className="flex gap-2">
+                            {(['workout', 'links', 'checklist'] as const).map((t) => (
+                                <button
+                                    key={t}
+                                    onClick={() => setType(t)}
+                                    className={`flex-1 py-3 rounded-xl text-sm font-bold capitalize transition-all ${type === t ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-500'}`}
+                                >
+                                    {t}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
-                <div className="px-4 py-8">
+                <div className="px-4 py-8 space-y-4">
                     <button
                         onClick={handleSave}
                         className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-[#2bee6c] text-[#102216] text-lg font-bold leading-normal tracking-[0.015em] shadow-lg shadow-[#2bee6c]/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
-                        <span className="truncate">Add to Homepage</span>
+                        <span className="truncate">Create Section</span>
+                    </button>
+
+                    {/* PRD Builder Option */}
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-white px-3 text-gray-400 font-bold">or</span>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => navigate('/prd-builder')}
+                        className="flex w-full cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl h-14 px-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg font-bold leading-normal tracking-[0.015em] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <span className="truncate">Build from PRD (AI)</span>
                     </button>
                     <div className="h-10"></div>
                 </div>

@@ -9,6 +9,9 @@ import {
 import { useLifeTracker } from '../utils/lifeTrackerStore';
 import type { ReadingFolder, Book } from '../utils/lifeTrackerStore';
 import { openPdfInNewTab, extractPdfCover } from '../utils/pdfService';
+import Button from './ui/Button';
+import { useContentProtection } from '../contexts/ContentProtectionContext';
+import { checkKeywords } from '../services/contentFilter';
 
 const COVER_COLORS = [
     'from-blue-500 to-indigo-600',
@@ -31,6 +34,7 @@ const ReadingLibraryNew: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const store = useLifeTracker();
+    const { settings, logBlockedAttempt } = useContentProtection();
     const folders = store.getFolders();
 
     // View States
@@ -96,6 +100,21 @@ const ReadingLibraryNew: React.FC = () => {
     // Handlers
     const handleCreateFolder = () => {
         if (!folderName.trim()) return;
+
+        // Content Protection
+        if (settings.protectionLevel !== 'off') {
+            const protectionResult = checkKeywords(
+                `${folderName} ${folderDesc}`,
+                settings.protectionLevel,
+                settings.customBlockedKeywords
+            );
+            if (protectionResult.blocked) {
+                alert(`Cannot create folder: ${protectionResult.reason}`);
+                logBlockedAttempt(folderName, 'keyword', protectionResult.reason);
+                return;
+            }
+        }
+
         store.addFolder({
             name: folderName.trim(),
             description: folderDesc.trim(),
@@ -108,6 +127,21 @@ const ReadingLibraryNew: React.FC = () => {
 
     const handleUpdateFolder = () => {
         if (!editingFolder || !folderName.trim()) return;
+
+        // Content Protection
+        if (settings.protectionLevel !== 'off') {
+            const protectionResult = checkKeywords(
+                `${folderName} ${folderDesc}`,
+                settings.protectionLevel,
+                settings.customBlockedKeywords
+            );
+            if (protectionResult.blocked) {
+                alert(`Cannot update folder: ${protectionResult.reason}`);
+                logBlockedAttempt(folderName, 'keyword', protectionResult.reason);
+                return;
+            }
+        }
+
         store.updateFolder(editingFolder.id, {
             name: folderName.trim(),
             description: folderDesc.trim(),
@@ -126,6 +160,21 @@ const ReadingLibraryNew: React.FC = () => {
 
     const handleAddBook = () => {
         if (!targetFolderId || !bookTitle.trim() || !bookPages) return;
+
+        // Content Protection
+        if (settings.protectionLevel !== 'off') {
+            const protectionResult = checkKeywords(
+                `${bookTitle} ${bookAuthor} ${bookDescription}`,
+                settings.protectionLevel,
+                settings.customBlockedKeywords
+            );
+            if (protectionResult.blocked) {
+                alert(`Cannot add book: ${protectionResult.reason}`);
+                logBlockedAttempt(bookTitle, 'keyword', protectionResult.reason);
+                return;
+            }
+        }
+
         const randomColor = COVER_COLORS[Math.floor(Math.random() * COVER_COLORS.length)];
         store.addBookToFolder(targetFolderId, {
             title: bookTitle.trim(),
@@ -160,45 +209,69 @@ const ReadingLibraryNew: React.FC = () => {
         console.log('Size:', (selectedFile.size / 1024).toFixed(2), 'KB');
 
         try {
-            // Convert PDF to data URL
+            // 1. Process PDF (extract cover)
             const reader = new FileReader();
             reader.onload = async () => {
                 try {
                     const pdfDataUrl = reader.result as string;
-                    console.log('PDF converted to data URL');
+                    console.log('PDF converted to data URL for extraction');
                     setIsProcessingPdf(true);
 
-                    // Try to extract cover (but don't fail if it errors)
+                    // Try to extract cover
                     let coverImage: string | undefined;
                     try {
                         console.log('Extracting cover page...');
                         coverImage = await extractPdfCover(pdfDataUrl);
                         console.log('✅ Cover extracted successfully');
+
+                        // If we have a cover image, upload it too
+                        if (coverImage) {
+                            // This part is tricky if coverImage is data URL. 
+                            // We might want to upload it to 'book-covers' to save space?
+                            // valid point, but for now let's persist existing behavior for cover, 
+                            // or effectively, we can upload it later.
+                            // Actually, store.updateBookCover handles base64 fine.
+                        }
                     } catch (coverError) {
                         console.warn('⚠️ Could not extract cover during upload:', coverError);
-                        console.log('Continuing without cover (can upload manually later)');
                     }
 
-                    // Upload PDF with optional cover
-                    store.uploadPdfToBook(
-                        targetBookId,
-                        selectedFile.name,
-                        selectedFile.size,
-                        pdfDataUrl,
-                        coverImage
-                    );
+                    // 2. Upload PDF to Supabase Storage
+                    console.log('Uploading PDF to Supabase Storage...');
+                    // @ts-ignore
+                    const pdfPath = await store.uploadFile(selectedFile, 'book-pdfs');
 
-                    console.log('✅ PDF uploaded successfully');
+                    if (pdfPath) {
+                        console.log('✅ PDF uploaded to storage:', pdfPath);
 
-                    // Reset state
-                    setSelectedFile(null);
-                    setShowUploadPdfModal(false);
-                    setTargetBookId(null);
-                    setIsProcessingPdf(false);
+                        // 3. Save to Store (with path, empty dataUrl to save local storage space)
+                        store.uploadPdfToBook(
+                            targetBookId,
+                            selectedFile.name,
+                            selectedFile.size,
+                            "", // Empty data URL since we have path
+                            coverImage,
+                            pdfPath
+                        );
+                        // Also update cover if we extracted one
+                        if (coverImage) {
+                            store.updateBookCover(targetBookId, coverImage);
+                        }
+
+                        console.log('✅ PDF info saved to store');
+
+                        // Reset state
+                        setSelectedFile(null);
+                        setShowUploadPdfModal(false);
+                        setTargetBookId(null);
+                    } else {
+                        throw new Error("Failed to upload PDF to storage");
+                    }
                 } catch (error) {
                     console.error('❌ Error processing PDF:', error);
-                    setIsProcessingPdf(false);
                     alert('Failed to process PDF. Please try again.');
+                } finally {
+                    setIsProcessingPdf(false);
                 }
             };
             reader.onerror = () => {
@@ -209,29 +282,41 @@ const ReadingLibraryNew: React.FC = () => {
         } catch (error) {
             console.error('❌ Error uploading PDF:', error);
             alert('Failed to upload PDF. Please try again.');
+            setIsProcessingPdf(false);
         }
     };
 
-    const handleOpenPdf = (book: Book) => {
+    const handleOpenPdf = async (book: Book) => {
         console.log('=== Opening PDF ===');
         console.log('Book:', book.title);
-        console.log('Has PDF:', !!book.pdfDataUrl);
-        console.log('PDF Data URL length:', book.pdfDataUrl?.length || 0);
 
-        if (book.pdfDataUrl) {
-            console.log('Calling openPdfInNewTab...');
-            try {
+        try {
+            if (book.pdfPath) {
+                console.log('Found PDF Path in Storage:', book.pdfPath);
+                // @ts-ignore
+                const signedUrl = await store.getPrivateFileUrl('book-pdfs', book.pdfPath);
+                if (signedUrl) {
+                    console.log('Generated Signed URL, opening...');
+                    openPdfInNewTab(signedUrl, book.title);
+                    return;
+                } else {
+                    console.error('Failed to generate signed URL');
+                    alert('Could not access PDF file from storage.');
+                    return;
+                }
+            } else if (book.pdfDataUrl) {
+                console.log('Found PDF Data URL');
                 openPdfInNewTab(book.pdfDataUrl, book.title);
-                console.log('✅ PDF open function called successfully');
-            } catch (error) {
-                console.error('❌ Error opening PDF:', error);
-                alert(`Failed to open PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } else {
+                console.warn('⚠️ No PDF found for book:', book.title);
+                alert('No PDF attached to this book.');
             }
-        } else {
-            console.warn('⚠️ No PDF data URL found for book:', book.title);
-            alert('No PDF file is attached to this book. Please upload a PDF first.');
+        } catch (error) {
+            console.error('❌ Error opening PDF:', error);
+            alert(`Failed to open PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     };
+
 
     // Manual cover image upload handlers
     const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -276,21 +361,51 @@ const ReadingLibraryNew: React.FC = () => {
     const handleUploadCover = async () => {
         if (!targetBookId || !coverPreview) return;
 
-        // Use selectedCoverFile just for logging/validation if it exists
-        if (selectedCoverFile) {
-            console.log('Uploading manual cover:', selectedCoverFile.name);
-        } else {
-            console.log('Setting extracted/preview cover as book cover');
+        setIsProcessingPdf(true); // Reuse loader or add new one
+        console.log('Starting cover upload...');
+
+        try {
+            let fileToUpload: File | null = selectedCoverFile;
+
+            // If no file selected but we have a preview (e.g. from PDF extraction), convert base64 to file
+            if (!fileToUpload && coverPreview.startsWith('data:')) {
+                try {
+                    const res = await fetch(coverPreview);
+                    const blob = await res.blob();
+                    fileToUpload = new File([blob], `cover-${targetBookId}.jpg`, { type: 'image/jpeg' });
+                } catch (e) {
+                    console.error('Error converting preview to file:', e);
+                }
+            }
+
+            let coverUrl = coverPreview;
+
+            if (fileToUpload) {
+                console.log('Uploading file to Supabase Storage...');
+                // @ts-ignore - method added recently
+                const uploadedUrl = await store.uploadFile(fileToUpload, 'book-covers');
+                if (uploadedUrl) {
+                    console.log('Upload successful:', uploadedUrl);
+                    coverUrl = uploadedUrl;
+                } else {
+                    console.error('Upload failed, falling back to base64');
+                }
+            }
+
+            // Update the book's coverImage in the store
+            store.updateBookCover(targetBookId, coverUrl);
+
+            // Reset state
+            setCoverPreview(null);
+            setSelectedCoverFile(null);
+            setShowUploadCoverModal(false);
+            setTargetBookId(null);
+        } catch (error) {
+            console.error('Error in handleUploadCover:', error);
+            alert('Failed to upload cover image.');
+        } finally {
+            setIsProcessingPdf(false);
         }
-
-        // Update the book's coverImage in the store
-        store.updateBookCover(targetBookId, coverPreview);
-
-        // Reset state
-        setCoverPreview(null);
-        setSelectedCoverFile(null);
-        setShowUploadCoverModal(false);
-        setTargetBookId(null);
     };
 
     const openUploadCover = (bookId: string) => {
@@ -433,12 +548,13 @@ const ReadingLibraryNew: React.FC = () => {
                         <Folder className="w-16 h-16 mx-auto mb-4 text-slate-300" />
                         <p className="text-slate-500 font-medium mb-2">No folders yet</p>
                         <p className="text-sm text-slate-400 mb-4">Create a folder to start organizing your books</p>
-                        <button
+                        <Button
                             onClick={() => setShowCreateFolderModal(true)}
-                            className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+                            variant="primary"
+                            size="md"
                         >
                             Create Your First Folder
-                        </button>
+                        </Button>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -695,13 +811,16 @@ const ReadingLibraryNew: React.FC = () => {
                                 </div>
                             </div>
 
-                            <button
+                            <Button
                                 onClick={handleCreateFolder}
                                 disabled={!folderName.trim()}
-                                className="w-full mt-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                variant="primary"
+                                size="lg"
+                                fullWidth
+                                className="mt-8"
                             >
                                 Create Folder
-                            </button>
+                            </Button>
                         </motion.div>
                     </motion.div>
                 )}
@@ -777,13 +896,16 @@ const ReadingLibraryNew: React.FC = () => {
                                 </div>
                             </div>
 
-                            <button
+                            <Button
                                 onClick={handleUpdateFolder}
                                 disabled={!folderName.trim()}
-                                className="w-full mt-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-lg transition-all active:scale-95 disabled:opacity-50"
+                                variant="primary"
+                                size="lg"
+                                fullWidth
+                                className="mt-8"
                             >
                                 Save Changes
-                            </button>
+                            </Button>
                         </motion.div>
                     </motion.div>
                 )}
@@ -866,13 +988,16 @@ const ReadingLibraryNew: React.FC = () => {
                                 </div>
                             </div>
 
-                            <button
+                            <Button
                                 onClick={handleAddBook}
                                 disabled={!bookTitle.trim() || !bookPages}
-                                className="w-full mt-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold shadow-lg shadow-emerald-200 transition-all active:scale-95 disabled:opacity-50"
+                                variant="primary"
+                                size="lg"
+                                fullWidth
+                                className="mt-8 bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200"
                             >
                                 Add Book
-                            </button>
+                            </Button>
                         </motion.div>
                     </motion.div>
                 )}
@@ -946,27 +1071,25 @@ const ReadingLibraryNew: React.FC = () => {
                             </div>
 
                             <div className="mt-8 flex gap-3">
-                                <button
+                                <Button
                                     onClick={() => { setShowUploadPdfModal(false); setSelectedFile(null); setTargetBookId(null); }}
                                     disabled={isProcessingPdf}
-                                    className="flex-1 py-4 px-6 rounded-2xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-all disabled:opacity-50"
+                                    variant="secondary"
+                                    size="lg"
+                                    className="flex-1"
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     onClick={handleUploadPdf}
                                     disabled={!selectedFile || isProcessingPdf}
-                                    className="flex-[2] py-4 px-6 rounded-2xl bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-200 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-2"
+                                    isLoading={isProcessingPdf}
+                                    variant="primary"
+                                    size="lg"
+                                    className="flex-[2]"
                                 >
-                                    {isProcessingPdf ? (
-                                        <>
-                                            <Loader2 className="w-5 h-5 animate-spin" />
-                                            Extracting Cover...
-                                        </>
-                                    ) : (
-                                        'Upload & Attach'
-                                    )}
-                                </button>
+                                    {isProcessingPdf ? 'Extracting Cover...' : 'Upload & Attach'}
+                                </Button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -1067,13 +1190,16 @@ const ReadingLibraryNew: React.FC = () => {
                                 </div>
                             </div>
 
-                            <button
+                            <Button
                                 onClick={handleUploadCover}
                                 disabled={!coverPreview || isProcessingPdf}
-                                className="w-full mt-6 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                variant="primary"
+                                size="lg"
+                                fullWidth
+                                className="mt-6 bg-purple-600 hover:bg-purple-700"
                             >
                                 Set as Cover
-                            </button>
+                            </Button>
                         </motion.div>
                     </motion.div>
                 )}
