@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, isSupported as isMessagingSupported } from "firebase/messaging";
-import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
+import { getFunctions } from "firebase/functions";
 import { getAnalytics, isSupported as isAnalyticsSupported } from "firebase/analytics";
 import { getPerformance } from "firebase/performance";
 
@@ -50,10 +50,6 @@ if (typeof window !== 'undefined') {
     }
 }
 
-// Connect to emulator in development (optional)
-if (import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS === 'true') {
-    connectFunctionsEmulator(functions, 'localhost', 5001);
-}
 
 // Export the app instance for advanced use cases
 export default app;

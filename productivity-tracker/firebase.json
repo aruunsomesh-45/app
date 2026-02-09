@@ -6,6 +6,9 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "predeploy": [
+      "npm run build"
+    ],
     "rewrites": [
       {
         "source": "**",
@@ -37,33 +40,5 @@
         "*.local"
       ]
     }
-  ],
-  "emulators": {
-    "auth": {
-      "port": 9090
-    },
-    "functions": {
-      "port": 5005
-    },
-    "firestore": {
-      "port": 8088
-    },
-    "database": {
-      "port": 9005
-    },
-    "hosting": {
-      "port": 5002
-    },
-    "pubsub": {
-      "port": 8086
-    },
-    "storage": {
-      "port": 9190
-    },
-    "ui": {
-      "enabled": true,
-      "port": 4001
-    },
-    "singleProjectMode": true
-  }
+  ]
 }
